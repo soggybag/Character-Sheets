@@ -255,3 +255,13 @@ struct TemplateTests {
         #expect(file.text() == CharacterFile.newCharacterTemplate)
     }
 }
+
+@Suite("App resources")
+struct AppResourceTests {
+    @Test func sampleCharacterMatchesTheExample() throws {
+        let app = examplesURL.deletingLastPathComponent().appending(path: "App/Help/Sample Character.md")
+        let sample = try String(contentsOf: app, encoding: .utf8)
+        #expect(sample == (try String(contentsOf: examplesURL.appending(path: "Elowen Thistledown.md"), encoding: .utf8)))
+        #expect(try CharacterFile(text: sample).isCharacter)
+    }
+}
