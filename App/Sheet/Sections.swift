@@ -3,7 +3,9 @@ import SwiftUI
 
 struct IdentitySection: View {
     @Binding var file: CharacterFile
+    let analysis: RulesAnalysis
     let placeholderName: String
+    let levelUp: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -15,8 +17,10 @@ struct IdentitySection: View {
                 LineField(label: "Alignment", text: $file.string(["alignment"]), suggestions: OSE.alignments)
                 LineNumberField(label: "Level", value: $file.int(["level"]))
                     .frame(width: 60)
-                LineNumberField(label: "XP", value: $file.int(["xp"]))
-                    .frame(width: 100)
+                LineNumberField(label: "XP", value: $file.int(["xp"]), caption: xpCaption)
+                    .frame(width: 110)
+                    .help(xpHelp)
+                levelUpButton
             }
             HStack(spacing: 20) {
                 LineField(label: "Title", text: $file.string(["title"]))
@@ -24,10 +28,36 @@ struct IdentitySection: View {
             }
         }
     }
+
+    private var xpCaption: String? {
+        guard let xp = analysis.xp else { return nil }
+        let next = xp.nextLevel.map { "next \($0.formatted())" } ?? "max level"
+        return xp.bonusPercent == 0 ? next : "\(next) · \(xp.bonusPercent > 0 ? "+" : "")\(xp.bonusPercent)%"
+    }
+
+    private var xpHelp: String {
+        guard let xp = analysis.xp else { return "Experience points" }
+        var lines = ["Experience points"]
+        if let next = xp.nextLevel { lines.append("Next level at \(next.formatted()) XP") }
+        if xp.bonusPercent != 0 { lines.append("Prime requisite: \(xp.bonusPercent > 0 ? "+" : "")\(xp.bonusPercent)% to XP awards") }
+        return lines.joined(separator: "\n")
+    }
+
+    @ViewBuilder private var levelUpButton: some View {
+        let button = Button("Level Up…", action: levelUp)
+            .disabled(analysis.classRules == nil || analysis.level == nil)
+            .help(analysis.xp?.readyToLevelUp == true ? "Enough XP for the next level" : "Go up a level")
+        if analysis.xp?.readyToLevelUp == true {
+            button.buttonStyle(.borderedProminent)
+        } else {
+            button
+        }
+    }
 }
 
 struct AbilityScoresSection: View {
     @Binding var file: CharacterFile
+    let analysis: RulesAnalysis
 
     private let scores = [("STR", "str", "Strength"), ("INT", "int", "Intelligence"), ("WIS", "wis", "Wisdom"),
                           ("DEX", "dex", "Dexterity"), ("CON", "con", "Constitution"), ("CHA", "cha", "Charisma")]
@@ -36,7 +66,10 @@ struct AbilityScoresSection: View {
         SheetSection(title: "Ability Scores") {
             HStack(spacing: 12) {
                 ForEach(scores, id: \.1) { label, key, name in
-                    StatBox(label: label, value: $file.int(["abilityScores", .key(key)]), help: name)
+                    let effects = analysis.abilities[key]
+                    StatBox(label: label, value: $file.int(["abilityScores", .key(key)]), help: name,
+                            caption: effects.map { $0.headline.isEmpty ? " " : $0.headline },
+                            captionHelp: effects?.effects.map { "\($0.label): \($0.value)" }.joined(separator: "\n"))
                 }
             }
         }
@@ -45,22 +78,28 @@ struct AbilityScoresSection: View {
 
 struct CombatSection: View {
     @Binding var file: CharacterFile
+    let analysis: RulesAnalysis
 
     var body: some View {
         SheetSection(title: "Combat") {
-            HStack(spacing: 12) {
+            HStack(alignment: .top, spacing: 12) {
                 StatBox(label: "HP", value: $file.int(["hp", "current"]), help: "Current hit points")
-                StatBox(label: "Max HP", value: $file.int(["hp", "max"]), help: "Maximum hit points")
-                StatBox(label: "AC", value: $file.int(["combat", "ac"]),
-                        help: file.usesAscendingAC ? "Armour class (ascending)" : "Armour class")
+                StatBox(label: "Max HP", value: $file.int(["hp", "max"]), help: "Maximum hit points",
+                        caption: analysis.hitDice.map { "HD \($0)" },
+                        captionHelp: analysis.hitPointRoll.map { "Roll \($0) per level (at least 1)" })
+                RuledStatBox(label: "AC", path: ["combat", "ac"], file: $file, analysis: analysis,
+                             help: file.usesAscendingAC ? "Armour class (ascending)" : "Armour class")
                 if file.usesAscendingAC {
-                    StatBox(label: "Attack", value: $file.int(["combat", "attackBonus"]), width: 72,
-                            help: "Attack bonus")
+                    RuledStatBox(label: "Attack", path: ["combat", "attackBonus"], file: $file, analysis: analysis,
+                                 width: 72, help: "Attack bonus")
                 } else {
-                    StatBox(label: "THAC0", value: $file.int(["combat", "thac0"]), help: "To hit AC 0")
+                    RuledStatBox(label: "THAC0", path: ["combat", "thac0"], file: $file, analysis: analysis,
+                                 help: "To hit AC 0")
                 }
-                StatBox(label: "Move", value: $file.int(["movement"]), suffix: "'", width: 72,
-                        help: "Base movement rate (feet per turn)")
+                RuledStatBox(label: "Move", path: ["movement"], file: $file, analysis: analysis, suffix: "'",
+                             width: 72, help: "Base movement rate (feet per turn)",
+                             caption: file.int(["movement"]).map { "\($0 / 3)' / round" },
+                             captionHelp: "Encounter movement: a third of the base rate")
             }
         }
     }
@@ -68,6 +107,7 @@ struct CombatSection: View {
 
 struct SavesSection: View {
     @Binding var file: CharacterFile
+    let analysis: RulesAnalysis
 
     private let saves = [("Death", "death", "Death / poison"), ("Wands", "wands", "Wands"),
                          ("Paralysis", "paralysis", "Paralysis / petrify"), ("Breath", "breath", "Breath attacks"),
@@ -77,8 +117,14 @@ struct SavesSection: View {
         SheetSection(title: "Saving Throws") {
             HStack(spacing: 12) {
                 ForEach(saves, id: \.1) { label, key, help in
-                    StatBox(label: label, value: $file.int(["saves", .key(key)]), width: 72, help: help)
+                    RuledStatBox(label: label, path: ["saves", .key(key)], file: $file, analysis: analysis,
+                                 width: 72, help: help)
                 }
+            }
+            if let wis = analysis.abilities["wis"]?.headline, wis != "+0" {
+                Text("\(wis) to saves against magic (WIS)")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
         }
     }
@@ -86,6 +132,7 @@ struct SavesSection: View {
 
 struct ExplorationSection: View {
     @Binding var file: CharacterFile
+    let analysis: RulesAnalysis
 
     private var className: String { file.string(["class"]) ?? "" }
 
@@ -104,8 +151,8 @@ struct ExplorationSection: View {
                 HStack(spacing: 12) {
                     percent("Climb", "climb", help: "Climb sheer surfaces")
                     percent("Traps", "traps", help: "Find or remove treasure traps")
-                    StatBox(label: "Hear", value: $file.int(["thiefSkills", "hearNoise"]), suffix: "in 6",
-                            width: 84, help: "Hear noise")
+                    RuledStatBox(label: "Hear", path: ["thiefSkills", "hearNoise"], file: $file, analysis: analysis,
+                                 suffix: "in 6", width: 84, help: "Hear noise")
                     percent("Hide", "hide", help: "Hide in shadows")
                     percent("Move", "moveSilently", help: "Move silently")
                     percent("Locks", "openLocks", help: "Open locks")
@@ -117,11 +164,13 @@ struct ExplorationSection: View {
     }
 
     private func inSix(_ label: String, _ key: String, help: String) -> some View {
-        StatBox(label: label, value: $file.int(["exploration", .key(key)]), suffix: "in 6", width: 84, help: help)
+        RuledStatBox(label: label, path: ["exploration", .key(key)], file: $file, analysis: analysis,
+                     suffix: "in 6", width: 84, help: help)
     }
 
     private func percent(_ label: String, _ key: String, help: String) -> some View {
-        StatBox(label: label, value: $file.int(["thiefSkills", .key(key)]), suffix: "%", width: 72, help: help)
+        RuledStatBox(label: label, path: ["thiefSkills", .key(key)], file: $file, analysis: analysis,
+                     suffix: "%", width: 72, help: help)
     }
 }
 
@@ -145,6 +194,7 @@ struct LanguagesSection: View {
 
 struct SpellsSection: View {
     @Binding var file: CharacterFile
+    let analysis: RulesAnalysis
 
     private let ordinals = ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th"]
 
@@ -165,6 +215,8 @@ struct SpellsSection: View {
                     }
                     .padding(.bottom, 10)
                 }
+                slotRulesHint
+                    .padding(.bottom, 10)
             }
 
             HStack(alignment: .top, spacing: 32) {
@@ -213,6 +265,20 @@ struct SpellsSection: View {
                 }
             }
             .padding(.top, 6)
+        }
+    }
+
+    /// Shown when the slots differ from (or are missing compared with) the rules.
+    @ViewBuilder private var slotRulesHint: some View {
+        let path: NodePath = ["spells", "slots"]
+        switch analysis.status(of: path, in: file) {
+        case let .overridden(rules), let .missing(rules):
+            Button("Rules: \(rules.description)") { file.setRulesValue(rules, at: path) }
+                .buttonStyle(.link)
+                .font(.caption)
+                .help("Use the spells per day from the rules")
+        case .matches, .noRule:
+            EmptyView()
         }
     }
 
@@ -303,6 +369,79 @@ struct NotesSection: View {
                 .padding(8)
                 .frame(minHeight: 280)
                 .background(.quaternary.opacity(0.3), in: .rect(cornerRadius: 8))
+        }
+    }
+}
+
+struct WeaponsSection: View {
+    let file: CharacterFile
+    let analysis: RulesAnalysis
+
+    var body: some View {
+        SheetSection(title: "Weapons") {
+            Grid(alignment: .leading, horizontalSpacing: 24, verticalSpacing: 8) {
+                GridRow {
+                    Text("Weapon")
+                    Text("Melee")
+                    Text("Missile")
+                    Text("Range")
+                }
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                ForEach(analysis.weapons, id: \.itemIndex) { weapon in
+                    GridRow {
+                        Text(weapon.name)
+                        attack(weapon.melee)
+                        attack(weapon.missile)
+                        Text(weapon.range.map { "\($0.short) / \($0.medium) / \($0.long)'" } ?? "")
+                            .monospacedDigit()
+                            .help("Short (+1 to hit) / medium / long (−1 to hit)")
+                    }
+                }
+            }
+            Text(footnote)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+    }
+
+    private func attack(_ attack: Attack?) -> some View {
+        Group {
+            if let attack {
+                Text("\(attack.notation)  \(attack.damage)")
+                    .monospacedDigit()
+                    .help("THAC0 \(attack.thac0) (attack bonus \(attack.bonus >= 0 ? "+" : "")\(attack.bonus)), damage \(attack.damage)")
+            } else {
+                Text("—").foregroundStyle(.tertiary)
+            }
+        }
+    }
+
+    private var footnote: String {
+        let variable = file.bool(["rules", "options", "variableWeaponDamage"]) ?? false
+        return "THAC0 [attack bonus] and damage, including STR for melee and DEX for missiles."
+            + (variable ? "" : " Every weapon does 1d6 (variable weapon damage is off).")
+    }
+}
+
+struct RulesNotesSection: View {
+    let notes: [RuleNote]
+
+    var body: some View {
+        SheetSection(title: "Rules Notes") {
+            VStack(alignment: .leading, spacing: 6) {
+                ForEach(notes) { note in
+                    Label {
+                        Text(note.message)
+                    } icon: {
+                        switch note.kind {
+                        case .warning: Image(systemName: "exclamationmark.triangle").foregroundStyle(.orange)
+                        case .info: Image(systemName: "info.circle").foregroundStyle(.secondary)
+                        }
+                    }
+                    .font(.callout)
+                }
+            }
         }
     }
 }

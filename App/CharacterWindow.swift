@@ -104,6 +104,12 @@ private struct RulesMenu: View {
             Toggle("Variable Weapon Damage", isOn: Binding(
                 get: { file.bool(["rules", "options", "variableWeaponDamage"]) ?? false },
                 set: { file.setBool($0, at: ["rules", "options", "variableWeaponDamage"]) }))
+            Divider()
+            Button("Fill In Missing Values") {
+                file.fillMissingValues(from: RulesAnalysis(file))
+            }
+            .help("Write the rules value into every empty field the rules cover")
+            Divider()
             Picker("Encumbrance", selection: Binding(
                 get: { file.string(["rules", "options", "encumbrance"]) ?? "basic" },
                 set: { file.setString($0, at: ["rules", "options", "encumbrance"]) })) {

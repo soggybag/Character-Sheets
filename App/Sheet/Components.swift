@@ -48,6 +48,12 @@ struct StatBox: View {
     var suffix: String?
     var width: CGFloat = 64
     var help: String?
+    /// How the value compares with the rules.
+    var status: FieldStatus = .noRule
+    var useRulesValue: (() -> Void)?
+    /// A line under the box, e.g. an ability modifier.
+    var caption: String?
+    var captionHelp: String?
 
     var body: some View {
         VStack(spacing: 4) {
@@ -56,7 +62,8 @@ struct StatBox: View {
                 .foregroundStyle(.secondary)
                 .lineLimit(1)
             HStack(spacing: 2) {
-                TextField("–", value: $value, format: .number.grouping(.never))
+                TextField(label, value: $value, format: .number.grouping(.never), prompt: Text(prompt))
+                    .labelsHidden()
                     .textFieldStyle(.plain)
                     .multilineTextAlignment(.center)
                     .font(.title3.monospacedDigit())
@@ -71,8 +78,72 @@ struct StatBox: View {
             .padding(.horizontal, 6)
             .frame(width: width)
             .background(.quaternary.opacity(0.6), in: .rect(cornerRadius: 8))
+            .overlay(alignment: .topTrailing) {
+                if case .overridden = status {
+                    Circle()
+                        .fill(.orange)
+                        .frame(width: 6, height: 6)
+                        .padding(4)
+                        .accessibilityLabel("Differs from the rules")
+                }
+            }
+            .contextMenu {
+                if let rules = rulesValue, let useRulesValue {
+                    Button("Use Rules Value (\(rules.description))", action: useRulesValue)
+                }
+            }
+            .help(boxHelp)
+            if let caption {
+                Text(caption)
+                    .font(.caption.monospacedDigit())
+                    .foregroundStyle(.secondary)
+                    .help(captionHelp ?? "")
+            }
         }
-        .help(help ?? label)
+    }
+
+    private var rulesValue: RulesValue? {
+        switch status {
+        case let .overridden(rules), let .missing(rules): rules
+        case .matches, .noRule: nil
+        }
+    }
+
+    private var prompt: String {
+        if case let .missing(rules) = status { return rules.description }
+        return "–"
+    }
+
+    private var boxHelp: String {
+        let name = help ?? label
+        switch status {
+        case let .overridden(rules):
+            return "\(name). The rules give \(rules); your value is kept. Right-click to use the rules value."
+        case let .missing(rules):
+            return "\(name). The rules give \(rules) (shown in grey until you fill it in)."
+        case .matches, .noRule:
+            return name
+        }
+    }
+}
+
+/// A stat box for a stored field the rules have a value for.
+struct RuledStatBox: View {
+    let label: String
+    let path: NodePath
+    @Binding var file: CharacterFile
+    let analysis: RulesAnalysis
+    var suffix: String?
+    var width: CGFloat = 64
+    var help: String?
+    var caption: String?
+    var captionHelp: String?
+
+    var body: some View {
+        StatBox(label: label, value: $file.int(path), suffix: suffix, width: width, help: help,
+                status: analysis.status(of: path, in: file),
+                useRulesValue: analysis.suggestions[path].map { value in { file.setRulesValue(value, at: path) } },
+                caption: caption, captionHelp: captionHelp)
     }
 }
 
@@ -117,6 +188,7 @@ struct LineNumberField: View {
     let label: String
     @Binding var value: Int?
     var prompt = ""
+    var caption: String?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 3) {
@@ -128,6 +200,13 @@ struct LineNumberField: View {
                 .monospacedDigit()
                 .labelsHidden()
             Divider()
+            if let caption {
+                Text(caption)
+                    .font(.caption.monospacedDigit())
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .fixedSize()
+            }
         }
     }
 }

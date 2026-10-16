@@ -1,7 +1,7 @@
 {
   "id": "ose",
   "variant": "classic",
-  "displayName": "OSE Classic Fantasy",
+  "displayName": "Classic Fantasy",
   "source": "Old-School Essentials SRD (OGL 1.0a). See LICENSE-OGL.md.",
   "dataVersion": 1,
   "files": { "classes": "classes-classic.json", "abilities": "abilities.json", "equipment": "equipment.json" },

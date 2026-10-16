@@ -44,8 +44,9 @@ There are **no override flags**. Instead:
 - If a stored value **differs** from the rules, it is an *override* (a house
   rule, a magic item, a GM ruling). The app keeps it, marks it subtly, and
   offers "Use rules value". It never changes it silently.
-- If a field is **missing**, the app shows the rules value and writes it on the
-  next save.
+- If a field is **missing**, the app shows the rules value in grey. It's
+  written only when you choose "Use Rules Value" or Rules → Fill In Missing
+  Values, or when a level-up fills it in.
 
 This means hand edits always win, and the file never needs extra metadata.
 

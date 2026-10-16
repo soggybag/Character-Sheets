@@ -14,7 +14,7 @@ with a YAML header. Starting with Old-School Essentials (Classic Fantasy).
 | `App/` | The macOS app (SwiftUI, document-based). Files added here are picked up by Xcode automatically. |
 | `Config/` | Info.plist (document types) and entitlements |
 | `Packages/CharacterKit/` | Reading and writing character files. No UI; shared with a future iPad app. |
-| `rules/ose/` | OSE Classic rules data (JSON) |
+| `Packages/CharacterKit/Sources/CharacterKit/Resources/ose/` | OSE Classic rules data (JSON), bundled with the app |
 | `schema/` | JSON Schema for the file header |
 | `examples/` | Example characters. Also test fixtures: every file must round-trip byte for byte. |
 
@@ -30,6 +30,9 @@ open "Character Sheets.xcodeproj"        # then Run (⌘R)
 cd Packages/CharacterKit && swift test
 ```
 
-Signing is set to "Sign to Run Locally" with a placeholder bundle id
-(`com.example.CharacterSheets`). Set your team and a real bundle id before
-distributing.
+The bundle id is `com.mitchellhudson.CharacterSheets`. Signing is set to
+"Sign to Run Locally"; set your development team before distributing.
+
+Third-party notices (Yams, MIT; OSE SRD rules data, OGL 1.0a) appear in
+the About window from `App/Credits.html`. The full OGL text ships in the
+CharacterKit resource bundle.

@@ -6,21 +6,32 @@ struct SheetView: View {
     @Binding var file: CharacterFile
     var placeholderName: String
 
+    @State private var levelUpPlan: LevelUpPlan?
+
     var body: some View {
+        let analysis = RulesAnalysis(file)
         ScrollView {
             VStack(alignment: .leading, spacing: 32) {
                 if file.headerHadComments {
                     Notice(systemImage: "number",
                            text: "This file's header has # comments. They'll be removed when you save. Move them to Notes to keep them.")
                 }
-                IdentitySection(file: $file, placeholderName: placeholderName)
-                AbilityScoresSection(file: $file)
-                CombatSection(file: $file)
-                SavesSection(file: $file)
-                ExplorationSection(file: $file)
+                IdentitySection(file: $file, analysis: analysis, placeholderName: placeholderName) {
+                    levelUpPlan = analysis.levelUpPlan(for: file)
+                }
+                if !analysis.notes.isEmpty {
+                    RulesNotesSection(notes: analysis.notes)
+                }
+                AbilityScoresSection(file: $file, analysis: analysis)
+                CombatSection(file: $file, analysis: analysis)
+                if !analysis.weapons.isEmpty {
+                    WeaponsSection(file: file, analysis: analysis)
+                }
+                SavesSection(file: $file, analysis: analysis)
+                ExplorationSection(file: $file, analysis: analysis)
                 LanguagesSection(file: $file)
                 if showsSpells {
-                    SpellsSection(file: $file)
+                    SpellsSection(file: $file, analysis: analysis)
                 }
                 EquipmentSection(file: $file)
                 MoneySection(file: $file)
@@ -36,6 +47,9 @@ struct SheetView: View {
             .frame(maxWidth: .infinity)
         }
         .background(.background)
+        .sheet(item: $levelUpPlan) { plan in
+            LevelUpSheet(plan: plan, file: $file)
+        }
     }
 
     private var showsSpells: Bool {
@@ -57,7 +71,7 @@ private struct Notice: View {
     }
 }
 
-/// OSE Classic names used as suggestions. Replaced by the rules data in M3.
+/// Classic Fantasy names used as suggestions.
 enum OSE {
     static let classes = ["Cleric", "Dwarf", "Elf", "Fighter", "Halfling", "Magic-User", "Thief"]
     static let alignments = ["Lawful", "Neutral", "Chaotic"]

@@ -108,7 +108,7 @@ Decisions:
 - [x] File format spec (`docs/FILE-FORMAT.md`)
 - [x] Sample character (`examples/`)
 - [x] JSON Schema for validating the header (`schema/`)
-- [x] OSE Classic data tables (`rules/ose/`): 7 classes, ability modifiers, armour,
+- [x] OSE Classic data tables (now in CharacterKit `Resources/ose/`): 7 classes, ability modifiers, armour,
       encumbrance, checked against the SRD
 - [x] Weapons, ammunition and adventuring gear lists, checked against the SRD
 - [x] Convert real characters from the PDF sheets: all 7 classes covered
@@ -139,11 +139,20 @@ Decisions:
 - [ ] Polish pass after using it at the table
 
 ### M3: Rules assist ← first outside testers
-- [ ] Derived values: modifiers, saves, THAC0/attack bonus, XP bonus and next
-      level, exploration odds, spell slots
-- [ ] Override markers (value differs from the rules) with "use rules value"
-- [ ] Rules notes: class requirements, level limits, armour restrictions
-- [ ] Level-up helper: proposes new saves, slots and an HP roll, and you accept or edit
+- [x] Rules engine in CharacterKit (`RulesAnalysis`), tested against every
+      example character: modifiers, saves, THAC0/attack bonus, AC from worn
+      armour, movement (all three encumbrance options), XP bonus and next
+      level, exploration odds, thief skills, spell slots
+- [x] Weapons: to-hit as "THAC0 [bonus]" for melee (STR) and missile (DEX,
+      halfling +1), damage (1d6, or the weapon's die with variable damage), ranges
+- [x] Override markers (value differs from the rules) with "Use Rules Value";
+      empty fields show the rules value in grey; Rules → Fill In Missing Values
+- [x] Rules notes: class requirements, level limits, armour, shield and weapon
+      restrictions, holy symbol, unused languages, HP to roll, XP to level up
+- [x] Level-up helper: shows every change, keeps overrides, rolls HP (fixed
+      gains after 9th level), then applies
+- [x] Calculated values have stable names (`namedValues`) for custom layouts
+- [ ] Layout pass with your sheet design (see Later: custom layouts)
 
 ### M4: At the table
 - [ ] Fast HP tracking, spell "cast" checkboxes, ammo and torch counters
@@ -160,6 +169,10 @@ Decisions:
 - [ ] Notarised release, simple website, announce to the OSE community
 
 ### Later
+- **Custom sheet layouts:** a layout file (likely YAML or JSON) that places
+  fields by path (`saves.death`) and calculated values by name (`str.mod`,
+  `weapons.0.melee`, from `RulesAnalysis.namedValues`). Import a layout to
+  get a different sheet; the character file doesn't change.
 - OSE Advanced Fantasy (separate race and class, more classes)
 - iPad version
 - Party view: open a folder, see everyone at a glance
@@ -189,6 +202,9 @@ Anything here needs a strong case before it moves up:
 
 ## Open decisions
 
-- App name (avoid "OSE" and "D&D" in it); then set the real bundle id
-  (currently `com.example.CharacterSheets`) and signing team
+- App name (avoid "OSE" and "D&D" in it). The bundle id is
+  `com.mitchellhudson.CharacterSheets`; the signing team is still to set.
+- Whether to sign up for Necrotic Gnome's third-party license. Without
+  it the app must not claim compatibility with Old-School Essentials
+  (OGL section 7), so the ruleset is labelled "Classic Fantasy".
 - Free, paid, or pay-what-you-want

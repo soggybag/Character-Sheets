@@ -1,4 +1,4 @@
-# OSE Classic Fantasy rules data
+# Classic Fantasy rules data
 
 Data tables the app uses to suggest derived values. Transcribed from the
 OSE SRD (OGL 1.0a, see `LICENSE-OGL.md`) and checked row by row against it.

@@ -11,7 +11,7 @@ let package = Package(
         .package(url: "https://github.com/jpsim/Yams.git", from: "6.2.0"),
     ],
     targets: [
-        .target(name: "CharacterKit", dependencies: ["Yams"]),
+        .target(name: "CharacterKit", dependencies: ["Yams"], resources: [.copy("Resources/ose")]),
         .testTarget(name: "CharacterKitTests", dependencies: ["CharacterKit"]),
     ]
 )

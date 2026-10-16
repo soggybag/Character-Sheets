@@ -97,6 +97,6 @@ Old-School Essentials Classic Fantasy: Rules Tome © 2019 Gavin Norman.
 
 Old-School Essentials System Reference Document © 2019 Gavin Norman. Author Gavin Norman.
 
-Character Sheets: OSE rules data © 2026 <Your Name>.
+Character Sheets: OSE rules data © 2026 Mitchell Hudson.
 
 END OF LICENSE
