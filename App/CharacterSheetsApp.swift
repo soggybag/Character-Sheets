@@ -3,7 +3,7 @@ import SwiftUI
 @main
 struct CharacterSheetsApp: App {
     init() {
-        // The M1 editor shows raw YAML. Smart quotes and dashes would corrupt it.
+        // Smart quotes and dashes would corrupt YAML in "Edit as Text".
         for key in ["NSAutomaticQuoteSubstitutionEnabled",
                     "NSAutomaticDashSubstitutionEnabled",
                     "NSAutomaticTextReplacementEnabled"] {
@@ -12,8 +12,9 @@ struct CharacterSheetsApp: App {
     }
 
     var body: some Scene {
-        DocumentGroup(newDocument: CharacterTextDocument()) { file in
-            RawEditorView(document: file.$document, fileURL: file.fileURL)
+        DocumentGroup(newDocument: CharacterDocument()) { file in
+            CharacterWindow(document: file.$document, fileURL: file.fileURL)
         }
+        .defaultSize(width: 860, height: 1000)
     }
 }

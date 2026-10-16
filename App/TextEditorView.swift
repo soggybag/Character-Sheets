@@ -1,24 +1,22 @@
 import CharacterKit
 import SwiftUI
 
-/// M1 editor: the file's text, plus a status bar saying whether it reads as
-/// a character.
-struct RawEditorView: View {
-    @Binding var document: CharacterTextDocument
+/// The file's text, with a status bar saying whether it reads as a character.
+struct TextEditorView: View {
+    @Binding var text: String
     var fileURL: URL?
 
     var body: some View {
         VStack(spacing: 0) {
-            TextEditor(text: $document.text)
+            TextEditor(text: $text)
                 .font(.system(.body, design: .monospaced))
                 .autocorrectionDisabled()
                 .scrollContentBackground(.hidden)
                 .padding(8)
             Divider()
-            StatusBar(status: ParseStatus(text: document.text, fileURL: fileURL))
+            StatusBar(status: ParseStatus(text: text, fileURL: fileURL))
         }
         .background(.background)
-        .frame(minWidth: 480, minHeight: 420)
     }
 }
 
@@ -37,7 +35,7 @@ enum ParseStatus {
             let name = file.name
                 ?? fileURL?.deletingPathExtension().lastPathComponent
                 ?? "Unnamed character"
-            let details = [file.header["class"]?.string, file.header["level"]?.int.map { "level \($0)" }]
+            let details = [file.string(["class"]), file.int(["level"]).map { "level \($0)" }]
                 .compactMap { $0 }
                 .filter { !$0.isEmpty }
             self = .character(summary: ([name] + details).joined(separator: " · "))

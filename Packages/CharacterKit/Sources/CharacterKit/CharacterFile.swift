@@ -7,7 +7,12 @@ import Yams
 /// The header is kept as a YAML node tree rather than decoded into a struct,
 /// so key order, flow/block style, quoting and unknown keys all survive a
 /// load/save cycle.
-public struct CharacterFile {
+///
+/// Sendable: Yams nodes share `Tag` objects that Yams mutates when it first
+/// works out an untagged value's type. Every node in a `CharacterFile` has an
+/// explicit tag (set when loading, and by every setter), so the tags are
+/// never mutated and copies can be read safely from any thread.
+public struct CharacterFile: @unchecked Sendable {
     /// The front matter. Always a mapping.
     public var header: Node
     /// Everything after the closing `---` line, unchanged.
@@ -16,13 +21,16 @@ public struct CharacterFile {
     public var lineEnding: LineEnding
     /// Whether the original file started with a UTF-8 byte order mark.
     public var hasByteOrderMark: Bool
+    /// The header had full-line `#` comments. They are not kept when the file
+    /// is saved, so the app warns about it.
+    public private(set) var headerHadComments = false
 
     public enum LineEnding: String, Sendable {
         case lf = "\n"
         case crlf = "\r\n"
     }
 
-    public init(header: Node = Node([(Node, Node)]()),
+    public init(header: Node = .mapping(.init([], Tag(.map), .block)),
                 body: String = "",
                 lineEnding: LineEnding = .lf,
                 hasByteOrderMark: Bool = false) {
@@ -70,6 +78,9 @@ extension CharacterFile {
 
         let (headerText, body) = try Self.split(text)
         self.body = body
+        headerHadComments = headerText.split(separator: "\n").contains {
+            $0.drop { $0 == " " }.hasPrefix("#")
+        }
 
         let node: Node?
         do {
@@ -79,9 +90,9 @@ extension CharacterFile {
         }
         switch node {
         case nil:
-            header = Node([(Node, Node)]())
+            header = .mapping(.init([], Tag(.map), .block))
         case let .some(node) where node.mapping != nil:
-            header = Self.restoringCollectionStyles(node, source: headerText.unicodeScalars.split(
+            header = Self.normalized(node, source: headerText.unicodeScalars.split(
                 separator: "\n", omittingEmptySubsequences: false).map(Array.init))
         default:
             throw CharacterFileError.headerNotMapping
@@ -109,30 +120,31 @@ extension CharacterFile {
         throw CharacterFileError.unterminatedFrontMatter
     }
 
-    /// Yams 6.2 reads a collection's style from its *end* event, so parsed
-    /// maps and lists come back with style `.any`. Recover it from the
-    /// source instead: a flow collection starts with `{` or `[` at its mark.
-    static func restoringCollectionStyles(_ node: Node, source lines: [[Unicode.Scalar]]) -> Node {
+    /// Prepares a parsed tree:
+    /// - Gives every node an explicit tag (see the note on `CharacterFile`).
+    /// - Restores collection styles. Yams 6.2 reads a collection's style from
+    ///   its *end* event, so parsed maps and lists come back with style `.any`.
+    ///   A flow collection starts with `{` or `[` at its mark.
+    static func normalized(_ node: Node, source lines: [[Unicode.Scalar]]) -> Node {
         func startsWithBracket(_ mark: Mark?, _ bracket: Unicode.Scalar) -> Bool? {
             guard let mark, lines.indices.contains(mark.line - 1) else { return nil }
             let line = lines[mark.line - 1]
             guard line.indices.contains(mark.column - 1) else { return nil }
             return line[mark.column - 1] == bracket
         }
+        let tag = Tag(Resolver.default.resolveTag(of: node))
         switch node {
-        case var .mapping(mapping):
-            if let isFlow = startsWithBracket(mapping.mark, "{") { mapping.style = isFlow ? .flow : .block }
-            for key in mapping.keys {
-                mapping[key] = mapping[key].map { restoringCollectionStyles($0, source: lines) }
-            }
-            return .mapping(mapping)
-        case var .sequence(sequence):
-            if let isFlow = startsWithBracket(sequence.mark, "[") { sequence.style = isFlow ? .flow : .block }
-            for index in sequence.indices {
-                sequence[index] = restoringCollectionStyles(sequence[index], source: lines)
-            }
-            return .sequence(sequence)
-        case .scalar, .alias:
+        case let .mapping(mapping):
+            let style: Node.Mapping.Style = startsWithBracket(mapping.mark, "{").map { $0 ? .flow : .block } ?? mapping.style
+            let pairs = mapping.map { (normalized($0.key, source: lines), normalized($0.value, source: lines)) }
+            return .mapping(.init(pairs, tag, style, mapping.mark))
+        case let .sequence(sequence):
+            let style: Node.Sequence.Style = startsWithBracket(sequence.mark, "[").map { $0 ? .flow : .block } ?? sequence.style
+            return .sequence(.init(sequence.map { normalized($0, source: lines) }, tag, style, sequence.mark))
+        case var .scalar(scalar):
+            scalar.tag = tag
+            return .scalar(scalar)
+        case .alias:
             return node
         }
     }
@@ -193,5 +205,38 @@ extension Node {
     /// as `false`.
     public static func text(_ string: String) -> Node {
         Node(string, Tag(.str))
+    }
+
+    static func integer(_ value: Int) -> Node {
+        Node(String(value), Tag(.int))
+    }
+
+    static func boolean(_ value: Bool) -> Node {
+        Node(value ? "true" : "false", Tag(.bool))
+    }
+}
+
+// MARK: - Options
+
+extension CharacterFile {
+    static let ascendingACPath: NodePath = ["rules", "options", "ascendingAC"]
+
+    /// Whether AC is ascending (and attacks use an attack bonus, not THAC0).
+    public var usesAscendingAC: Bool { bool(Self.ascendingACPath) ?? false }
+
+    /// Switches AC style, converting AC and THAC0 / attack bonus to match
+    /// (ascending = 19 − descending).
+    public mutating func setAscendingAC(_ ascending: Bool) {
+        let wasAscending = usesAscendingAC
+        setBool(ascending, at: Self.ascendingACPath)
+        guard ascending != wasAscending else { return }
+        if let ac = int(["combat", "ac"]) { setInt(19 - ac, at: ["combat", "ac"]) }
+        let (from, to): (NodePath, NodePath) = ascending
+            ? (["combat", "thac0"], ["combat", "attackBonus"])
+            : (["combat", "attackBonus"], ["combat", "thac0"])
+        if let value = int(from) {
+            self[from] = nil
+            setInt(19 - value, at: to)
+        }
     }
 }

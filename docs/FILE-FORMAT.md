@@ -17,6 +17,9 @@ for a machine-checkable definition of the header.
   `formatVersion` and `rules.system`. Other Markdown files are left alone.
 - **Unknown keys are preserved.** Anything the app doesn't recognise, at any
   level, is kept and written back unchanged. You can add your own fields.
+- **Clearing a field removes its key**, and unchecked boxes (`equipped`,
+  `cast`) are left out rather than written as `false`. New keys are inserted
+  in the order listed below, not at the end.
 - **Missing keys are fine.** Every field except `formatVersion` and `rules` is
   optional. A character with no `name` is shown by its file name. The app fills in what it can calculate when it displays
   the sheet.

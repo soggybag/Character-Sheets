@@ -125,11 +125,18 @@ Decisions:
       / YAML error with line number)
 
 ### M2: The sheet
-- [ ] Save through `CharacterKit` (M1 saves the raw text as typed)
-- [ ] Clean sheet layout: identity, ability scores, combat, saves, inventory, money
-- [ ] Inline editing of every field
-- [ ] Notes area (the Markdown body) with comfortable typography
-- [ ] Undo/redo, autosave, versions (mostly free from the document architecture)
+- [x] Save through `CharacterKit`; files that don't parse open as text and
+      save exactly as typed
+- [x] Clean sheet layout: identity, ability scores, combat, saves,
+      exploration (+ thief skills), languages, spells, equipment, money
+- [x] Inline editing of every field; class and alignment suggestions; per-
+      character Rules menu (ascending AC converts AC and THAC0 for you)
+- [x] Notes area (the Markdown body)
+- [x] "Edit as Text" for anything the sheet doesn't show; unknown keys and
+      header comments are pointed out
+- [ ] Check undo/redo, autosave and versions by hand (they come from the
+      document architecture). Undo is currently per keystroke in text fields
+- [ ] Polish pass after using it at the table
 
 ### M3: Rules assist ← first outside testers
 - [ ] Derived values: modifiers, saves, THAC0/attack bonus, XP bonus and next
