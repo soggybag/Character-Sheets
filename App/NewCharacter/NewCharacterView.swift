@@ -1,0 +1,281 @@
+import CharacterKit
+import SwiftUI
+
+/// File → New Character…
+struct NewCharacterButton: View {
+    @Environment(\.openWindow) private var openWindow
+
+    var body: some View {
+        Button("New Character…") { openWindow(id: NewCharacterView.windowID) }
+            .keyboardShortcut("n", modifiers: [.command, .option])
+    }
+}
+
+/// Rolls up a 1st-level character: scores in order, class, optional score
+/// adjustments, hit points and gold. Every roll shows its dice, and every
+/// value can be typed in from real dice instead.
+struct NewCharacterView: View {
+    static let windowID = "new-character"
+
+    @Environment(\.newDocument) private var newDocument
+    @Environment(\.dismissWindow) private var dismissWindow
+    @State private var character = NewCharacter()
+
+    var body: some View {
+        let analysis = character.analysis
+        VStack(spacing: 0) {
+            Form {
+                ScoresSection(character: $character, analysis: analysis)
+                ClassSection(character: $character)
+                AdjustSection(character: $character)
+                DetailsSection(character: $character)
+                HitPointsSection(character: $character)
+                GoldSection(character: $character)
+            }
+            .formStyle(.grouped)
+
+            Divider()
+            HStack {
+                Text("Saves, attacks and skills are filled in from the rules. Buy equipment on the sheet.")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+                Spacer()
+                Button("Cancel", role: .cancel) { dismissWindow(id: Self.windowID) }
+                    .keyboardShortcut(.cancelAction)
+                Button("Create Character") {
+                    let document = CharacterDocument(file: character.makeFile())
+                    newDocument(document)
+                    dismissWindow(id: Self.windowID)
+                }
+                .keyboardShortcut(.defaultAction)
+                .disabled(!character.hasAllScores || character.classRules == nil)
+            }
+            .padding()
+        }
+        .frame(width: 600, height: 760)
+    }
+}
+
+// MARK: - Sections
+
+private struct ScoresSection: View {
+    @Binding var character: NewCharacter
+    let analysis: RulesAnalysis
+
+    var body: some View {
+        Section {
+            Grid(alignment: .leading, horizontalSpacing: 16, verticalSpacing: 8) {
+                GridRow {
+                    Text("")
+                    Text("Roll").gridColumnAlignment(.trailing)
+                    Text("Dice")
+                    Text("Score").gridColumnAlignment(.trailing)
+                    Text("Mod").gridColumnAlignment(.trailing)
+                }
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                ForEach(NewCharacter.abilityOrder, id: \.self) { ability in
+                    GridRow {
+                        Text(ability.uppercased()).bold()
+                        TextField(ability.uppercased(), value: Binding(
+                            get: { character.rolledScores[ability] },
+                            set: { character.setRolledScore($0, for: ability) }),
+                            format: .number, prompt: Text("–"))
+                            .labelsHidden()
+                            .multilineTextAlignment(.trailing)
+                            .frame(width: 44)
+                        Text(character.scoreRolls[ability]?.results.map(String.init).joined(separator: " ") ?? "")
+                            .monospacedDigit()
+                            .foregroundStyle(.secondary)
+                            .frame(minWidth: 60, alignment: .leading)
+                        Text(character.scores[ability].map(String.init) ?? "")
+                            .monospacedDigit()
+                            .foregroundStyle(character.adjustments[ability, default: 0] == 0 ? .primary : Color.accentColor)
+                        Text(character.scores[ability] == nil ? "" : analysis.abilities[ability]?.headline ?? "")
+                            .monospacedDigit()
+                            .help(analysis.abilities[ability]?.effects.map { "\($0.label): \($0.value)" }
+                                .joined(separator: "\n") ?? "")
+                    }
+                }
+            }
+        } header: {
+            HStack {
+                Text("Ability Scores")
+                Spacer()
+                Button(character.hasAllScores ? "Roll Again" : "Roll \(character.abilityDice.description) in Order") {
+                    character.rollScores()
+                }
+            }
+        } footer: {
+            Text("Roll here, or roll real dice and type the totals.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+    }
+}
+
+private struct ClassSection: View {
+    @Binding var character: NewCharacter
+
+    var body: some View {
+        Section("Class") {
+            Picker("Class", selection: $character.className) {
+                ForEach(character.rules.classes, id: \.name) { classRules in
+                    ClassRow(classRules: classRules, character: character)
+                        .tag(Optional(classRules.name))
+                }
+            }
+            .pickerStyle(.radioGroup)
+            .labelsHidden()
+        }
+    }
+}
+
+private struct ClassRow: View {
+    let classRules: ClassRules
+    let character: NewCharacter
+
+    var body: some View {
+        let unmet = character.hasAllScores ? character.unmetRequirements(for: classRules) : []
+        HStack(alignment: .firstTextBaseline) {
+            Text(classRules.name)
+                .frame(width: 90, alignment: .leading)
+            Text(details)
+                .font(.callout)
+                .foregroundStyle(.secondary)
+            if !unmet.isEmpty {
+                Text("Needs " + unmet.joined(separator: ", "))
+                    .font(.callout)
+                    .foregroundStyle(.orange)
+            }
+        }
+    }
+
+    private var details: String {
+        var parts = ["HD \(classRules.hitDie)",
+                     "Prime " + classRules.primeRequisites.map { $0.uppercased() }.joined(separator: " & ")]
+        if character.hasAllScores {
+            let bonus = character.xpBonus(for: classRules)
+            if bonus != 0 { parts.append("XP \(bonus > 0 ? "+" : "−")\(abs(bonus))%") }
+        }
+        return parts.joined(separator: " · ")
+    }
+}
+
+private struct AdjustSection: View {
+    @Binding var character: NewCharacter
+
+    var body: some View {
+        Section {
+            DisclosureGroup("Adjust Scores (optional)") {
+                Text(character.rules.creation.abilityAdjustment.note
+                     + " Only STR, INT and WIS can be lowered, and not below \(character.rules.creation.abilityAdjustment.minimum).")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+                HStack(spacing: 14) {
+                    ForEach(NewCharacter.abilityOrder, id: \.self) { ability in
+                        VStack(spacing: 2) {
+                            Text(ability.uppercased()).font(.caption).foregroundStyle(.secondary)
+                            Stepper(value: Binding(
+                                get: { character.adjustments[ability, default: 0] },
+                                set: { character.adjustments[ability] = $0 == 0 ? nil : $0 }),
+                                in: -9...9) {
+                                Text(adjustmentText(character.adjustments[ability, default: 0]))
+                                    .monospacedDigit()
+                                    .frame(width: 24, alignment: .trailing)
+                            }
+                        }
+                    }
+                }
+                ForEach(character.adjustmentNotes, id: \.self) { note in
+                    Label(note, systemImage: "exclamationmark.triangle")
+                        .font(.callout)
+                        .foregroundStyle(.orange)
+                }
+            }
+            .disabled(!character.hasAllScores)
+        }
+    }
+
+    private func adjustmentText(_ change: Int) -> String {
+        change == 0 ? "0" : (change > 0 ? "+\(change)" : "−\(-change)")
+    }
+}
+
+private struct DetailsSection: View {
+    @Binding var character: NewCharacter
+
+    var body: some View {
+        Section("Details") {
+            TextField("Name", text: $character.name, prompt: Text("Optional"))
+            Picker("Alignment", selection: $character.alignment) {
+                Text("Choose…").tag(String?.none)
+                ForEach(character.rules.alignments, id: \.self) { Text($0).tag(Optional($0)) }
+            }
+            Picker("Armour Class", selection: $character.ascendingAC) {
+                Text("Descending (THAC0)").tag(false)
+                Text("Ascending (attack bonus)").tag(true)
+            }
+        }
+    }
+}
+
+private struct HitPointsSection: View {
+    @Binding var character: NewCharacter
+
+    var body: some View {
+        Section {
+            if let die = character.hitDie {
+                HStack {
+                    Button(character.hitPointRoll == nil ? "Roll \(die.description)" : "Roll Again") { character.rollHitPoints() }
+                    TextField("Hit die", value: $character.hitPointRoll, format: .number, prompt: Text("roll"))
+                        .labelsHidden()
+                        .frame(width: 50)
+                        .help("Or type the roll you made")
+                    if let roll = character.hitPointRoll, let total = character.hitPoints {
+                        Text(summary(roll: roll, total: total))
+                            .monospacedDigit()
+                    }
+                }
+                let rerolls = character.rules.creation.hitPoints.optionalRerollAtFirstLevel
+                if let roll = character.hitPointRoll, rerolls.contains(roll) {
+                    Text("Optional rule: at 1st level, \(rerolls.map(String.init).joined(separator: "s and "))s may be rerolled.")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                }
+            } else {
+                Text("Choose a class first.").foregroundStyle(.secondary)
+            }
+        } header: {
+            Text("Hit Points")
+        }
+    }
+
+    private func summary(roll: Int, total: Int) -> String {
+        let con = character.conModifier
+        let sum = con == 0 ? "\(roll)" : "\(roll) \(con > 0 ? "+" : "−") \(abs(con)) CON"
+        return "\(sum) = \(total) hit point\(total == 1 ? "" : "s")"
+    }
+}
+
+private struct GoldSection: View {
+    @Binding var character: NewCharacter
+
+    var body: some View {
+        Section("Starting Gold") {
+            HStack {
+                Button(character.gold == nil ? "Roll \(character.goldDice.description)" : "Roll Again") { character.rollGold() }
+                TextField("Gold", value: Binding(
+                    get: { character.gold },
+                    set: { character.gold = $0; character.goldRoll = nil }),
+                    format: .number, prompt: Text("gp"))
+                    .labelsHidden()
+                    .frame(width: 60)
+                    .help("Or type the gold you rolled")
+                if let roll = character.goldRoll {
+                    Text("\(roll.description) gp").monospacedDigit().foregroundStyle(.secondary)
+                }
+            }
+        }
+    }
+}

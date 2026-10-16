@@ -16,5 +16,17 @@ struct CharacterSheetsApp: App {
             CharacterWindow(document: file.$document, fileURL: file.fileURL)
         }
         .defaultSize(width: 860, height: 1000)
+        .commands {
+            CommandGroup(after: .newItem) {
+                NewCharacterButton()
+                ImportSheetButton()
+            }
+        }
+
+        Window("New Character", id: NewCharacterView.windowID) {
+            NewCharacterView()
+        }
+        .windowResizability(.contentSize)
+        .defaultPosition(.center)
     }
 }

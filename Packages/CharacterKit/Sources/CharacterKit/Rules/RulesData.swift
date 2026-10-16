@@ -153,13 +153,21 @@ public struct ArmourData: Decodable, Sendable {
     public let name: String
     public let ac: Int?
     public let acBonus: Int?
+    public let cost: Int
     public let weight: Int
     /// `light` or `heavy`; nil for shields.
     public let encumbrance: String?
 }
 
+public struct AmmunitionData: Decodable, Sendable {
+    public let id: String
+    /// As sold, e.g. `Arrows (quiver of 20)`.
+    public let name: String
+}
+
 struct EquipmentTables: Decodable, Sendable {
     let weapons: [WeaponData]
+    let ammunition: [AmmunitionData]
     let armour: [ArmourData]
     let encumbrance: Encumbrance
 
@@ -185,9 +193,33 @@ struct RulesetInfo: Decodable, Sendable {
     let alignments: [String]
     let combat: Combat
     let exploration: Exploration
+    let creation: CreationRules
 
     struct Combat: Decodable, Sendable { let unarmouredAC: Int }
     struct Exploration: Decodable, Sendable { let defaults: [String: Int] }
+}
+
+public struct CreationRules: Decodable, Sendable {
+    /// `3d6`
+    public let abilityRoll: String
+    /// `3d6*10`
+    public let startingGold: String
+    public let abilityAdjustment: Adjustment
+    public let hitPoints: HitPoints
+
+    public struct Adjustment: Decodable, Sendable {
+        public let note: String
+        /// Points a score is lowered by for each point raised.
+        public let cost: Int
+        public let canLower: [String]
+        /// No score may be lowered below this.
+        public let minimum: Int
+    }
+
+    public struct HitPoints: Decodable, Sendable {
+        /// Optional rule: reroll these results at 1st level.
+        public let optionalRerollAtFirstLevel: [Int]
+    }
 }
 
 struct ClassesFile: Decodable {

@@ -1,6 +1,6 @@
 # PDF Character Sheet Import
 
-Goal: **File → Import OSE Character Sheet…** turns a filled-in fillable PDF
+**File → Import PDF Character Sheet…** (⇧⌘I) turns a filled-in fillable PDF
 into a character file. It reads the form fields with PDFKit
 (`PDFDocument` → page annotations → `fieldName` / `widgetStringValue`), maps
 them to the format, and opens the result as a new, unsaved document for you to
@@ -9,6 +9,11 @@ check.
 Built from 9 real PDFs (`~/Documents/Game/OSR/OSE/OSE Characters/`). Most were
 produced by `pdf-lib`, which suggests they came from an online character
 generator, so other players' files will likely use the same layouts.
+
+Code: `Packages/CharacterKit/Sources/CharacterKit/Import/`. Tests use the
+form-field values of the 9 PDFs, saved as JSON in
+`Tests/CharacterKitTests/Fixtures/pdf-fields/`, and also read the real PDFs
+when they're on the machine.
 
 > Don't copy the PDFs into the repo. The sheets contain Necrotic Gnome and
 > James V. West artwork. Tests should load them from a local path and skip if
@@ -46,7 +51,8 @@ fields (`STR Melee Mod`, `DEX Missile Mod`, `GP`, `XP`) have no suffix even on B
 | `languages` | `Languages` (comma list) | `Languages` | — |
 | `money.*` | `PP` `GP` `EP` `SP` `CP` | same | `GP` (others not fillable) |
 | equipment | `Weapons and Armour`, `Equipment`, `Magic Items`, `Treasure` | same | `Weapons and Armour`, `Equipment` |
-| body: description | — | `Description` | `Description` |
+| spells | `Abilities, Skills, Weapons`, `Notes` | same | `Abilities` |
+| body: description | — | `Description` | `Description`, `Portrait` (added unless already in the description) |
 | body: notes | `Notes` | `Notes` | — |
 
 Ignore fields the rules can recalculate: `THAC1`–`THAC9`, ability modifiers
@@ -77,7 +83,12 @@ Spells: Sleep
   armour table by AC, cost and weight (here: plate mail).
 - `Abilities:` is class features. Drop it, because the rules data supplies them.
 - `Spells:` (in the abilities box or in `Notes`) fills the spell book and
-  memorized spells.
+  memorized spells. At 1st level each spell gets `level: 1`; at higher
+  levels the sheet doesn't say, so `level` is left out.
+- Missing XP is written as `0`. Movement, exploration and thief skills are
+  only imported when the sheet has them; otherwise the rules suggest them.
+- Fields with a value that weren't imported (and aren't derived values) are
+  listed in a banner above the new character.
 - Languages: drop duplicates and the literal word `Alignment` (it means the
   alignment language, which is already listed by name).
 - Remaining text from `Notes` and `Description` goes into the Markdown body.

@@ -22,6 +22,11 @@ struct CharacterWindow: View {
                 TextEditorView(text: plainText, fileURL: fileURL)
             }
         }
+        .safeAreaInset(edge: .top) {
+            if let summary = document.importSummary {
+                ImportBanner(text: summary) { document.importSummary = nil }
+            }
+        }
         .frame(minWidth: 640, minHeight: 480)
         .toolbar { toolbar }
     }
@@ -119,5 +124,25 @@ private struct RulesMenu: View {
             }
         }
         .help("Rules options for this character")
+    }
+}
+
+/// Says where an imported character came from.
+private struct ImportBanner: View {
+    let text: String
+    let dismiss: () -> Void
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline) {
+            Label(text, systemImage: "doc.richtext")
+                .frame(maxWidth: .infinity, alignment: .leading)
+            Button("Dismiss", systemImage: "xmark", action: dismiss)
+                .labelStyle(.iconOnly)
+                .buttonStyle(.borderless)
+        }
+        .font(.callout)
+        .padding(10)
+        .background(.bar)
+        .overlay(alignment: .bottom) { Divider() }
     }
 }

@@ -18,10 +18,27 @@ struct CharacterDocument: FileDocument {
     }
 
     var content: Content
+    /// Shown above a just-imported character until dismissed. Not saved.
+    var importSummary: String?
 
     init() {
         // The template is covered by CharacterKit's tests.
         content = .sheet(try! CharacterFile(text: CharacterFile.newCharacterTemplate))
+    }
+
+    /// A new, unsaved character.
+    init(file: CharacterFile) {
+        content = .sheet(file)
+    }
+
+    /// A new, unsaved character made from an imported PDF sheet.
+    init(imported result: SheetImport, from url: URL) {
+        content = .sheet(result.file)
+        var summary = "Imported from “\(url.lastPathComponent)”. Check it against the PDF, then save."
+        if !result.skipped.isEmpty {
+            summary += " Not imported: " + result.skipped.joined(separator: ", ") + "."
+        }
+        importSummary = summary
     }
 
     init(configuration: ReadConfiguration) throws {

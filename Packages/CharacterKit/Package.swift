@@ -12,6 +12,6 @@ let package = Package(
     ],
     targets: [
         .target(name: "CharacterKit", dependencies: ["Yams"], resources: [.copy("Resources/ose")]),
-        .testTarget(name: "CharacterKitTests", dependencies: ["CharacterKit"]),
+        .testTarget(name: "CharacterKitTests", dependencies: ["CharacterKit"], resources: [.copy("Fixtures")]),
     ]
 )

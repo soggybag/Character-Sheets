@@ -5,6 +5,7 @@ public struct OSERuleset: Sendable {
     public let classes: [ClassRules]
     public let weapons: [WeaponData]
     public let armour: [ArmourData]
+    public let ammunition: [AmmunitionData]
     let abilities: AbilityTables
     let encumbrance: EquipmentTables.Encumbrance
     let info: RulesetInfo
@@ -30,12 +31,14 @@ public struct OSERuleset: Sendable {
         let equipment = try load("equipment", as: EquipmentTables.self)
         weapons = equipment.weapons
         armour = equipment.armour
+        ammunition = equipment.ammunition
         encumbrance = equipment.encumbrance
         abilities = try load("abilities", as: AbilityTables.self)
         info = try load("ruleset", as: RulesetInfo.self)
     }
 
     public var alignments: [String] { info.alignments }
+    public var creation: CreationRules { info.creation }
 
     /// Finds a class by name or id, ignoring case and punctuation
     /// ("Magic-User", "magic user", "magicuser").
@@ -61,6 +64,17 @@ public struct OSERuleset: Sendable {
         }
         guard !key.isEmpty else { return nil }
         return armour.first { Self.matchKey($0.name) == key || Self.matchKey($0.id) == key }
+    }
+
+    /// Whether an equipment item is ammunition ("Arrows", "Crossbow bolts").
+    /// The packaging in the table's names ("(quiver of 20)") is ignored.
+    public func isAmmunition(_ name: String) -> Bool {
+        let key = Self.matchKey(name)
+        guard !key.isEmpty else { return false }
+        return ammunition.contains { ammo in
+            let plain = ammo.name.split(separator: "(").first.map(String.init) ?? ammo.name
+            return Self.matchKey(plain) == key || Self.matchKey(ammo.id) == key
+        }
     }
 
     /// Lowercased letters and digits only.

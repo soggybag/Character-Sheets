@@ -156,10 +156,12 @@ Decisions:
 
 ### M4: At the table
 - [ ] Fast HP tracking, spell "cast" checkboxes, ammo and torch counters
-- [ ] Small dice roller (click a stat or attack to roll)
 - [ ] Print / export PDF of a tidy one-page sheet
-- [ ] New-character flow: roll 3d6 in order, pick a class, starting gold
-- [ ] **Import OSE PDF character sheets** (PDFKit form fields; three layouts,
+- [x] New-character flow (File → New Character…, ⌥⌘N): roll 3d6 in order,
+      pick a class (unmet requirements shown, not enforced), optional score
+      adjustments, hit points, starting gold. Rolls show every die and can be
+      typed in from real dice.
+- [x] **Import PDF character sheets** (PDFKit form fields; three layouts,
       see `docs/PDF-IMPORT.md`). Opens the result as a new document to review.
 
 ### M5: Ship 1.0
@@ -169,6 +171,8 @@ Decisions:
 - [ ] Notarised release, simple website, announce to the OSE community
 
 ### Later
+- Dice roller on the sheet: optional at most. Players prefer to see real
+  rolls; the app only rolls in character creation and level-up.
 - **Custom sheet layouts:** a layout file (likely YAML or JSON) that places
   fields by path (`saves.death`) and calculated values by name (`str.mod`,
   `weapons.0.melee`, from `RulesAnalysis.namedValues`). Import a layout to
