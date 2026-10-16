@@ -1,0 +1,64 @@
+{
+  "id": "ose",
+  "variant": "classic",
+  "displayName": "OSE Classic Fantasy",
+  "source": "Old-School Essentials SRD (OGL 1.0a). See LICENSE-OGL.md.",
+  "dataVersion": 1,
+  "files": { "classes": "classes-classic.json", "abilities": "abilities.json", "equipment": "equipment.json" },
+  "alignments": ["Lawful", "Neutral", "Chaotic"],
+  "languages": [
+    "Bugbear",
+    "Doppelgänger",
+    "Dragon",
+    "Dwarvish",
+    "Elvish",
+    "Gargoyle",
+    "Gnoll",
+    "Gnomish",
+    "Goblin",
+    "Halfling",
+    "Harpy",
+    "Hobgoblin",
+    "Kobold",
+    "Lizard man",
+    "Medusa",
+    "Minotaur",
+    "Ogre",
+    "Orcish",
+    "Pixie",
+    "Human dialect"
+  ],
+  "saves": [
+    { "key": "death", "abbr": "D", "name": "Death / poison" },
+    { "key": "wands", "abbr": "W", "name": "Wands" },
+    { "key": "paralysis", "abbr": "P", "name": "Paralysis / petrify" },
+    { "key": "breath", "abbr": "B", "name": "Breath attacks" },
+    { "key": "spells", "abbr": "S", "name": "Spells / rods / staves" }
+  ],
+  "creation": {
+    "abilityRoll": "3d6",
+    "startingGold": "3d6*10",
+    "startingLevel": 1,
+    "abilityAdjustment": {
+      "note": "Lower a score by 2 to raise a prime requisite by 1.",
+      "cost": 2,
+      "canLower": ["str", "int", "wis"],
+      "minimum": 9
+    },
+    "hitPoints": {
+      "minimumPerDie": 1,
+      "optionalRerollAtFirstLevel": [1, 2]
+    }
+  },
+  "combat": {
+    "unarmouredAC": 9,
+    "ascendingAC": { "note": "Ascending AC = 19 - descending AC; attack bonus = 19 - THAC0." },
+    "attackMatrix": { "note": "Roll needed = THAC0 - target AC, clamped to 2..20 (matches the SRD attack matrix)." }
+  },
+  "exploration": {
+    "defaults": { "listen": 1, "secretDoors": 1, "findTraps": 1 },
+    "openDoors": "From STR (abilities.json)",
+    "note": "Class exploration values replace these defaults."
+  },
+  "spellSlotsNote": "Index 0 = 1st level spells."
+}

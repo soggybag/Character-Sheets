@@ -1,0 +1,438 @@
+{
+  "variant": "classic",
+  "classes": [
+    {
+      "id": "cleric",
+      "name": "Cleric",
+      "race": "Human",
+      "requirements": {},
+      "primeRequisites": ["wis"],
+      "xpModifier": "standard",
+      "hitDie": "d6",
+      "maxLevel": 14,
+      "armour": {
+        "allowed": ["leather", "chainmail", "plate"],
+        "shields": true
+      },
+      "weapons": {
+        "text": "Blunt weapons only",
+        "allowed": ["club", "mace", "sling", "staff", "war-hammer"]
+      },
+      "languages": ["Alignment", "Common"],
+      "spellcasting": { "type": "divine", "list": "cleric", "fromLevel": 2 },
+      "features": [
+        {
+          "id": "divine-magic",
+          "name": "Divine magic",
+          "summary": "Prays for spells from 2nd level. Must carry a holy symbol and stay in their deity's favour."
+        },
+        {
+          "id": "turn-undead",
+          "name": "Turn undead",
+          "summary": "Roll 2d6 against the turning table to make undead flee or destroy them. On success, 2d6 HD of undead are affected (at least one monster)."
+        },
+        {
+          "id": "magic-items",
+          "name": "Create magic items",
+          "summary": "Can make magic items through magical research.",
+          "minLevel": 9
+        },
+        {
+          "id": "stronghold",
+          "name": "Stronghold",
+          "summary": "May build a stronghold (half cost if in favour), attracting 5d6×10 devoted 1st–2nd level fighters.",
+          "minLevel": 9
+        }
+      ],
+      "turnUndead": {
+        "columns": ["1", "2", "2*", "3", "4", "5", "6", "7-9"],
+        "note": "Number = 2d6 roll needed; T = turned; D = destroyed; null = cannot turn. 2* = 2 HD with a special ability.",
+        "byLevel": [
+          ["7", "9", "11", null, null, null, null, null],
+          ["T", "7", "9", "11", null, null, null, null],
+          ["T", "T", "7", "9", "11", null, null, null],
+          ["D", "T", "T", "7", "9", "11", null, null],
+          ["D", "D", "T", "T", "7", "9", "11", null],
+          ["D", "D", "D", "T", "T", "7", "9", "11"],
+          ["D", "D", "D", "D", "T", "T", "7", "9"],
+          ["D", "D", "D", "D", "D", "T", "T", "7"],
+          ["D", "D", "D", "D", "D", "D", "T", "T"],
+          ["D", "D", "D", "D", "D", "D", "D", "T"],
+          ["D", "D", "D", "D", "D", "D", "D", "D"]
+        ],
+        "levelsAbove": "Use the last row for level 11 and above."
+      },
+      "levels": [
+        {"level": 1, "xp": 0, "hd": "1d6", "thac0": 19, "saves": {"death": 11, "wands": 12, "paralysis": 14, "breath": 16, "spells": 15}, "spells": []},
+        {"level": 2, "xp": 1500, "hd": "2d6", "thac0": 19, "saves": {"death": 11, "wands": 12, "paralysis": 14, "breath": 16, "spells": 15}, "spells": [1]},
+        {"level": 3, "xp": 3000, "hd": "3d6", "thac0": 19, "saves": {"death": 11, "wands": 12, "paralysis": 14, "breath": 16, "spells": 15}, "spells": [2]},
+        {"level": 4, "xp": 6000, "hd": "4d6", "thac0": 19, "saves": {"death": 11, "wands": 12, "paralysis": 14, "breath": 16, "spells": 15}, "spells": [2, 1]},
+        {"level": 5, "xp": 12000, "hd": "5d6", "thac0": 17, "saves": {"death": 9, "wands": 10, "paralysis": 12, "breath": 14, "spells": 12}, "spells": [2, 2]},
+        {"level": 6, "xp": 25000, "hd": "6d6", "thac0": 17, "saves": {"death": 9, "wands": 10, "paralysis": 12, "breath": 14, "spells": 12}, "spells": [2, 2, 1, 1]},
+        {"level": 7, "xp": 50000, "hd": "7d6", "thac0": 17, "saves": {"death": 9, "wands": 10, "paralysis": 12, "breath": 14, "spells": 12}, "spells": [2, 2, 2, 1, 1]},
+        {"level": 8, "xp": 100000, "hd": "8d6", "thac0": 17, "saves": {"death": 9, "wands": 10, "paralysis": 12, "breath": 14, "spells": 12}, "spells": [3, 3, 2, 2, 1]},
+        {"level": 9, "xp": 200000, "hd": "9d6", "thac0": 14, "saves": {"death": 6, "wands": 7, "paralysis": 9, "breath": 11, "spells": 9}, "spells": [3, 3, 3, 2, 2]},
+        {"level": 10, "xp": 300000, "hd": "9d6+1", "conModifier": false, "thac0": 14, "saves": {"death": 6, "wands": 7, "paralysis": 9, "breath": 11, "spells": 9}, "spells": [4, 4, 3, 3, 2]},
+        {"level": 11, "xp": 400000, "hd": "9d6+2", "conModifier": false, "thac0": 14, "saves": {"death": 6, "wands": 7, "paralysis": 9, "breath": 11, "spells": 9}, "spells": [4, 4, 4, 3, 3]},
+        {"level": 12, "xp": 500000, "hd": "9d6+3", "conModifier": false, "thac0": 14, "saves": {"death": 6, "wands": 7, "paralysis": 9, "breath": 11, "spells": 9}, "spells": [5, 5, 4, 4, 3]},
+        {"level": 13, "xp": 600000, "hd": "9d6+4", "conModifier": false, "thac0": 12, "saves": {"death": 3, "wands": 5, "paralysis": 7, "breath": 8, "spells": 7}, "spells": [5, 5, 5, 4, 4]},
+        {"level": 14, "xp": 700000, "hd": "9d6+5", "conModifier": false, "thac0": 12, "saves": {"death": 3, "wands": 5, "paralysis": 7, "breath": 8, "spells": 7}, "spells": [6, 5, 5, 5, 4]}
+      ]
+    },
+    {
+      "id": "dwarf",
+      "name": "Dwarf",
+      "race": "Dwarf",
+      "requirements": { "con": 9 },
+      "primeRequisites": ["str"],
+      "xpModifier": "standard",
+      "hitDie": "d8",
+      "maxLevel": 12,
+      "armour": {
+        "allowed": ["leather", "chainmail", "plate"],
+        "shields": true
+      },
+      "weapons": {
+        "text": "Small or normal sized",
+        "forbidden": ["long-bow", "two-handed-sword"]
+      },
+      "languages": ["Alignment", "Common", "Dwarvish", "Gnomish", "Goblin", "Kobold"],
+      "exploration": { "listen": 2, "findTraps": 2, "constructionTricks": 2 },
+      "infravision": 60,
+      "features": [
+        {
+          "id": "construction-tricks",
+          "name": "Detect construction tricks",
+          "summary": "2-in-6 to notice new construction, sliding walls or sloping passages when searching."
+        },
+        {
+          "id": "room-traps",
+          "name": "Detect room traps",
+          "summary": "2-in-6 to find non-magical room traps when searching."
+        },
+        { "id": "infravision", "name": "Infravision", "summary": "Sees heat in the dark to 60'." },
+        { "id": "listening", "name": "Listening at doors", "summary": "2-in-6 to hear noises." },
+        {
+          "id": "stronghold",
+          "name": "Stronghold",
+          "summary": "May delve an underground stronghold and found a clan. Hires only dwarven mercenaries.",
+          "minLevel": 9
+        }
+      ],
+      "levels": [
+        {"level": 1, "xp": 0, "hd": "1d8", "thac0": 19, "saves": {"death": 8, "wands": 9, "paralysis": 10, "breath": 13, "spells": 12}},
+        {"level": 2, "xp": 2200, "hd": "2d8", "thac0": 19, "saves": {"death": 8, "wands": 9, "paralysis": 10, "breath": 13, "spells": 12}},
+        {"level": 3, "xp": 4400, "hd": "3d8", "thac0": 19, "saves": {"death": 8, "wands": 9, "paralysis": 10, "breath": 13, "spells": 12}},
+        {"level": 4, "xp": 8800, "hd": "4d8", "thac0": 17, "saves": {"death": 6, "wands": 7, "paralysis": 8, "breath": 10, "spells": 10}},
+        {"level": 5, "xp": 17000, "hd": "5d8", "thac0": 17, "saves": {"death": 6, "wands": 7, "paralysis": 8, "breath": 10, "spells": 10}},
+        {"level": 6, "xp": 35000, "hd": "6d8", "thac0": 17, "saves": {"death": 6, "wands": 7, "paralysis": 8, "breath": 10, "spells": 10}},
+        {"level": 7, "xp": 70000, "hd": "7d8", "thac0": 14, "saves": {"death": 4, "wands": 5, "paralysis": 6, "breath": 7, "spells": 8}},
+        {"level": 8, "xp": 140000, "hd": "8d8", "thac0": 14, "saves": {"death": 4, "wands": 5, "paralysis": 6, "breath": 7, "spells": 8}},
+        {"level": 9, "xp": 270000, "hd": "9d8", "thac0": 14, "saves": {"death": 4, "wands": 5, "paralysis": 6, "breath": 7, "spells": 8}},
+        {"level": 10, "xp": 400000, "hd": "9d8+3", "conModifier": false, "thac0": 12, "saves": {"death": 2, "wands": 3, "paralysis": 4, "breath": 4, "spells": 6}},
+        {"level": 11, "xp": 530000, "hd": "9d8+6", "conModifier": false, "thac0": 12, "saves": {"death": 2, "wands": 3, "paralysis": 4, "breath": 4, "spells": 6}},
+        {"level": 12, "xp": 660000, "hd": "9d8+9", "conModifier": false, "thac0": 12, "saves": {"death": 2, "wands": 3, "paralysis": 4, "breath": 4, "spells": 6}}
+      ]
+    },
+    {
+      "id": "elf",
+      "name": "Elf",
+      "race": "Elf",
+      "requirements": { "int": 9 },
+      "primeRequisites": ["int", "str"],
+      "xpModifier": [
+        {
+          "all": { "int": 16, "str": 13 },
+          "percent": 10
+        },
+        {
+          "all": { "int": 13, "str": 13 },
+          "percent": 5
+        }
+      ],
+      "hitDie": "d6",
+      "maxLevel": 10,
+      "armour": {
+        "allowed": ["leather", "chainmail", "plate"],
+        "shields": true
+      },
+      "weapons": { "text": "Any" },
+      "languages": ["Alignment", "Common", "Elvish", "Gnoll", "Hobgoblin", "Orcish"],
+      "spellcasting": { "type": "arcane", "list": "magic-user", "fromLevel": 1, "spellBook": true },
+      "exploration": { "listen": 2, "secretDoors": 2 },
+      "infravision": 60,
+      "features": [
+        {
+          "id": "arcane-magic",
+          "name": "Arcane magic",
+          "summary": "Casts magic-user spells from a spell book. Can use arcane scrolls and items such as wands."
+        },
+        {
+          "id": "secret-doors",
+          "name": "Detect secret doors",
+          "summary": "2-in-6 to find secret doors when searching."
+        },
+        {
+          "id": "ghoul-immunity",
+          "name": "Immune to ghoul paralysis",
+          "summary": "Ghouls' paralysing touch has no effect."
+        },
+        { "id": "infravision", "name": "Infravision", "summary": "Sees heat in the dark to 60'." },
+        { "id": "listening", "name": "Listening at doors", "summary": "2-in-6 to hear noises." },
+        {
+          "id": "magic-items",
+          "name": "Create magic items",
+          "summary": "Can make magic items through magical research.",
+          "minLevel": 9
+        },
+        {
+          "id": "stronghold",
+          "name": "Stronghold",
+          "summary": "May build a forest stronghold; local animals become allies. Hires only elven mercenaries.",
+          "minLevel": 9
+        }
+      ],
+      "levels": [
+        {"level": 1, "xp": 0, "hd": "1d6", "thac0": 19, "saves": {"death": 12, "wands": 13, "paralysis": 13, "breath": 15, "spells": 15}, "spells": [1]},
+        {"level": 2, "xp": 4000, "hd": "2d6", "thac0": 19, "saves": {"death": 12, "wands": 13, "paralysis": 13, "breath": 15, "spells": 15}, "spells": [2]},
+        {"level": 3, "xp": 8000, "hd": "3d6", "thac0": 19, "saves": {"death": 12, "wands": 13, "paralysis": 13, "breath": 15, "spells": 15}, "spells": [2, 1]},
+        {"level": 4, "xp": 16000, "hd": "4d6", "thac0": 17, "saves": {"death": 10, "wands": 11, "paralysis": 11, "breath": 13, "spells": 12}, "spells": [2, 2]},
+        {"level": 5, "xp": 32000, "hd": "5d6", "thac0": 17, "saves": {"death": 10, "wands": 11, "paralysis": 11, "breath": 13, "spells": 12}, "spells": [2, 2, 1]},
+        {"level": 6, "xp": 64000, "hd": "6d6", "thac0": 17, "saves": {"death": 10, "wands": 11, "paralysis": 11, "breath": 13, "spells": 12}, "spells": [2, 2, 2]},
+        {"level": 7, "xp": 120000, "hd": "7d6", "thac0": 14, "saves": {"death": 8, "wands": 9, "paralysis": 9, "breath": 10, "spells": 10}, "spells": [3, 2, 2, 1]},
+        {"level": 8, "xp": 250000, "hd": "8d6", "thac0": 14, "saves": {"death": 8, "wands": 9, "paralysis": 9, "breath": 10, "spells": 10}, "spells": [3, 3, 2, 2]},
+        {"level": 9, "xp": 400000, "hd": "9d6", "thac0": 14, "saves": {"death": 8, "wands": 9, "paralysis": 9, "breath": 10, "spells": 10}, "spells": [3, 3, 3, 2, 1]},
+        {"level": 10, "xp": 600000, "hd": "9d6+2", "conModifier": false, "thac0": 12, "saves": {"death": 6, "wands": 7, "paralysis": 8, "breath": 8, "spells": 8}, "spells": [3, 3, 3, 3, 2]}
+      ]
+    },
+    {
+      "id": "fighter",
+      "name": "Fighter",
+      "race": "Human",
+      "requirements": {},
+      "primeRequisites": ["str"],
+      "xpModifier": "standard",
+      "hitDie": "d8",
+      "maxLevel": 14,
+      "armour": {
+        "allowed": ["leather", "chainmail", "plate"],
+        "shields": true
+      },
+      "weapons": { "text": "Any" },
+      "languages": ["Alignment", "Common"],
+      "features": [
+        {
+          "id": "stronghold",
+          "name": "Stronghold",
+          "summary": "May build a castle and rule the surrounding lands at any level."
+        },
+        {
+          "id": "barony",
+          "name": "Barony",
+          "summary": "May be granted a noble title; their lands become a barony.",
+          "minLevel": 9
+        }
+      ],
+      "levels": [
+        {"level": 1, "xp": 0, "hd": "1d8", "thac0": 19, "saves": {"death": 12, "wands": 13, "paralysis": 14, "breath": 15, "spells": 16}},
+        {"level": 2, "xp": 2000, "hd": "2d8", "thac0": 19, "saves": {"death": 12, "wands": 13, "paralysis": 14, "breath": 15, "spells": 16}},
+        {"level": 3, "xp": 4000, "hd": "3d8", "thac0": 19, "saves": {"death": 12, "wands": 13, "paralysis": 14, "breath": 15, "spells": 16}},
+        {"level": 4, "xp": 8000, "hd": "4d8", "thac0": 17, "saves": {"death": 10, "wands": 11, "paralysis": 12, "breath": 13, "spells": 14}},
+        {"level": 5, "xp": 16000, "hd": "5d8", "thac0": 17, "saves": {"death": 10, "wands": 11, "paralysis": 12, "breath": 13, "spells": 14}},
+        {"level": 6, "xp": 32000, "hd": "6d8", "thac0": 17, "saves": {"death": 10, "wands": 11, "paralysis": 12, "breath": 13, "spells": 14}},
+        {"level": 7, "xp": 64000, "hd": "7d8", "thac0": 14, "saves": {"death": 8, "wands": 9, "paralysis": 10, "breath": 10, "spells": 12}},
+        {"level": 8, "xp": 120000, "hd": "8d8", "thac0": 14, "saves": {"death": 8, "wands": 9, "paralysis": 10, "breath": 10, "spells": 12}},
+        {"level": 9, "xp": 240000, "hd": "9d8", "thac0": 14, "saves": {"death": 8, "wands": 9, "paralysis": 10, "breath": 10, "spells": 12}},
+        {"level": 10, "xp": 360000, "hd": "9d8+2", "conModifier": false, "thac0": 12, "saves": {"death": 6, "wands": 7, "paralysis": 8, "breath": 8, "spells": 10}},
+        {"level": 11, "xp": 480000, "hd": "9d8+4", "conModifier": false, "thac0": 12, "saves": {"death": 6, "wands": 7, "paralysis": 8, "breath": 8, "spells": 10}},
+        {"level": 12, "xp": 600000, "hd": "9d8+6", "conModifier": false, "thac0": 12, "saves": {"death": 6, "wands": 7, "paralysis": 8, "breath": 8, "spells": 10}},
+        {"level": 13, "xp": 720000, "hd": "9d8+8", "conModifier": false, "thac0": 10, "saves": {"death": 4, "wands": 5, "paralysis": 6, "breath": 5, "spells": 8}},
+        {"level": 14, "xp": 840000, "hd": "9d8+10", "conModifier": false, "thac0": 10, "saves": {"death": 4, "wands": 5, "paralysis": 6, "breath": 5, "spells": 8}}
+      ]
+    },
+    {
+      "id": "halfling",
+      "name": "Halfling",
+      "race": "Halfling",
+      "requirements": { "con": 9, "dex": 9 },
+      "primeRequisites": ["dex", "str"],
+      "xpModifier": [
+        {
+          "all": { "dex": 13, "str": 13 },
+          "percent": 10
+        },
+        {
+          "any": { "dex": 13, "str": 13 },
+          "percent": 5
+        }
+      ],
+      "hitDie": "d6",
+      "maxLevel": 8,
+      "armour": {
+        "allowed": ["leather", "chainmail", "plate"],
+        "shields": true,
+        "text": "Sized to fit"
+      },
+      "weapons": {
+        "text": "Any appropriate to size",
+        "forbidden": ["long-bow", "two-handed-sword"]
+      },
+      "languages": ["Alignment", "Common", "Halfling"],
+      "exploration": { "listen": 2 },
+      "features": [
+        {
+          "id": "defensive-bonus",
+          "name": "Defensive bonus",
+          "summary": "+2 AC against attackers larger than human-sized."
+        },
+        {
+          "id": "hiding",
+          "name": "Hiding",
+          "summary": "90% to hide in woods or undergrowth. 2-in-6 in dungeons, needing cover and staying still and silent."
+        },
+        { "id": "initiative", "name": "Initiative bonus", "summary": "+1 to individual initiative (optional rule)." },
+        { "id": "listening", "name": "Listening at doors", "summary": "2-in-6 to hear noises." },
+        {
+          "id": "missile-bonus",
+          "name": "Missile attack bonus",
+          "summary": "+1 to attack rolls with missile weapons."
+        },
+        {
+          "id": "stronghold",
+          "name": "Stronghold",
+          "summary": "May build a stronghold at any level, founding a halfling shire."
+        }
+      ],
+      "levels": [
+        {"level": 1, "xp": 0, "hd": "1d6", "thac0": 19, "saves": {"death": 8, "wands": 9, "paralysis": 10, "breath": 13, "spells": 12}},
+        {"level": 2, "xp": 2000, "hd": "2d6", "thac0": 19, "saves": {"death": 8, "wands": 9, "paralysis": 10, "breath": 13, "spells": 12}},
+        {"level": 3, "xp": 4000, "hd": "3d6", "thac0": 19, "saves": {"death": 8, "wands": 9, "paralysis": 10, "breath": 13, "spells": 12}},
+        {"level": 4, "xp": 8000, "hd": "4d6", "thac0": 17, "saves": {"death": 6, "wands": 7, "paralysis": 8, "breath": 10, "spells": 10}},
+        {"level": 5, "xp": 16000, "hd": "5d6", "thac0": 17, "saves": {"death": 6, "wands": 7, "paralysis": 8, "breath": 10, "spells": 10}},
+        {"level": 6, "xp": 32000, "hd": "6d6", "thac0": 17, "saves": {"death": 6, "wands": 7, "paralysis": 8, "breath": 10, "spells": 10}},
+        {"level": 7, "xp": 64000, "hd": "7d6", "thac0": 14, "saves": {"death": 4, "wands": 5, "paralysis": 6, "breath": 7, "spells": 8}},
+        {"level": 8, "xp": 120000, "hd": "8d6", "thac0": 14, "saves": {"death": 4, "wands": 5, "paralysis": 6, "breath": 7, "spells": 8}}
+      ]
+    },
+    {
+      "id": "magic-user",
+      "name": "Magic-User",
+      "race": "Human",
+      "requirements": {},
+      "primeRequisites": ["int"],
+      "xpModifier": "standard",
+      "hitDie": "d4",
+      "maxLevel": 14,
+      "armour": {
+        "allowed": [],
+        "shields": false
+      },
+      "weapons": {
+        "text": "Dagger only",
+        "allowed": ["dagger"]
+      },
+      "languages": ["Alignment", "Common"],
+      "spellcasting": { "type": "arcane", "list": "magic-user", "fromLevel": 1, "spellBook": true },
+      "features": [
+        {
+          "id": "arcane-magic",
+          "name": "Arcane magic",
+          "summary": "Casts spells from a spell book. Can use arcane scrolls and items such as wands."
+        },
+        {
+          "id": "magic-items",
+          "name": "Create magic items",
+          "summary": "Can make magic items through magical research.",
+          "minLevel": 9
+        },
+        {
+          "id": "stronghold",
+          "name": "Stronghold",
+          "summary": "May build a tower, attracting 1d6 apprentices of levels 1–3.",
+          "minLevel": 11
+        }
+      ],
+      "levels": [
+        {"level": 1, "xp": 0, "hd": "1d4", "thac0": 19, "saves": {"death": 13, "wands": 14, "paralysis": 13, "breath": 16, "spells": 15}, "spells": [1]},
+        {"level": 2, "xp": 2500, "hd": "2d4", "thac0": 19, "saves": {"death": 13, "wands": 14, "paralysis": 13, "breath": 16, "spells": 15}, "spells": [2]},
+        {"level": 3, "xp": 5000, "hd": "3d4", "thac0": 19, "saves": {"death": 13, "wands": 14, "paralysis": 13, "breath": 16, "spells": 15}, "spells": [2, 1]},
+        {"level": 4, "xp": 10000, "hd": "4d4", "thac0": 19, "saves": {"death": 13, "wands": 14, "paralysis": 13, "breath": 16, "spells": 15}, "spells": [2, 2]},
+        {"level": 5, "xp": 20000, "hd": "5d4", "thac0": 19, "saves": {"death": 13, "wands": 14, "paralysis": 13, "breath": 16, "spells": 15}, "spells": [2, 2, 1]},
+        {"level": 6, "xp": 40000, "hd": "6d4", "thac0": 17, "saves": {"death": 11, "wands": 12, "paralysis": 11, "breath": 14, "spells": 12}, "spells": [2, 2, 2]},
+        {"level": 7, "xp": 80000, "hd": "7d4", "thac0": 17, "saves": {"death": 11, "wands": 12, "paralysis": 11, "breath": 14, "spells": 12}, "spells": [3, 2, 2, 1]},
+        {"level": 8, "xp": 150000, "hd": "8d4", "thac0": 17, "saves": {"death": 11, "wands": 12, "paralysis": 11, "breath": 14, "spells": 12}, "spells": [3, 3, 2, 2]},
+        {"level": 9, "xp": 300000, "hd": "9d4", "thac0": 17, "saves": {"death": 11, "wands": 12, "paralysis": 11, "breath": 14, "spells": 12}, "spells": [3, 3, 3, 2, 1]},
+        {"level": 10, "xp": 450000, "hd": "9d4+1", "conModifier": false, "thac0": 17, "saves": {"death": 11, "wands": 12, "paralysis": 11, "breath": 14, "spells": 12}, "spells": [3, 3, 3, 3, 2]},
+        {"level": 11, "xp": 600000, "hd": "9d4+2", "conModifier": false, "thac0": 14, "saves": {"death": 8, "wands": 9, "paralysis": 8, "breath": 11, "spells": 8}, "spells": [4, 3, 3, 3, 2, 1]},
+        {"level": 12, "xp": 750000, "hd": "9d4+3", "conModifier": false, "thac0": 14, "saves": {"death": 8, "wands": 9, "paralysis": 8, "breath": 11, "spells": 8}, "spells": [4, 4, 3, 3, 3, 2]},
+        {"level": 13, "xp": 900000, "hd": "9d4+4", "conModifier": false, "thac0": 14, "saves": {"death": 8, "wands": 9, "paralysis": 8, "breath": 11, "spells": 8}, "spells": [4, 4, 4, 3, 3, 3]},
+        {"level": 14, "xp": 1050000, "hd": "9d4+5", "conModifier": false, "thac0": 14, "saves": {"death": 8, "wands": 9, "paralysis": 8, "breath": 11, "spells": 8}, "spells": [4, 4, 4, 4, 3, 3]}
+      ]
+    },
+    {
+      "id": "thief",
+      "name": "Thief",
+      "race": "Human",
+      "requirements": {},
+      "primeRequisites": ["dex"],
+      "xpModifier": "standard",
+      "hitDie": "d4",
+      "maxLevel": 14,
+      "armour": {
+        "allowed": ["leather"],
+        "shields": false
+      },
+      "weapons": { "text": "Any" },
+      "languages": ["Alignment", "Common"],
+      "creation": {
+        "cannotLower": ["str"]
+      },
+      "features": [
+        {
+          "id": "back-stab",
+          "name": "Back-stab",
+          "summary": "+4 to hit and double damage against an unaware target from behind."
+        },
+        {
+          "id": "thief-skills",
+          "name": "Thief skills",
+          "summary": "Climb, find/remove treasure traps, hear noise, hide in shadows, move silently, open locks, pick pockets. See the level table."
+        },
+        {
+          "id": "read-languages",
+          "name": "Read languages",
+          "summary": "80% to read any non-magical text. One try per text per level.",
+          "minLevel": 4
+        },
+        {
+          "id": "scroll-use",
+          "name": "Scroll use",
+          "summary": "Can cast arcane spells from scrolls, with a 10% chance of a mishap.",
+          "minLevel": 10
+        },
+        {
+          "id": "hideout",
+          "name": "Hideout",
+          "summary": "May build a hideout, attracting 2d6 1st level apprentice thieves.",
+          "minLevel": 9
+        }
+      ],
+      "levels": [
+        {"level": 1, "xp": 0, "hd": "1d4", "thac0": 19, "saves": {"death": 13, "wands": 14, "paralysis": 13, "breath": 16, "spells": 15}, "thiefSkills": {"climb": 87, "traps": 10, "hearNoise": 2, "hide": 10, "moveSilently": 20, "openLocks": 15, "pickPockets": 20}},
+        {"level": 2, "xp": 1200, "hd": "2d4", "thac0": 19, "saves": {"death": 13, "wands": 14, "paralysis": 13, "breath": 16, "spells": 15}, "thiefSkills": {"climb": 88, "traps": 15, "hearNoise": 2, "hide": 15, "moveSilently": 25, "openLocks": 20, "pickPockets": 25}},
+        {"level": 3, "xp": 2400, "hd": "3d4", "thac0": 19, "saves": {"death": 13, "wands": 14, "paralysis": 13, "breath": 16, "spells": 15}, "thiefSkills": {"climb": 89, "traps": 20, "hearNoise": 3, "hide": 20, "moveSilently": 30, "openLocks": 25, "pickPockets": 30}},
+        {"level": 4, "xp": 4800, "hd": "4d4", "thac0": 19, "saves": {"death": 13, "wands": 14, "paralysis": 13, "breath": 16, "spells": 15}, "thiefSkills": {"climb": 90, "traps": 25, "hearNoise": 3, "hide": 25, "moveSilently": 35, "openLocks": 30, "pickPockets": 35}},
+        {"level": 5, "xp": 9600, "hd": "5d4", "thac0": 17, "saves": {"death": 12, "wands": 13, "paralysis": 11, "breath": 14, "spells": 13}, "thiefSkills": {"climb": 91, "traps": 30, "hearNoise": 3, "hide": 30, "moveSilently": 40, "openLocks": 35, "pickPockets": 40}},
+        {"level": 6, "xp": 20000, "hd": "6d4", "thac0": 17, "saves": {"death": 12, "wands": 13, "paralysis": 11, "breath": 14, "spells": 13}, "thiefSkills": {"climb": 92, "traps": 40, "hearNoise": 3, "hide": 36, "moveSilently": 45, "openLocks": 45, "pickPockets": 45}},
+        {"level": 7, "xp": 40000, "hd": "7d4", "thac0": 17, "saves": {"death": 12, "wands": 13, "paralysis": 11, "breath": 14, "spells": 13}, "thiefSkills": {"climb": 93, "traps": 50, "hearNoise": 4, "hide": 45, "moveSilently": 55, "openLocks": 55, "pickPockets": 55}},
+        {"level": 8, "xp": 80000, "hd": "8d4", "thac0": 17, "saves": {"death": 12, "wands": 13, "paralysis": 11, "breath": 14, "spells": 13}, "thiefSkills": {"climb": 94, "traps": 60, "hearNoise": 4, "hide": 55, "moveSilently": 65, "openLocks": 65, "pickPockets": 65}},
+        {"level": 9, "xp": 160000, "hd": "9d4", "thac0": 14, "saves": {"death": 10, "wands": 11, "paralysis": 9, "breath": 12, "spells": 10}, "thiefSkills": {"climb": 95, "traps": 70, "hearNoise": 4, "hide": 65, "moveSilently": 75, "openLocks": 75, "pickPockets": 75}},
+        {"level": 10, "xp": 280000, "hd": "9d4+2", "conModifier": false, "thac0": 14, "saves": {"death": 10, "wands": 11, "paralysis": 9, "breath": 12, "spells": 10}, "thiefSkills": {"climb": 96, "traps": 80, "hearNoise": 4, "hide": 75, "moveSilently": 85, "openLocks": 85, "pickPockets": 85}},
+        {"level": 11, "xp": 400000, "hd": "9d4+4", "conModifier": false, "thac0": 14, "saves": {"death": 10, "wands": 11, "paralysis": 9, "breath": 12, "spells": 10}, "thiefSkills": {"climb": 97, "traps": 90, "hearNoise": 5, "hide": 85, "moveSilently": 95, "openLocks": 95, "pickPockets": 95}},
+        {"level": 12, "xp": 520000, "hd": "9d4+6", "conModifier": false, "thac0": 14, "saves": {"death": 10, "wands": 11, "paralysis": 9, "breath": 12, "spells": 10}, "thiefSkills": {"climb": 98, "traps": 95, "hearNoise": 5, "hide": 90, "moveSilently": 96, "openLocks": 96, "pickPockets": 105}},
+        {"level": 13, "xp": 640000, "hd": "9d4+8", "conModifier": false, "thac0": 12, "saves": {"death": 8, "wands": 9, "paralysis": 7, "breath": 10, "spells": 8}, "thiefSkills": {"climb": 99, "traps": 97, "hearNoise": 5, "hide": 95, "moveSilently": 98, "openLocks": 97, "pickPockets": 115}},
+        {"level": 14, "xp": 760000, "hd": "9d4+10", "conModifier": false, "thac0": 12, "saves": {"death": 8, "wands": 9, "paralysis": 7, "breath": 10, "spells": 8}, "thiefSkills": {"climb": 99, "traps": 99, "hearNoise": 5, "hide": 99, "moveSilently": 99, "openLocks": 99, "pickPockets": 125}}
+      ]
+    }
+  ]
+}

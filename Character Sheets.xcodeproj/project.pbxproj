@@ -1,0 +1,273 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		C5000000000000000000B001 /* CharacterKit in Frameworks */ = {isa = PBXBuildFile; productRef = C5000000000000000000D001 /* CharacterKit */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		C5000000000000000000F001 /* Character Sheets.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Character Sheets.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C5000000000000000000F002 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C5000000000000000000F003 /* CharacterSheets.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CharacterSheets.entitlements; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		C5000000000000000000A001 /* App */ = {isa = PBXFileSystemSynchronizedRootGroup; path = App; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C5000000000000000000E002 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C5000000000000000000B001 /* CharacterKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		C5000000000000000000G001 = {
+			isa = PBXGroup;
+			children = (
+				C5000000000000000000A001 /* App */,
+				C5000000000000000000G002 /* Config */,
+				C5000000000000000000G003 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C5000000000000000000G002 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				C5000000000000000000F002 /* Info.plist */,
+				C5000000000000000000F003 /* CharacterSheets.entitlements */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+		C5000000000000000000G003 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C5000000000000000000F001 /* Character Sheets.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		C5000000000000000000T001 /* Character Sheets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C5000000000000000000L002 /* Build configuration list for PBXNativeTarget "Character Sheets" */;
+			buildPhases = (
+				C5000000000000000000E001 /* Sources */,
+				C5000000000000000000E002 /* Frameworks */,
+				C5000000000000000000E003 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				C5000000000000000000A001 /* App */,
+			);
+			name = "Character Sheets";
+			packageProductDependencies = (
+				C5000000000000000000D001 /* CharacterKit */,
+			);
+			productName = "Character Sheets";
+			productReference = C5000000000000000000F001 /* Character Sheets.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C5000000000000000000P001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2700;
+				LastUpgradeCheck = 2700;
+				TargetAttributes = {
+					C5000000000000000000T001 = {
+						CreatedOnToolsVersion = 27.0;
+					};
+				};
+			};
+			buildConfigurationList = C5000000000000000000L001 /* Build configuration list for PBXProject "Character Sheets" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = C5000000000000000000G001;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				C5000000000000000000K001 /* XCLocalSwiftPackageReference "Packages/CharacterKit" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = C5000000000000000000G003 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C5000000000000000000T001 /* Character Sheets */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C5000000000000000000E003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C5000000000000000000E001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		C5000000000000000000C001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		C5000000000000000000C002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		C5000000000000000000C003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Config/CharacterSheets.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Config/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.role-playing-games";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.CharacterSheets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		C5000000000000000000C004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Config/CharacterSheets.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Config/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.role-playing-games";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.CharacterSheets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C5000000000000000000L001 /* Build configuration list for PBXProject "Character Sheets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C5000000000000000000C001 /* Debug */,
+				C5000000000000000000C002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C5000000000000000000L002 /* Build configuration list for PBXNativeTarget "Character Sheets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C5000000000000000000C003 /* Debug */,
+				C5000000000000000000C004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		C5000000000000000000K001 /* XCLocalSwiftPackageReference "Packages/CharacterKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/CharacterKit;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		C5000000000000000000D001 /* CharacterKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C5000000000000000000K001 /* XCLocalSwiftPackageReference "Packages/CharacterKit" */;
+			productName = CharacterKit;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = C5000000000000000000P001 /* Project object */;
+}

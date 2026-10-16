@@ -1,0 +1,341 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Character file header, format v1",
+  "description": "YAML front matter of a character Markdown file. Unknown keys are allowed and must be preserved by tools.",
+  "type": "object",
+  "required": [
+    "formatVersion",
+    "rules"
+  ],
+  "properties": {
+    "formatVersion": {
+      "const": 1
+    },
+    "rules": {
+      "type": "object",
+      "required": [
+        "system"
+      ],
+      "properties": {
+        "system": {
+          "type": "string",
+          "examples": [
+            "ose"
+          ]
+        },
+        "variant": {
+          "type": "string",
+          "examples": [
+            "classic",
+            "advanced"
+          ]
+        },
+        "options": {
+          "type": "object",
+          "properties": {
+            "ascendingAC": {
+              "type": "boolean",
+              "default": false
+            },
+            "encumbrance": {
+              "enum": [
+                "none",
+                "basic",
+                "detailed"
+              ],
+              "default": "basic"
+            },
+            "variableWeaponDamage": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        }
+      }
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "player": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "portrait": {
+      "type": "string",
+      "description": "Image path relative to the character file."
+    },
+    "class": {
+      "type": "string"
+    },
+    "race": {
+      "type": "string"
+    },
+    "level": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "alignment": {
+      "type": "string"
+    },
+    "xp": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "abilityScores": {
+      "type": "object",
+      "properties": {
+        "str": {
+          "$ref": "#/$defs/score"
+        },
+        "int": {
+          "$ref": "#/$defs/score"
+        },
+        "wis": {
+          "$ref": "#/$defs/score"
+        },
+        "dex": {
+          "$ref": "#/$defs/score"
+        },
+        "con": {
+          "$ref": "#/$defs/score"
+        },
+        "cha": {
+          "$ref": "#/$defs/score"
+        }
+      }
+    },
+    "hp": {
+      "type": "object",
+      "properties": {
+        "max": {
+          "type": "integer"
+        },
+        "current": {
+          "type": "integer"
+        },
+        "rolls": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "combat": {
+      "type": "object",
+      "properties": {
+        "ac": {
+          "type": "integer"
+        },
+        "thac0": {
+          "type": "integer"
+        },
+        "attackBonus": {
+          "type": "integer"
+        }
+      }
+    },
+    "saves": {
+      "type": "object",
+      "properties": {
+        "death": {
+          "type": "integer"
+        },
+        "wands": {
+          "type": "integer"
+        },
+        "paralysis": {
+          "type": "integer"
+        },
+        "breath": {
+          "type": "integer"
+        },
+        "spells": {
+          "type": "integer"
+        }
+      }
+    },
+    "movement": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "exploration": {
+      "type": "object",
+      "properties": {
+        "listen": {
+          "$ref": "#/$defs/inSix"
+        },
+        "secretDoors": {
+          "$ref": "#/$defs/inSix"
+        },
+        "openDoors": {
+          "$ref": "#/$defs/inSix"
+        },
+        "findTraps": {
+          "$ref": "#/$defs/inSix"
+        },
+        "constructionTricks": {
+          "$ref": "#/$defs/inSix"
+        }
+      }
+    },
+    "thiefSkills": {
+      "type": "object",
+      "properties": {
+        "climb": {
+          "$ref": "#/$defs/percent"
+        },
+        "hide": {
+          "$ref": "#/$defs/percent"
+        },
+        "moveSilently": {
+          "$ref": "#/$defs/percent"
+        },
+        "openLocks": {
+          "$ref": "#/$defs/percent"
+        },
+        "pickPockets": {
+          "$ref": "#/$defs/percent"
+        },
+        "traps": {
+          "$ref": "#/$defs/percent"
+        },
+        "hearNoise": {
+          "$ref": "#/$defs/inSix"
+        }
+      }
+    },
+    "languages": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "spells": {
+      "type": "object",
+      "properties": {
+        "slots": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "spellbook": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "level": {
+                "type": "integer",
+                "minimum": 1
+              }
+            }
+          }
+        },
+        "memorized": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "cast": {
+                "type": "boolean",
+                "default": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "equipment": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "qty": {
+            "type": "integer",
+            "minimum": 0,
+            "default": 1
+          },
+          "weight": {
+            "type": "number",
+            "minimum": 0,
+            "description": "In coins."
+          },
+          "equipped": {
+            "type": "boolean",
+            "default": false
+          },
+          "damage": {
+            "type": "string",
+            "examples": [
+              "1d8"
+            ]
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "money": {
+      "type": "object",
+      "properties": {
+        "pp": {
+          "type": "integer"
+        },
+        "gp": {
+          "type": "integer"
+        },
+        "ep": {
+          "type": "integer"
+        },
+        "sp": {
+          "type": "integer"
+        },
+        "cp": {
+          "type": "integer"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "score": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 25
+    },
+    "inSix": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 6
+    },
+    "percent": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "ranges": [
+    [3, 3],
+    [4, 5],
+    [6, 8],
+    [9, 12],
+    [13, 15],
+    [16, 17],
+    [18, 18]
+  ],
+  "note": "Each table lists one value per range above, in order.",
+  "str": {
+    "melee": [-3, -2, -1, 0, 1, 2, 3],
+    "openDoors": [1, 1, 1, 2, 3, 4, 5]
+  },
+  "int": {
+    "extraLanguages": [0, 0, 0, 0, 1, 2, 3],
+    "literacy": ["illiterate", "illiterate", "basic", "literate", "literate", "literate", "literate"],
+    "speech": ["broken", "native", "native", "native", "native", "native", "native"]
+  },
+  "wis": {
+    "magicSaves": [-3, -2, -1, 0, 1, 2, 3]
+  },
+  "dex": {
+    "ac": [-3, -2, -1, 0, 1, 2, 3],
+    "missile": [-3, -2, -1, 0, 1, 2, 3],
+    "initiative": [-2, -1, -1, 0, 1, 1, 2]
+  },
+  "con": {
+    "hitPoints": [-3, -2, -1, 0, 1, 2, 3]
+  },
+  "cha": {
+    "reactions": [-2, -1, -1, 0, 1, 1, 2],
+    "maxRetainers": [1, 2, 3, 4, 5, 6, 7],
+    "retainerLoyalty": [4, 5, 6, 7, 8, 9, 10]
+  },
+  "primeRequisite": {
+    "ranges": [
+      [3, 5],
+      [6, 8],
+      [9, 12],
+      [13, 15],
+      [16, 18]
+    ],
+    "xpPercent": [-20, -10, 0, 5, 10]
+  }
+}

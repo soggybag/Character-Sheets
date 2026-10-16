@@ -1,0 +1,102 @@
+{
+  "weaponDamage": {
+    "default": "1d6",
+    "note": "PC attacks deal 1d6 unless the variableWeaponDamage option is on; then use each weapon's damage."
+  },
+  "weaponQualities": {
+    "blunt": "Usable by clerics.",
+    "brace": "Braced against the ground: double damage against charging monsters.",
+    "charge": "Mounted, after moving 60'+ this round: double damage on a hit.",
+    "melee": "Close quarters (5' or less).",
+    "missile": "Thrown or fired. Short range +1 to hit, long range -1.",
+    "reload": "Optional rule: fires only every second round.",
+    "slow": "Acts last in the combat round.",
+    "splash": "Damage applies for two rounds.",
+    "two-handed": "Needs both hands; no shield."
+  },
+  "weapons": [
+    {"id": "battle-axe", "name": "Battle axe", "cost": 7, "weight": 50, "damage": "1d8", "qualities": ["melee", "slow", "two-handed"]},
+    {"id": "club", "name": "Club", "cost": 3, "weight": 50, "damage": "1d4", "qualities": ["blunt", "melee"]},
+    {"id": "crossbow", "name": "Crossbow", "cost": 30, "weight": 50, "damage": "1d6", "qualities": ["missile", "reload", "slow", "two-handed"], "range": {"short": 80, "medium": 160, "long": 240}},
+    {"id": "dagger", "name": "Dagger", "cost": 3, "weight": 10, "damage": "1d4", "qualities": ["melee", "missile"], "range": {"short": 10, "medium": 20, "long": 30}},
+    {"id": "hand-axe", "name": "Hand axe", "cost": 4, "weight": 30, "damage": "1d6", "qualities": ["melee", "missile"], "range": {"short": 10, "medium": 20, "long": 30}},
+    {"id": "holy-water-vial", "name": "Holy water (vial)", "cost": 25, "weight": null, "damage": "1d8", "qualities": ["missile", "splash"], "range": {"short": 10, "medium": 30, "long": 50}},
+    {"id": "javelin", "name": "Javelin", "cost": 1, "weight": 20, "damage": "1d4", "qualities": ["missile"], "range": {"short": 30, "medium": 60, "long": 90}},
+    {"id": "lance", "name": "Lance", "cost": 5, "weight": 120, "damage": "1d6", "qualities": ["charge", "melee"]},
+    {"id": "long-bow", "name": "Long bow", "cost": 40, "weight": 30, "damage": "1d6", "qualities": ["missile", "two-handed"], "range": {"short": 70, "medium": 140, "long": 210}},
+    {"id": "mace", "name": "Mace", "cost": 5, "weight": 30, "damage": "1d6", "qualities": ["blunt", "melee"]},
+    {"id": "oil-flask-burning", "name": "Oil (flask), burning", "cost": 2, "weight": null, "damage": "1d8", "qualities": ["missile", "splash"], "range": {"short": 10, "medium": 30, "long": 50}},
+    {"id": "pole-arm", "name": "Pole arm", "cost": 7, "weight": 150, "damage": "1d10", "qualities": ["brace", "melee", "slow", "two-handed"]},
+    {"id": "short-bow", "name": "Short bow", "cost": 25, "weight": 30, "damage": "1d6", "qualities": ["missile", "two-handed"], "range": {"short": 50, "medium": 100, "long": 150}},
+    {"id": "short-sword", "name": "Short sword", "cost": 7, "weight": 30, "damage": "1d6", "qualities": ["melee"]},
+    {"id": "silver-dagger", "name": "Silver dagger", "cost": 30, "weight": 10, "damage": "1d4", "qualities": ["melee", "missile"], "range": {"short": 10, "medium": 20, "long": 30}},
+    {"id": "sling", "name": "Sling", "cost": 2, "weight": 20, "damage": "1d4", "qualities": ["blunt", "missile"], "range": {"short": 40, "medium": 80, "long": 160}},
+    {"id": "spear", "name": "Spear", "cost": 3, "weight": 30, "damage": "1d6", "qualities": ["brace", "melee", "missile"], "range": {"short": 20, "medium": 40, "long": 60}},
+    {"id": "staff", "name": "Staff", "cost": 2, "weight": 40, "damage": "1d4", "qualities": ["blunt", "melee", "slow", "two-handed"]},
+    {"id": "sword", "name": "Sword", "cost": 10, "weight": 60, "damage": "1d8", "qualities": ["melee"]},
+    {"id": "torch", "name": "Torch", "cost": 1, "costFor": 6, "weight": null, "damage": "1d4", "qualities": ["melee"]},
+    {"id": "two-handed-sword", "name": "Two-handed sword", "cost": 15, "weight": 150, "damage": "1d10", "qualities": ["melee", "slow", "two-handed"]},
+    {"id": "war-hammer", "name": "War hammer", "cost": 5, "weight": 30, "damage": "1d6", "qualities": ["blunt", "melee"]}
+  ],
+  "ammunition": [
+    {"id": "arrows", "name": "Arrows (quiver of 20)", "cost": 5, "quantity": 20, "for": ["long-bow", "short-bow"]},
+    {"id": "crossbow-bolts", "name": "Crossbow bolts (case of 30)", "cost": 10, "quantity": 30, "for": ["crossbow"]},
+    {"id": "silver-arrow", "name": "Silver tipped arrow", "cost": 5, "quantity": 1, "for": ["long-bow", "short-bow"]},
+    {"id": "sling-stones", "name": "Sling stones", "cost": 0, "for": ["sling"]}
+  ],
+  "gear": [
+    {"id": "backpack", "name": "Backpack", "cost": 5, "notes": "Holds 400 coins."},
+    {"id": "crowbar", "name": "Crowbar", "cost": 10},
+    {"id": "garlic", "name": "Garlic", "cost": 5},
+    {"id": "grappling-hook", "name": "Grappling hook", "cost": 25},
+    {"id": "hammer-small", "name": "Hammer (small)", "cost": 2},
+    {"id": "holy-symbol", "name": "Holy symbol", "cost": 25, "notes": "Required for divine spell casting."},
+    {"id": "holy-water-vial", "name": "Holy water (vial)", "cost": 25, "notes": "Damages undead (see weapons)."},
+    {"id": "iron-spikes", "name": "Iron spikes", "cost": 1, "quantity": 12},
+    {"id": "lantern", "name": "Lantern", "cost": 10, "notes": "30' light; burns 1 oil flask per 4 hours (24 turns)."},
+    {"id": "mirror-hand-sized-steel", "name": "Mirror (hand-sized, steel)", "cost": 5},
+    {"id": "oil-1-flask", "name": "Oil (1 flask)", "cost": 2, "notes": "Lantern fuel for 4 hours. Burning pool: 1d8 damage for 1 turn."},
+    {"id": "pole-10-long-wooden", "name": "Pole (10' long, wooden)", "cost": 1},
+    {"id": "rations-iron-7-days", "name": "Rations (iron, 7 days)", "cost": 15, "quantity": 7, "notes": "Preserved."},
+    {"id": "rations-standard-7-days", "name": "Rations (standard, 7 days)", "cost": 5, "quantity": 7, "notes": "Fresh, unpreserved."},
+    {"id": "rope-50", "name": "Rope (50')", "cost": 1, "notes": "Holds three people and their gear."},
+    {"id": "sack-large", "name": "Sack (large)", "cost": 2, "notes": "Holds 600 coins."},
+    {"id": "sack-small", "name": "Sack (small)", "cost": 1, "notes": "Holds 200 coins."},
+    {"id": "stakes-3-and-mallet", "name": "Stakes (3) and mallet", "cost": 3},
+    {"id": "thieves-tools", "name": "Thieves' tools", "cost": 25, "notes": "Needed to open locks."},
+    {"id": "tinder-box-flint-steel", "name": "Tinder box (flint & steel)", "cost": 3, "notes": "2-in-6 per round to light a fire."},
+    {"id": "torches", "name": "Torches", "cost": 1, "quantity": 6, "notes": "30' light for 1 hour (6 turns)."},
+    {"id": "waterskin", "name": "Waterskin", "cost": 1, "notes": "Holds 2 pints."},
+    {"id": "wine-2-pints", "name": "Wine (2 pints)", "cost": 1},
+    {"id": "wolfsbane-1-bunch", "name": "Wolfsbane (1 bunch)", "cost": 10, "notes": "Repels lycanthropes (must hit in melee)."}
+  ],
+  "gearNote": "Under detailed encumbrance, miscellaneous gear counts as 80 coins in total.",
+  "armour": [
+    {"id": "leather", "name": "Leather", "ac": 7, "cost": 20, "weight": 200, "encumbrance": "light"},
+    {"id": "chainmail", "name": "Chainmail", "ac": 5, "cost": 40, "weight": 400, "encumbrance": "heavy"},
+    {"id": "plate", "name": "Plate mail", "ac": 3, "cost": 60, "weight": 500, "encumbrance": "heavy"},
+    {"id": "shield", "name": "Shield", "acBonus": 1, "cost": 10, "weight": 100}
+  ],
+  "encumbrance": {
+    "maxLoad": 1600,
+    "basic": {
+      "note": "Movement from armour worn, and whether carrying significant treasure.",
+      "movement": {
+        "none": { "normal": 120, "treasure": 90 },
+        "light": { "normal": 90, "treasure": 60 },
+        "heavy": { "normal": 60, "treasure": 30 }
+      }
+    },
+    "detailed": {
+      "note": "Movement from total weight of armour, weapons and treasure. Misc. gear counts as 80 coins.",
+      "miscGear": 80,
+      "movement": [
+        { "upTo": 400, "rate": 120 },
+        { "upTo": 600, "rate": 90 },
+        { "upTo": 800, "rate": 60 },
+        { "upTo": 1600, "rate": 30 }
+      ]
+    },
+    "treasureWeights": { "coin": 1, "gem": 1, "jewellery": 10, "potion": 10, "rod": 20, "scroll": 1, "staff": 40, "wand": 10 }
+  }
+}
