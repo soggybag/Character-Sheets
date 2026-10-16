@@ -1,0 +1,142 @@
+<title>Character Sheets Privacy Policy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap">
+<style>
+  /* Layout: one readable column, a short summary panel up top, plain sections below. */
+  :root {
+    --bg: #f7f5f4;
+    --surface: #ffffff;
+    --fg: #241c1d;
+    --muted: #6b5f60;
+    --rule: #e3dcdb;
+    --accent: #8e2328;
+    --accent-soft: #f4e6e6;
+    --display: "Newsreader", Georgia, "Times New Roman", serif;
+    --body: "Libre Franklin", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #1b1617; --surface: #251e1f; --fg: #eee6e5; --muted: #b3a6a5;
+      --rule: #3a3031; --accent: #e8878b; --accent-soft: #3a2426; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #1b1617; --surface: #251e1f; --fg: #eee6e5; --muted: #b3a6a5;
+    --rule: #3a3031; --accent: #e8878b; --accent-soft: #3a2426; color-scheme: dark;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--body);
+    font-size: 1rem;
+    line-height: 1.65;
+    padding-inline: 16px;
+    padding-block: 48px 64px;
+  }
+  main { max-width: 40rem; margin-inline: auto; display: grid; gap: 2.25rem; }
+
+  header { display: grid; gap: 0.5rem; }
+  .app {
+    font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--accent);
+  }
+  h1 {
+    font-family: var(--display); font-weight: 600; font-size: clamp(2rem, 6vw, 2.75rem);
+    line-height: 1.1; margin: 0; text-wrap: balance;
+  }
+  .date { color: var(--muted); font-size: 0.875rem; margin: 0; }
+
+  .summary {
+    background: var(--accent-soft);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    display: grid; gap: 0.75rem;
+  }
+  .summary p { margin: 0; font-size: 1.0625rem; }
+  .summary ul { margin: 0; padding-left: 1.2rem; display: grid; gap: 0.25rem; }
+
+  section { display: grid; gap: 0.6rem; border-top: 1px solid var(--rule); padding-top: 1.5rem; }
+  h2 {
+    font-family: var(--display); font-weight: 500; font-size: 1.4rem;
+    line-height: 1.25; margin: 0; text-wrap: balance;
+  }
+  p { margin: 0; }
+  ul { margin: 0; padding-left: 1.2rem; display: grid; gap: 0.35rem; }
+
+  a { color: var(--accent); text-underline-offset: 2px; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+  .address {
+    font-weight: 600; user-select: all; -webkit-user-select: all;
+    overflow-wrap: anywhere;
+  }
+  footer { color: var(--muted); font-size: 0.875rem; }
+</style>
+
+<main>
+  <header>
+    <span class="app">Character Sheets for Mac</span>
+    <h1>Privacy Policy</h1>
+    <p class="date">Effective October 16, 2026</p>
+  </header>
+
+  <div class="summary">
+    <p><strong>Character Sheets doesn't collect, store or share any personal information.</strong></p>
+    <ul>
+      <li>No accounts, analytics, advertising or tracking.</li>
+      <li>The app can't connect to the internet. It runs in the macOS App Sandbox without network access.</li>
+      <li>Your characters stay in files on your Mac, where you put them.</li>
+    </ul>
+  </div>
+
+  <section>
+    <h2>Your character files</h2>
+    <p>Characters are saved as plain text files in a folder you choose. The app reads and writes only the files you open or save, and only on your Mac. If you keep your files in iCloud Drive, Dropbox or another syncing service, that service's own privacy policy applies to them.</p>
+  </section>
+
+  <section>
+    <h2>Importing PDF character sheets</h2>
+    <p>When you import a PDF, the app reads the form fields in the file you choose. This happens on your Mac. Nothing is uploaded anywhere.</p>
+  </section>
+
+  <section>
+    <h2>Settings</h2>
+    <p>The app keeps a few preferences, such as whether you've already seen the welcome window. macOS stores these on your Mac, and they never leave it.</p>
+  </section>
+
+  <section>
+    <h2>Sending feedback</h2>
+    <p>Help → Send Feedback… opens a draft email in your own email app. The draft includes the app's version number and your macOS version, to help with bug reports. Nothing is sent unless you send it.</p>
+    <p>I use feedback emails only to reply to you and to improve the app. I don't share them with anyone, and I'll delete your messages if you ask.</p>
+  </section>
+
+  <section>
+    <h2>TestFlight and the App Store</h2>
+    <p>Apple handles downloads, installs and updates. If you test a beta through TestFlight, Apple may share some information with me:</p>
+    <ul>
+      <li>your name and email address, if you were invited by email</li>
+      <li>crash reports</li>
+      <li>basic usage information, such as installs and sessions</li>
+      <li>any feedback or screenshots you send through TestFlight</li>
+    </ul>
+    <p>I use this only to fix problems and improve the app. Apple's handling of this information is covered by the <a href="https://www.apple.com/legal/privacy/" target="_blank" rel="noopener">Apple Privacy Policy</a>.</p>
+  </section>
+
+  <section>
+    <h2>Children</h2>
+    <p>The app doesn't collect personal information from anyone, including children under 13.</p>
+  </section>
+
+  <section>
+    <h2>Changes to this policy</h2>
+    <p>If this policy changes, the new version will be posted on this page with a new effective date.</p>
+  </section>
+
+  <section>
+    <h2>Contact</h2>
+    <p>Questions about privacy? Email Mitchell Hudson at <span class="address">soggybag@gmail.com</span>.</p>
+  </section>
+
+  <footer>© 2026 Mitchell Hudson</footer>
+</main>
