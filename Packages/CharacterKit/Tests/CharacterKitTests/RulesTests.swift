@@ -331,3 +331,12 @@ struct FillTests {
         #expect(file.fillMissingValues(from: RulesAnalysis(file)) == 0)
     }
 }
+
+@Suite("License")
+struct LicenseTests {
+    @Test func oglTextIsBundledAndFilledIn() {
+        let text = OSERuleset.licenseText
+        #expect(text.contains("OPEN GAME LICENSE Version 1.0a"))
+        #expect(!text.contains("<Your Name>"))
+    }
+}

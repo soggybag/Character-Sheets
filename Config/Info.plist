@@ -17,17 +17,19 @@
 			</array>
 		</dict>
 	</array>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>UTImportedTypeDeclarations</key>
 	<array>
 		<dict>
-			<key>UTTypeIdentifier</key>
-			<string>net.daringfireball.markdown</string>
-			<key>UTTypeDescription</key>
-			<string>Markdown Document</string>
 			<key>UTTypeConformsTo</key>
 			<array>
 				<string>public.plain-text</string>
 			</array>
+			<key>UTTypeDescription</key>
+			<string>Markdown Document</string>
+			<key>UTTypeIdentifier</key>
+			<string>net.daringfireball.markdown</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.filename-extension</key>

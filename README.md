@@ -30,8 +30,9 @@ open "Character Sheets.xcodeproj"        # then Run (⌘R)
 cd Packages/CharacterKit && swift test
 ```
 
-The bundle id is `com.mitchellhudson.CharacterSheets`. Signing is set to
-"Sign to Run Locally"; set your development team before distributing.
+The bundle id is `com.mitchellhudson.CharacterSheets`, signed automatically
+with team `753UQ7TNXJ`. To send a build to TestFlight, run
+`scripts/testflight.sh` (see `docs/RELEASING.md`).
 
 Third-party notices (Yams, MIT; OSE SRD rules data, OGL 1.0a) appear in
 the About window from `App/Credits.html`. The full OGL text ships in the

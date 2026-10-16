@@ -37,6 +37,15 @@ public struct OSERuleset: Sendable {
         info = try load("ruleset", as: RulesetInfo.self)
     }
 
+    /// The Open Game License and copyright notices for the bundled rules data.
+    public static var licenseText: String {
+        guard let url = Bundle.module.url(forResource: "LICENSE-OGL", withExtension: "md", subdirectory: "ose"),
+              let text = try? String(contentsOf: url, encoding: .utf8) else {
+            fatalError("The OGL text is missing from the bundle.")
+        }
+        return text
+    }
+
     public var alignments: [String] { info.alignments }
     public var creation: CreationRules { info.creation }
 

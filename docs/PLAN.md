@@ -165,12 +165,20 @@ Decisions:
       see `docs/PDF-IMPORT.md`). Opens the result as a new document to review.
 
 ### M5: Ship 1.0
-- [ ] App icon, About window with OGL text and attributions
-- [ ] Quick Look preview of character files in Finder
-- [ ] Onboarding sample character, help page explaining the file format
-- [ ] Notarised release, simple website, announce to the OSE community
+- [x] TestFlight setup: signing team, export compliance, upload script
+      (`scripts/testflight.sh`, see `docs/RELEASING.md`)
+- [x] Placeholder app icon (`scripts/make-placeholder-icon.swift`)
+- [ ] Final app icon
+- [x] About window attributions; Help → Open Game License
+- [x] Help window (shown on first launch) explaining the sheet and the file
+      format; Help → Open Sample Character; Help → Send Feedback…
+- [ ] Beta with testers; layout pass from their feedback
+- [ ] Final app name, App Store listing, simple website, announce to the
+      OSE community
 
 ### Later
+- Quick Look preview. Deferred: character files are plain `.md`, so a
+  preview extension would take over every Markdown file's preview.
 - Dice roller on the sheet: optional at most. Players prefer to see real
   rolls; the app only rolls in character creation and level-up.
 - **Custom sheet layouts:** a layout file (likely YAML or JSON) that places
