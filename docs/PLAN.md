@@ -155,7 +155,8 @@ Decisions:
 - [ ] Layout pass with your sheet design (see Later: custom layouts)
 
 ### M4: At the table
-- [ ] Fast HP tracking, spell "cast" checkboxes, ammo and torch counters
+- [x] Fast HP tracking (damage / heal, healing stops at max), spell "cast"
+      checkboxes with Rest, "use one" for ammo and torches
 - [ ] Print / export PDF of a tidy one-page sheet
 - [x] New-character flow (File → New Character…, ⌥⌘N): roll 3d6 in order,
       pick a class (unmet requirements shown, not enforced), optional score

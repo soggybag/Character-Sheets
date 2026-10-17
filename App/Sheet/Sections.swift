@@ -84,6 +84,7 @@ struct CombatSection: View {
         SheetSection(title: "Combat") {
             HStack(alignment: .top, spacing: 12) {
                 StatBox(label: "HP", value: $file.int(["hp", "current"]), help: "Current hit points")
+                HitPointAdjuster(file: $file)
                 StatBox(label: "Max HP", value: $file.int(["hp", "max"]), help: "Maximum hit points",
                         caption: analysis.hitDice.map { "HD \($0)" },
                         captionHelp: analysis.hitPointRoll.map { "Roll \($0) per level (at least 1)" })
@@ -102,6 +103,50 @@ struct CombatSection: View {
                              captionHelp: "Encounter movement: a third of the base rate")
             }
         }
+    }
+}
+
+/// Applies damage or healing to current hit points. Type an amount and
+/// press Return for damage, or use the buttons. No amount means 1.
+struct HitPointAdjuster: View {
+    @Binding var file: CharacterFile
+    @State private var amount = ""
+    @State private var last: String?
+
+    var body: some View {
+        VStack(spacing: 4) {
+            Text("Damage / Heal")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+            HStack(spacing: 4) {
+                ListButton(title: "Damage", systemImage: "minus.circle") { apply(-1) }
+                TextField("Amount", text: $amount, prompt: Text("1"))
+                    .labelsHidden()
+                    .textFieldStyle(.plain)
+                    .multilineTextAlignment(.center)
+                    .font(.title3.monospacedDigit())
+                    .frame(width: 34)
+                    .onSubmit { apply(-1) }
+                    .help("Amount. Press Return to take damage.")
+                ListButton(title: "Heal", systemImage: "plus.circle") { apply(1) }
+            }
+            .padding(.vertical, 6)
+            .padding(.horizontal, 6)
+            .background(.quaternary.opacity(0.6), in: .rect(cornerRadius: 8))
+            Text(last ?? " ")
+                .font(.caption.monospacedDigit())
+                .foregroundStyle(.secondary)
+        }
+        .disabled(file.currentHitPoints == nil)
+    }
+
+    private func apply(_ sign: Int) {
+        let text = amount.trimmingCharacters(in: .whitespaces).replacing("−", with: "-")
+        let size = abs(Int(text.hasPrefix("+") ? String(text.dropFirst()) : text) ?? 1)
+        guard size > 0, let before = file.currentHitPoints, let after = file.adjustHitPoints(by: sign * size) else { return }
+        last = after == before ? "at max" : "\(sign < 0 ? "−" : "+")\(abs(after - before)) → \(after)"
+        amount = ""
     }
 }
 
@@ -243,7 +288,15 @@ struct SpellsSection: View {
                     }
                 }
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("Memorized").font(.caption).foregroundStyle(.secondary)
+                    HStack {
+                        Text("Memorized").font(.caption).foregroundStyle(.secondary)
+                        Spacer()
+                        Button("Rest") { file.resetCastSpells() }
+                            .buttonStyle(.link)
+                            .font(.caption)
+                            .disabled(file.castSpellCount == 0)
+                            .help("Clear every Cast mark after a night's rest")
+                    }
                     ForEach(0..<file.count(["spells", "memorized"]), id: \.self) { index in
                         let path: NodePath = ["spells", "memorized", .index(index)]
                         HStack {
@@ -321,8 +374,16 @@ struct EquipmentSection: View {
                             .help("Equipped")
                         TextField("Item", text: $file.string(path + ["name"]))
                             .frame(minWidth: 160)
-                        NumberField(label: "Qty", value: $file.int(path + ["qty"]), prompt: "1")
-                            .frame(width: 44)
+                        HStack(spacing: 2) {
+                            NumberField(label: "Qty", value: $file.int(path + ["qty"]), prompt: "1")
+                                .frame(width: 40)
+                            if let quantity = file.int(path + ["qty"]), quantity > 0 {
+                                ListButton(title: "Use one", systemImage: "minus.square") {
+                                    file.useOne(ofItemAt: index)
+                                }
+                            }
+                        }
+                        .frame(width: 64, alignment: .leading)
                         TextField("", text: $file.string(path + ["damage"]))
                             .frame(width: 60)
                         TextField("", text: $file.string(path + ["notes"]))
