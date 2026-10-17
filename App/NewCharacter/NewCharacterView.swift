@@ -41,12 +41,13 @@ struct NewCharacterView: View {
                 DetailsSection(character: $character)
                 HitPointsSection(character: $character)
                 GoldSection(character: $character)
+                StartingEquipmentSection(character: $character)
             }
             .formStyle(.grouped)
 
             Divider()
             HStack {
-                Text("Saves, attacks and skills are filled in from the rules. Buy equipment on the sheet.")
+                Text("Saves, attacks and skills are filled in from the rules.")
                     .font(.callout)
                     .foregroundStyle(.secondary)
                 Spacer()
@@ -285,6 +286,53 @@ private struct GoldSection: View {
                 if let roll = character.goldRoll {
                     Text("\(roll.description) gp").monospacedDigit().foregroundStyle(.secondary)
                 }
+            }
+        }
+    }
+}
+
+private struct StartingEquipmentSection: View {
+    @Binding var character: NewCharacter
+    @State private var isShopping = false
+
+    var body: some View {
+        Section("Equipment") {
+            let over = character.unaffordable
+            ForEach(character.purchases.indices, id: \.self) { index in
+                let purchase = character.purchases[index]
+                let amount = (purchase.item.quantity ?? 1) * purchase.count
+                HStack {
+                    Text(purchase.item.itemName + (amount > 1 ? " × \(amount)" : ""))
+                        .strikethrough(over.contains(purchase))
+                    Spacer()
+                    Text(purchase.paid ? "\(purchase.cost.formatted()) gp" : "given")
+                        .monospacedDigit()
+                        .foregroundStyle(.secondary)
+                    Button("Remove", systemImage: "minus.circle") { character.purchases.remove(at: index) }
+                        .labelStyle(.iconOnly)
+                        .buttonStyle(.borderless)
+                }
+            }
+            if !over.isEmpty {
+                Text("Not enough gold for: \(over.map(\.item.itemName).joined(separator: ", ")). They'll be left out.")
+                    .foregroundStyle(.orange)
+            }
+            HStack {
+                Button(character.purchases.isEmpty ? "Buy Equipment…" : "Buy More…") { isShopping = true }
+                    .disabled(character.gold == nil)
+                Spacer()
+                if let left = character.goldLeft {
+                    Text("\(left.formatted()) gp left").monospacedDigit()
+                } else {
+                    Text("Roll gold first").foregroundStyle(.secondary)
+                }
+            }
+        }
+        .sheet(isPresented: $isShopping) {
+            ShopView(classRules: character.classRules, purse: Purse(gp: character.goldLeft ?? 0)) { item, count, pay in
+                if pay, item.cost * count > character.goldLeft ?? 0 { return false }
+                character.buy(item, count: count, paid: pay)
+                return true
             }
         }
     }

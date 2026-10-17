@@ -20,6 +20,23 @@ public struct NewCharacter: Sendable {
     public var goldRoll: DiceRoll?
     /// Starting gold, rolled or typed.
     public var gold: Int?
+    /// Equipment bought (or given) at creation, in order.
+    public var purchases: [Purchase] = []
+
+    public struct Purchase: Equatable, Sendable {
+        public let item: ShopItem
+        public var count: Int
+        /// Paid for from the starting gold; false for gear that was given.
+        public var paid: Bool
+
+        public init(item: ShopItem, count: Int = 1, paid: Bool = true) {
+            self.item = item
+            self.count = count
+            self.paid = paid
+        }
+
+        public var cost: Int { paid ? item.cost * count : 0 }
+    }
 
     public init(rules: OSERuleset = .classic) {
         self.rules = rules
@@ -140,15 +157,44 @@ public struct NewCharacter: Sendable {
     /// The rules' view of the character so far (modifiers, XP bonus, notes).
     public var analysis: RulesAnalysis { RulesAnalysis(baseFile(), rules: rules) }
 
+    // MARK: Shopping
+
+    /// Gold left after the purchases that fit.
+    public var goldLeft: Int? {
+        guard let gold else { return nil }
+        return gold - purchases.filter { !unaffordable.contains($0) }.reduce(0) { $0 + $1.cost }
+    }
+
+    /// Paid purchases the gold doesn't stretch to (after a lower gold roll),
+    /// in order. They're left out of the character.
+    public var unaffordable: [Purchase] {
+        var left = gold ?? 0
+        var over: [Purchase] = []
+        for purchase in purchases {
+            if purchase.cost > left { over.append(purchase) } else { left -= purchase.cost }
+        }
+        return over
+    }
+
+    /// Buys an item, or more of one already bought the same way.
+    public mutating func buy(_ item: ShopItem, count: Int = 1, paid: Bool = true) {
+        if let index = purchases.firstIndex(where: { $0.item.id == item.id && $0.paid == paid }) {
+            purchases[index].count += count
+        } else {
+            purchases.append(Purchase(item: item, count: count, paid: paid))
+        }
+    }
+
     // MARK: The file
 
     /// The new character's file. Values that don't depend on equipment
-    /// (saves, attacks, skills, spell slots) are filled from the rules;
-    /// AC and movement are left for the rules to suggest once gear is bought.
+    /// (saves, attacks, skills, spell slots) are filled from the rules.
+    /// AC and movement are filled too once gear is bought; without gear
+    /// they're left for the rules to suggest later.
     public func makeFile() -> CharacterFile {
         var file = baseFile()
         let analysis = RulesAnalysis(file, rules: rules)
-        let gearDependent: Set<NodePath> = [["combat", "ac"], ["movement"]]
+        let gearDependent: Set<NodePath> = file.count(["equipment"]) > 0 ? [] : [["combat", "ac"], ["movement"]]
         for (path, value) in analysis.suggestions.sorted(by: { $0.key.dotted < $1.key.dotted })
         where !gearDependent.contains(path) && analysis.status(of: path, in: file) == .missing(rules: value) {
             file.setRulesValue(value, at: path)
@@ -175,7 +221,11 @@ public struct NewCharacter: Sendable {
             if let actual, !languages.contains(actual) { languages.append(actual) }
         }
         file.setStrings(languages, at: ["languages"])
-        file.setInt(gold, at: ["money", "gp"])
+        file.setInt(goldLeft, at: ["money", "gp"])
+        let over = unaffordable
+        for purchase in purchases where !over.contains(purchase) {
+            file.addEquipment(purchase.item, count: purchase.count)
+        }
         return file
     }
 }

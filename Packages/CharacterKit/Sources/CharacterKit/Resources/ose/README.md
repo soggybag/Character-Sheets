@@ -34,6 +34,10 @@ Numbers and short summaries only. Full rules and spell text are not included.
   restrictions (`allowed` / `forbidden`) refer to these ids. Costs are in gp;
   weights are in coins, and `null` means the item's weight isn't tracked.
   Missile ranges are the far end of each band, in feet.
+- **Buying**: `itemName` is how an item is written on a sheet when it's
+  bought ("Arrows" for "Arrows (quiver of 20)"); `quantity` is how many come
+  for the cost. A weapon with `soldAs` (torch, burning oil, holy water) is
+  bought as that gear entry, so the shop lists it once.
 - **Weapon damage**: every PC attack does 1d6 unless the character's
   `variableWeaponDamage` option is on.
 - **Features** are short summaries in our own words. `minLevel` means the

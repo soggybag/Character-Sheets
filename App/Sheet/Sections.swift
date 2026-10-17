@@ -392,6 +392,7 @@ struct SpellsSection: View {
 
 struct EquipmentSection: View {
     @Binding var file: CharacterFile
+    @State private var isShopping = false
 
     var body: some View {
         SheetSection(title: "Equipment") {
@@ -425,7 +426,7 @@ struct EquipmentSection: View {
                             }
                         }
                         .frame(width: 64, alignment: .leading)
-                        TextField("", text: $file.string(path + ["damage"]))
+                        TextField("", text: $file.string(path + ["damage"]), prompt: Text(rulesDamage(at: index)))
                             .frame(width: 60)
                         TextField("", text: $file.string(path + ["notes"]))
                             .frame(minWidth: 140)
@@ -436,10 +437,27 @@ struct EquipmentSection: View {
                     .textFieldStyle(.plain)
                 }
             }
-            ListButton(title: "Add item", systemImage: "plus.circle") {
-                file.appendItem(to: ["equipment"])
+            HStack(spacing: 12) {
+                ListButton(title: "Add item", systemImage: "plus.circle") {
+                    file.appendItem(to: ["equipment"])
+                }
+                Button("Add from List…") { isShopping = true }
+                    .help("Buy or add weapons, armour and gear from the rules")
             }
         }
+        .sheet(isPresented: $isShopping) {
+            ShopView(classRules: OSERuleset.classic.classRules(named: file.string(["class"]) ?? ""),
+                     purse: Purse(file)) { item, count, pay in
+                file.buy(item, count: count, pay: pay)
+            }
+        }
+    }
+
+    /// The rules damage for a weapon, shown in grey when none is typed.
+    private func rulesDamage(at index: Int) -> String {
+        guard let name = file.string(["equipment", .index(index), "name"]),
+              let weapon = OSERuleset.classic.weapon(named: name) else { return "" }
+        return file.bool(["rules", "options", "variableWeaponDamage"]) == true ? weapon.damage : "1d6"
     }
 }
 

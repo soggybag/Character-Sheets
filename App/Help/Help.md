@@ -35,6 +35,12 @@ the rules for you, without getting in your way.
 - **At the table:** type an amount in **Damage / Heal** and press Return to
   take damage, or use − and +. The − next to a quantity uses one torch or
   arrow.
+- **Equipment:** **Add from List…** under Equipment shows the rules'
+  weapons, armour, ammunition and gear with their costs. Add an item and
+  pay for it from the character's money (change is made in gold, silver and
+  copper), or untick **Pay** for something found or given. Items the class
+  can't normally use are marked ⚠︎ but can still be added. **New
+  Character** has the same list for spending starting gold.
 - **Spells** are one list: the spell book, with how many copies of each are
   memorized today (− and +) and a **Cast** box for each copy. **Rest** clears
   the Cast boxes. A memorized spell that isn't in the book (a cleric's

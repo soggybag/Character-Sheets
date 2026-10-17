@@ -139,6 +139,8 @@ public struct WeaponData: Decodable, Sendable {
     public let damage: String
     public let qualities: [String]
     public let range: Range?
+    /// The gear entry this weapon is bought as (torches, oil, holy water).
+    public let soldAs: String?
 
     public var isMelee: Bool { qualities.contains("melee") }
     public var isMissile: Bool { qualities.contains("missile") }
@@ -163,11 +165,26 @@ public struct AmmunitionData: Decodable, Sendable {
     public let id: String
     /// As sold, e.g. `Arrows (quiver of 20)`.
     public let name: String
+    /// As written on a sheet, e.g. `Arrows`.
+    public let itemName: String?
+    public let cost: Int
+    /// How many come for the cost.
+    public let quantity: Int?
+}
+
+public struct GearData: Decodable, Sendable {
+    public let id: String
+    public let name: String
+    public let itemName: String?
+    public let cost: Int
+    public let quantity: Int?
+    public let notes: String?
 }
 
 struct EquipmentTables: Decodable, Sendable {
     let weapons: [WeaponData]
     let ammunition: [AmmunitionData]
+    let gear: [GearData]
     let armour: [ArmourData]
     let encumbrance: Encumbrance
 
