@@ -1,0 +1,18 @@
+New in this build:
+
+- Printing works now. File → Print (⌘P) prints a one-page sheet followed by your notes; File → Export as PDF… saves the same thing. Please print your own character and tell me if anything is cut off, crowded, or missing.
+- File → New Character… is now ⌘N: roll scores, pick a class, roll hit points and gold. File → New Blank Sheet (⌥⌘N) starts an empty sheet.
+- Party view: File → Open Party Folder… (⇧⌘O) and choose the folder where you keep your characters. Everyone appears in one window with HP, AC, attack, saves and XP, and it updates when a sheet is saved. Double-click someone to open their sheet.
+- Spells are one list: your spell book, with how many copies of each you've memorized today (− and +) and a Cast box for each copy. Rest clears the Cast boxes.
+- Damage / Heal next to hit points: type an amount and press Return to take damage, or use − and +. The − next to an item's quantity uses one (arrows, torches, rations).
+- Level up asks for Max HP if it's empty, and offers to set XP if you don't have enough for the new level. Level Down… (the arrow beside Level Up) handles energy drain.
+- The sheet warns when XP is below the character's level, or Max HP is more or less than the hit dice can roll.
+- To use the rules value for a box you've changed, click its orange dot.
+- Fixed: Edit as Text → Cancel could crash. Tab now goes through the boxes in order. Tabbing through boxes no longer changes anything.
+
+Things to try:
+- Play a session with it: take damage, use supplies, cast and rest, level up.
+- Print a character on your usual paper size.
+- Open your characters' folder as a party.
+
+Send feedback from Help → Send Feedback…, or with TestFlight's screenshot feedback.

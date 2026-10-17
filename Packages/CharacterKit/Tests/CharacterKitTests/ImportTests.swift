@@ -1,3 +1,4 @@
+import CoreGraphics
 import Foundation
 import Testing
 @testable import CharacterKit
@@ -118,10 +119,15 @@ struct ImportTests {
         #expect(throws: SheetImportError.nothingRecognised) { try SheetImport(fields: ["Invoice": "42"]) }
     }
 
+    /// Only the PDFs with fixtures: the folder also holds other PDFs, such as
+    /// sheets exported from the app.
     @Test func realPDFsWhenPresent() throws {
         let folder = URL(filePath: NSHomeDirectory()).appending(path: "Documents/Game/OSR/OSE/OSE Characters")
         let pdfs = (try? FileManager.default.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil))?
-            .filter { $0.pathExtension == "pdf" } ?? []
+            .filter { pdf in
+                pdf.pathExtension == "pdf" && FileManager.default.fileExists(
+                    atPath: fixtures.appending(path: pdf.deletingPathExtension().lastPathComponent + ".json").path)
+            } ?? []
         for pdf in pdfs {
             let fromPDF = try SheetImport(contentsOf: pdf)
             let fromFixture = try imported(pdf.deletingPathExtension().lastPathComponent)
@@ -162,5 +168,22 @@ struct ImportParsingTests {
         #expect(SheetImport.firstNumber(in: "−1") == -1)
         #expect(SheetImport.firstNumber(in: "2-in-6") == 2)
         #expect(SheetImport.firstNumber(in: "none") == nil)
+    }
+}
+
+@Suite("PDF import of exported sheets")
+struct ExportedPDFImportTests {
+    @Test func recognisesItsOwnPrintouts() throws {
+        let data = NSMutableData()
+        var box = CGRect(x: 0, y: 0, width: 612, height: 792)
+        let context = try #require(CGContext(consumer: CGDataConsumer(data: data)!, mediaBox: &box,
+                                             [kCGPDFContextCreator: SheetImportError.exportCreator] as CFDictionary))
+        context.beginPDFPage(nil)
+        context.endPDFPage()
+        context.closePDF()
+        let url = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString + ".pdf")
+        try (data as Data).write(to: url)
+        defer { try? FileManager.default.removeItem(at: url) }
+        #expect(throws: SheetImportError.exportedByThisApp) { try SheetImport(contentsOf: url) }
     }
 }

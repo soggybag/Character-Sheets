@@ -82,7 +82,7 @@ This means hand edits always win, and the file never needs extra metadata.
 | `languages` | list of strings | |
 | `spells.slots` | list of integers | Slots per spell level; index 0 = level 1. |
 | `spells.spellbook` | list of `{ name, level }` | Spells known (arcane) or available (divine). |
-| `spells.memorized` | list of `{ name, cast }` | Prepared today; `cast: true` once used. |
+| `spells.memorized` | list of `{ name, level, cast }` | Prepared today, one entry per copy (memorize Sleep twice, list it twice); `cast: true` once used. Matched to the spell book by name, ignoring case. `level` only for spells not in the book. |
 | `equipment` | list of items | Each item: `name` (required), `qty`, `weight` (coins), `equipped`, `damage`, `notes`. The app matches item names to the ruleset's equipment list (case-insensitive) to suggest damage, weight and cost; unmatched items are just free text. |
 | `money` | map | `pp`, `gp`, `ep`, `sp`, `cp` as integers. |
 

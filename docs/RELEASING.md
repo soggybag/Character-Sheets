@@ -27,6 +27,11 @@ This runs the CharacterKit tests, archives a universal Release build with a
 new build number (UTC date and time, e.g. `202610161530`), and uploads it.
 `--no-upload` archives and exports without uploading.
 
+Before uploading, update `docs/WHAT-TO-TEST.txt`; the script prints it and
+copies it to the clipboard for TestFlight's **What to Test**. Run the smoke
+test in `docs/TESTING.md` on the processed build before external testers
+get it.
+
 The marketing version is `MARKETING_VERSION` in the project (currently 0.1).
 Export compliance is answered in `Config/Info.plist`
 (`ITSAppUsesNonExemptEncryption = NO`: the app uses no encryption).

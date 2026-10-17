@@ -6,15 +6,18 @@ struct CharacterWindow: View {
     @Binding var document: CharacterDocument
     var fileURL: URL?
 
-    /// Non-nil while a character is being edited as text.
-    @State private var textDraft: String?
+    /// True while a character is being edited as text.
+    @State private var isEditingText = false
+    /// The text being edited. Not optional: the text view can still write
+    /// to it while it's being taken down, which crashed an unwrapped binding.
+    @State private var textDraft = ""
 
     var body: some View {
         Group {
             switch document.content {
             case .sheet:
-                if let draft = Binding($textDraft) {
-                    TextEditorView(text: draft, fileURL: fileURL)
+                if isEditingText {
+                    TextEditorView(text: $textDraft, fileURL: fileURL)
                 } else {
                     SheetView(file: sheet, placeholderName: placeholderName)
                 }
@@ -47,13 +50,13 @@ struct CharacterWindow: View {
     private var toolbar: some ToolbarContent {
         switch document.content {
         case let .sheet(file):
-            if let draft = textDraft {
+            if isEditingText {
                 ToolbarItem {
-                    Button("Cancel") { textDraft = nil }
+                    Button("Cancel") { isEditingText = false }
                 }
                 ToolbarItem(placement: .primaryAction) {
-                    Button("Done") { finishTextEditing(draft, original: file) }
-                        .disabled((try? CharacterFile(text: draft)) == nil)
+                    Button("Done") { finishTextEditing(textDraft, original: file) }
+                        .disabled((try? CharacterFile(text: textDraft)) == nil)
                         .keyboardShortcut(.return, modifiers: .command)
                 }
             } else {
@@ -61,8 +64,11 @@ struct CharacterWindow: View {
                     RulesMenu(file: sheet)
                 }
                 ToolbarItem(placement: .primaryAction) {
-                    Button("Edit as Text", systemImage: "curlybraces") { textDraft = file.text() }
-                        .help("Edit the file's text directly")
+                    Button("Edit as Text", systemImage: "curlybraces") {
+                        textDraft = file.text()
+                        isEditingText = true
+                    }
+                    .help("Edit the file's text directly")
                 }
             }
         case let .text(text):
@@ -77,7 +83,7 @@ struct CharacterWindow: View {
     }
 
     private func finishTextEditing(_ draft: String, original: CharacterFile) {
-        defer { textDraft = nil }
+        defer { isEditingText = false }
         guard draft != original.text() else { return }
         document.content = CharacterDocument.content(for: draft)
     }
@@ -117,7 +123,16 @@ private struct RulesMenu: View {
                 set: { file.setBool($0, at: ["rules", "options", "variableWeaponDamage"]) }))
             Divider()
             Button("Fill In Missing Values") {
-                file.fillMissingValues(from: RulesAnalysis(file))
+                let analysis = RulesAnalysis(file)
+                file.fillMissingValues(from: analysis)
+                // The one empty box people expect this to fill.
+                if file.int(["hp", "max"]) == nil, let roll = analysis.hitPointRoll {
+                    let alert = NSAlert()
+                    alert.messageText = "Max HP is still empty"
+                    alert.informativeText = "Hit points are rolled, so the rules can't fill them in. "
+                        + "Roll \(roll) per level (at least 1 each) and type the total into Max HP."
+                    alert.runModal()
+                }
             }
             .help("Write the rules value into every empty field the rules cover")
             Divider()

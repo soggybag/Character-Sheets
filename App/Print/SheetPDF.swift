@@ -18,7 +18,11 @@ enum SheetPDF {
         let data = NSMutableData()
         var mediaBox = CGRect(origin: .zero, size: paperSize)
         guard let consumer = CGDataConsumer(data: data),
-              let context = CGContext(consumer: consumer, mediaBox: &mediaBox, nil) else { return Data() }
+              let context = CGContext(consumer: consumer, mediaBox: &mediaBox, [
+                  kCGPDFContextTitle: sheet.title,
+                  // Lets PDF import recognise its own printouts.
+                  kCGPDFContextCreator: SheetImportError.exportCreator,
+              ] as CFDictionary) else { return Data() }
         for (index, page) in pages.enumerated() {
             let view = PageView(blocks: page, title: sheet.title, number: index + 1, of: pages.count,
                                 contentWidth: contentWidth)

@@ -44,6 +44,14 @@ xcodebuild -exportArchive \
 
 if $upload; then
     echo "✓ Uploaded build $build. It appears in App Store Connect → TestFlight after processing (about 10–30 minutes)."
+    notes=docs/WHAT-TO-TEST.txt
+    if [[ -f "$notes" ]]; then
+        pbcopy < "$notes"
+        echo
+        echo "What to Test (copied to the clipboard; see docs/TESTING.md):"
+        echo
+        cat "$notes"
+    fi
 else
     echo "✓ Exported to $out/export"
 fi

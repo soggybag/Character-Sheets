@@ -242,12 +242,21 @@ public struct SheetImport: Sendable {
 public enum SheetImportError: Error, LocalizedError, Equatable {
     case unreadable
     case noFormFields
+    /// A sheet printed or exported from this app: a picture of the sheet,
+    /// with no form fields.
+    case exportedByThisApp
     case nothingRecognised
+
+    /// The PDF Creator that exported sheets carry, so import can recognise them.
+    public static let exportCreator = "Character Sheets"
 
     public var errorDescription: String? {
         switch self {
         case .unreadable: "The file couldn't be opened as a PDF."
-        case .noFormFields: "This PDF has no filled-in form fields."
+        case .noFormFields:
+            "This PDF has no filled-in form fields. Import reads fillable character sheets; a printed or scanned sheet can't be read."
+        case .exportedByThisApp:
+            "This PDF was exported from Character Sheets. It's a printout, with no form fields to read. Open the character's file instead."
         case .nothingRecognised: "None of this PDF's form fields look like a character sheet."
         }
     }

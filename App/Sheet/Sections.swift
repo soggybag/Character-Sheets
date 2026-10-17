@@ -6,13 +6,14 @@ struct IdentitySection: View {
     let analysis: RulesAnalysis
     let placeholderName: String
     let levelUp: () -> Void
+    let levelDown: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             TextField("Name", text: $file.string(["name"]), prompt: Text(placeholderName))
                 .textFieldStyle(.plain)
                 .font(.system(size: 30, weight: .semibold, design: .serif))
-            HStack(alignment: .bottom, spacing: 20) {
+            HStack(alignment: .fieldLine, spacing: 20) {
                 LineField(label: "Class", text: $file.string(["class"]), suggestions: OSE.classes)
                 LineField(label: "Alignment", text: $file.string(["alignment"]), suggestions: OSE.alignments)
                 LineNumberField(label: "Level", value: $file.int(["level"]))
@@ -21,6 +22,7 @@ struct IdentitySection: View {
                     .frame(width: 110)
                     .help(xpHelp)
                 levelUpButton
+                    .alignmentGuide(.fieldLine) { $0[VerticalAlignment.center] }
             }
             HStack(spacing: 20) {
                 LineField(label: "Title", text: $file.string(["title"]))
@@ -43,10 +45,21 @@ struct IdentitySection: View {
         return lines.joined(separator: "\n")
     }
 
+    /// Level Up…, with Level Down… in its menu: losing a level is rare
+    /// (energy drain) and shouldn't sit beside the everyday button.
     @ViewBuilder private var levelUpButton: some View {
-        let button = Button("Level Up…", action: levelUp)
+        let button = Menu("Level Up…") {
+            Button("Level Down…", action: levelDown)
+                .disabled((analysis.level ?? 0) <= 1)
+        } primaryAction: {
+            levelUp()
+        }
+            .menuStyle(.button)
+            .fixedSize()
             .disabled(analysis.classRules == nil || analysis.level == nil)
-            .help(analysis.xp?.readyToLevelUp == true ? "Enough XP for the next level" : "Go up a level")
+            .help(analysis.xp?.readyToLevelUp == true
+                ? "Enough XP for the next level. Use the arrow to lose a level."
+                : "Go up a level. Use the arrow to lose a level (energy drain).")
         if analysis.xp?.readyToLevelUp == true {
             button.buttonStyle(.borderedProminent)
         } else {
@@ -80,14 +93,23 @@ struct CombatSection: View {
     @Binding var file: CharacterFile
     let analysis: RulesAnalysis
 
+    private func warning(at path: NodePath) -> String? {
+        analysis.notes.first { $0.kind == .warning && $0.path == path }?.message
+    }
+
     var body: some View {
         SheetSection(title: "Combat") {
             HStack(alignment: .top, spacing: 12) {
-                StatBox(label: "HP", value: $file.int(["hp", "current"]), help: "Current hit points")
+                StatBox(label: "HP", value: $file.int(["hp", "current"]), help: "Current hit points",
+                        warning: warning(at: ["hp", "current"]))
                 HitPointAdjuster(file: $file)
-                StatBox(label: "Max HP", value: $file.int(["hp", "max"]), help: "Maximum hit points",
+                StatBox(label: "Max HP", value: $file.int(["hp", "max"]),
+                        help: "Maximum hit points. They're rolled, so the rules can't fill them in"
+                            + (analysis.hitPointRoll.map { ": \($0) per level (at least 1)" } ?? ""),
                         caption: analysis.hitDice.map { "HD \($0)" },
-                        captionHelp: analysis.hitPointRoll.map { "Roll \($0) per level (at least 1)" })
+                        captionHelp: analysis.hitPointRoll.map { "Roll \($0) per level (at least 1)" },
+                        emptyPrompt: "roll",
+                        warning: warning(at: ["hp", "max"]))
                 RuledStatBox(label: "AC", path: ["combat", "ac"], file: $file, analysis: analysis,
                              help: file.usesAscendingAC ? "Armour class (ascending)" : "Armour class")
                 if file.usesAscendingAC {
@@ -248,77 +270,96 @@ struct SpellsSection: View {
             HStack(alignment: .bottom, spacing: 12) {
                 ForEach(0..<max(file.count(["spells", "slots"]), 1), id: \.self) { level in
                     StatBox(label: ordinals[min(level, ordinals.count - 1)], value: slot(level),
-                            help: "Spells per day of level \(level + 1)")
+                            help: "Spells per day of level \(level + 1)",
+                            caption: memorizedCaption(level: level + 1))
                 }
                 ListButton(title: "Add spell level", systemImage: "plus.circle") {
                     file.appendInt(0, to: ["spells", "slots"])
                 }
-                .padding(.bottom, 10)
+                .padding(.bottom, 27)
                 if file.count(["spells", "slots"]) > 1 {
                     ListButton(title: "Remove spell level", systemImage: "minus.circle") {
                         file.removeItem(at: ["spells", "slots", .index(file.count(["spells", "slots"]) - 1)])
                     }
-                    .padding(.bottom, 10)
+                    .padding(.bottom, 27)
                 }
                 slotRulesHint
-                    .padding(.bottom, 10)
+                    .padding(.bottom, 27)
             }
 
-            HStack(alignment: .top, spacing: 32) {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("Spell book").font(.caption).foregroundStyle(.secondary)
-                    ForEach(0..<file.count(["spells", "spellbook"]), id: \.self) { index in
-                        let path: NodePath = ["spells", "spellbook", .index(index)]
-                        HStack {
-                            TextField("Spell", text: $file.string(path + ["name"]))
-                                .textFieldStyle(.plain)
-                            NumberField(label: "Lvl", value: $file.int(path + ["level"]))
-                                .textFieldStyle(.plain)
-                                .frame(width: 28)
-                                .help("Spell level")
-                            ListButton(title: "Remove spell", systemImage: "minus.circle") {
-                                file.removeItem(at: path)
-                            }
-                        }
-                        Divider()
-                    }
-                    ListButton(title: "Add spell", systemImage: "plus.circle") {
-                        let index = file.appendItem(to: ["spells", "spellbook"])
-                        file.setInt(1, at: ["spells", "spellbook", .index(index), "level"])
-                    }
+            spellList
+                .padding(.top, 6)
+        }
+    }
+
+    /// One row per spell: its level, how many copies are memorized, and a
+    /// Cast box for each copy.
+    private var spellList: some View {
+        let rows = file.spellRows
+        return Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 6) {
+            GridRow {
+                Text("Spell")
+                Text("Level")
+                Text("Memorized")
+                HStack {
+                    Text("Cast")
+                    Spacer()
+                    Button("Rest") { file.resetCastSpells() }
+                        .buttonStyle(.link)
+                        .disabled(file.castSpellCount == 0)
+                        .help("Clear every Cast mark after a night's rest")
                 }
-                VStack(alignment: .leading, spacing: 6) {
-                    HStack {
-                        Text("Memorized").font(.caption).foregroundStyle(.secondary)
-                        Spacer()
-                        Button("Rest") { file.resetCastSpells() }
-                            .buttonStyle(.link)
-                            .font(.caption)
-                            .disabled(file.castSpellCount == 0)
-                            .help("Clear every Cast mark after a night's rest")
+                .gridCellColumns(2)
+            }
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            ForEach(rows.indices, id: \.self) { index in
+                let row = rows[index]
+                GridRow {
+                    CommitTextField(prompt: "Spell", value: row.name) { file.renameSpell(row, to: $0) }
+                        .textFieldStyle(.plain)
+                        .strikethrough(!row.memorized.isEmpty && row.memorized.allSatisfy { file.isCast(memorized: $0) })
+                        .help(row.bookIndex == nil ? "Memorized, but not in the spell book" : "")
+                        .frame(minWidth: 160)
+                    NumberField(label: "Level", value: Binding { row.level } set: { file.setSpellLevel(row, to: $0) },
+                                prompt: "–")
+                        .textFieldStyle(.plain)
+                        .labelsHidden()
+                        .frame(width: 32)
+                    HStack(spacing: 2) {
+                        ListButton(title: "Forget one", systemImage: "minus.circle") { file.forgetOne(row) }
+                            .disabled(row.memorized.isEmpty)
+                        Text("\(row.memorized.count)")
+                            .monospacedDigit()
+                            .frame(minWidth: 16)
+                            .foregroundStyle(row.memorized.isEmpty ? .secondary : .primary)
+                        ListButton(title: "Memorize one more", systemImage: "plus.circle") { file.memorize(row) }
+                            .disabled(row.name.trimmingCharacters(in: .whitespaces).isEmpty)
                     }
-                    ForEach(0..<file.count(["spells", "memorized"]), id: \.self) { index in
-                        let path: NodePath = ["spells", "memorized", .index(index)]
-                        HStack {
-                            Toggle("Cast", isOn: $file.flag(path + ["cast"]))
+                    HStack(spacing: 6) {
+                        ForEach(row.memorized, id: \.self) { copy in
+                            Toggle("Cast", isOn: Binding { file.isCast(memorized: copy) }
+                                   set: { file.setCast($0, memorized: copy) })
                                 .labelsHidden()
                                 .help("Cast today")
-                            TextField("Spell", text: $file.string(path + ["name"]))
-                                .textFieldStyle(.plain)
-                                .strikethrough(file.bool(path + ["cast"]) ?? false)
-                            ListButton(title: "Remove", systemImage: "minus.circle") {
-                                file.removeItem(at: path)
-                            }
                         }
-                        Divider()
                     }
-                    ListButton(title: "Memorize a spell", systemImage: "plus.circle") {
-                        file.appendItem(to: ["spells", "memorized"])
-                    }
+                    .frame(minWidth: 80, alignment: .leading)
+                    ListButton(title: "Remove spell", systemImage: "trash") { file.removeSpell(row) }
+                        .help(row.memorized.isEmpty ? "Remove spell" : "Remove spell and its memorized copies")
                 }
+                Divider().gridCellUnsizedAxes(.horizontal)
             }
-            .padding(.top, 6)
+            GridRow {
+                ListButton(title: "Add spell", systemImage: "plus.circle") { file.addSpell() }
+                    .gridCellColumns(5)
+            }
         }
+    }
+
+    private func memorizedCaption(level: Int) -> String {
+        // Always shown, so the boxes stay level (Tab follows position).
+        "\(file.memorizedCount(level: level)) memorized"
     }
 
     /// Shown when the slots differ from (or are missing compared with) the rules.

@@ -28,7 +28,7 @@ enum Layout {
         "thiefSkills": ["climb", "traps", "hearNoise", "hide", "moveSilently", "openLocks", "pickPockets"],
         "spells": ["slots", "spellbook", "memorized"],
         "spells.spellbook.*": ["name", "level"],
-        "spells.memorized.*": ["name", "cast"],
+        "spells.memorized.*": ["name", "level", "cast"],
         "equipment.*": ["name", "qty", "weight", "equipped", "damage", "notes"],
         "money": ["pp", "gp", "ep", "sp", "cp"],
     ]

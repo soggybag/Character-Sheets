@@ -5,7 +5,13 @@ extension SheetImport {
     /// Imports a fillable PDF character sheet.
     public init(contentsOf url: URL, rules: OSERuleset = .classic) throws {
         guard let document = PDFDocument(url: url) else { throw SheetImportError.unreadable }
-        try self.init(fields: Self.formFields(in: document), rules: rules)
+        do {
+            try self.init(fields: Self.formFields(in: document), rules: rules)
+        } catch SheetImportError.noFormFields
+            where document.documentAttributes?[PDFDocumentAttribute.creatorAttribute] as? String
+                == SheetImportError.exportCreator {
+            throw SheetImportError.exportedByThisApp
+        }
     }
 
     /// Every form field's name and value. Fields that appear more than once
