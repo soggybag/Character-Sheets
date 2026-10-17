@@ -67,6 +67,8 @@ public struct WeaponLine: Sendable {
 public struct XPInfo: Equatable, Sendable {
     /// Prime requisite bonus (or penalty), in percent.
     public let bonusPercent: Int
+    /// XP the current level starts at.
+    public let currentLevel: Int?
     /// XP needed for the next level; nil at the class's maximum.
     public let nextLevel: Int?
     public let readyToLevelUp: Bool
@@ -372,11 +374,17 @@ private struct Builder {
                 return all && any
             }?.percent ?? 0
         }
+        let current = classRules.row(level: level)?.xp
         let next = classRules.row(level: level + 1)?.xp
         let ready = next.map { (file.int(["xp"]) ?? 0) >= $0 } ?? false
-        xp = XPInfo(bonusPercent: percent, nextLevel: next, readyToLevelUp: ready)
+        xp = XPInfo(bonusPercent: percent, currentLevel: current, nextLevel: next, readyToLevelUp: ready)
         if ready {
             note(.info, "Enough XP for level \(level + 1).", ["xp"])
+        }
+        // Only when XP is filled in: plenty of files don't track it.
+        if let stored = file.int(["xp"]), let current, stored < current {
+            note(.warning, "Level \(level) starts at \(current.formatted()) XP; this character has \(stored.formatted()).",
+                 ["xp"])
         }
     }
 
@@ -427,6 +435,18 @@ private struct Builder {
         guard let classRules else { return }
         if file.int(["hp", "max"]) == nil, let hitPointRoll {
             note(.info, "Roll hit points: \(hitPointRoll) per level (at least 1).", ["hp", "max"])
+        }
+        // A house rule or magic item can explain it, but it's usually a slip.
+        if let stored = file.int(["hp", "max"]), let row, let dice = Dice(row.hd) {
+            let con = mod("con") { $0.con.hitPoints }
+            let highest = dice.count * max(1, dice.sides + con) + dice.modifier
+            let lowest = dice.count * max(1, 1 + con) + dice.modifier
+            let roll = dice.description + (con == 0 ? "" : " with CON \(signed(con)) a die")
+            if stored > highest {
+                note(.warning, "Max HP \(stored) is more than \(roll) can give (at most \(highest)).", ["hp", "max"])
+            } else if stored < lowest {
+                note(.warning, "Max HP \(stored) is less than \(roll) can give (at least \(lowest)).", ["hp", "max"])
+            }
         }
         if (file.string(["alignment"]) ?? "").isEmpty {
             note(.info, "No alignment chosen.", ["alignment"])

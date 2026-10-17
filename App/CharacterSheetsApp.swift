@@ -37,9 +37,15 @@ struct CharacterSheetsApp: App {
         }
         .defaultSize(width: 860, height: 1000)
         .commands {
-            CommandGroup(after: .newItem) {
+            // New Character… (the generator) takes ⌘N; a blank sheet is
+            // for people who rolled their character elsewhere.
+            CommandGroup(replacing: .newItem) {
                 NewCharacterButton()
+                NewBlankSheetButton()
+            }
+            CommandGroup(after: .newItem) {
                 ImportSheetButton()
+                OpenPartyButton()
             }
             CommandGroup(replacing: .printItem) {
                 PrintCommands()
@@ -48,6 +54,11 @@ struct CharacterSheetsApp: App {
                 HelpCommands()
             }
         }
+
+        WindowGroup("Party", for: PartyFolder.self) { $folder in
+            PartyView(partyFolder: folder)
+        }
+        .defaultSize(width: 860, height: 360)
 
         Window("New Character", id: NewCharacterView.windowID) {
             NewCharacterView()

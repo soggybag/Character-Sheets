@@ -69,7 +69,7 @@ struct ExampleRulesTests {
         #expect(a.status(of: ["movement"], in: file) == .matches)               // heavy armour: 60'
         #expect(a.status(of: ["spells", "slots"], in: file) == .matches)        // [1]
         #expect(a.status(of: ["exploration", "secretDoors"], in: file) == .matches)
-        #expect(a.xp == XPInfo(bonusPercent: 0, nextLevel: 4000, readyToLevelUp: false)) // STR 10: no bonus
+        #expect(a.xp == XPInfo(bonusPercent: 0, currentLevel: 0, nextLevel: 4000, readyToLevelUp: false)) // STR 10: no bonus
         #expect(a.abilities["dex"]?.headline == "+2")
         #expect(a.abilities["int"]?.headline == "+1 lang")
 
@@ -269,7 +269,7 @@ struct LevelUpTests {
 
     @Test func hitPointGainIsAtLeastOne() {
         let plan = LevelUpPlan(fromLevel: 1, toLevel: 2, changes: [], keptOverrides: [],
-                               hitPoints: .roll(sides: 4, conModifier: -2))
+                               hitPoints: .roll(sides: 4, conModifier: -2), xpShortfall: nil)
         #expect(plan.hitPointGain(roll: 1) == 1)
     }
 

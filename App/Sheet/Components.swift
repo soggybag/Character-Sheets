@@ -66,6 +66,10 @@ struct StatBox: View {
     /// A line under the box, e.g. an ability modifier.
     var caption: String?
     var captionHelp: String?
+    /// Shown in grey when the box is empty and the rules have no value.
+    var emptyPrompt = "–"
+    /// A rules warning about this value; the box gets an orange outline.
+    var warning: String?
 
     var body: some View {
         VStack(spacing: 4) {
@@ -73,6 +77,9 @@ struct StatBox: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .lineLimit(1)
+                // Right-clicking the box itself reaches the text field's
+                // own menu, so the label and the dot carry this one.
+                .contextMenu { rulesMenu }
             HStack(spacing: 2) {
                 NumberField(label: label, value: $value, prompt: prompt)
                     .labelsHidden()
@@ -90,18 +97,14 @@ struct StatBox: View {
             .padding(.horizontal, 6)
             .frame(width: width)
             .background(.quaternary.opacity(0.6), in: .rect(cornerRadius: 8))
-            .overlay(alignment: .topTrailing) {
-                if case .overridden = status {
-                    Circle()
-                        .fill(.orange)
-                        .frame(width: 6, height: 6)
-                        .padding(4)
-                        .accessibilityLabel("Differs from the rules")
+            .overlay {
+                if warning != nil {
+                    RoundedRectangle(cornerRadius: 8).strokeBorder(.orange, lineWidth: 1.5)
                 }
             }
-            .contextMenu {
-                if let rules = rulesValue, let useRulesValue {
-                    Button("Use Rules Value (\(rules.description))", action: useRulesValue)
+            .overlay(alignment: .topTrailing) {
+                if case .overridden = status {
+                    overrideDot
                 }
             }
             .help(boxHelp)
@@ -114,6 +117,31 @@ struct StatBox: View {
         }
     }
 
+    /// The orange dot on an override. Click it for the rules value.
+    private var overrideDot: some View {
+        Menu {
+            rulesMenu
+        } label: {
+            Circle()
+                .fill(.orange)
+                .frame(width: 9, height: 9)
+                .padding(5)
+                .contentShape(.rect)
+        }
+        .menuStyle(.button)
+        .buttonStyle(.plain)
+        .menuIndicator(.hidden)
+        .fixedSize()
+        .accessibilityLabel("Differs from the rules")
+    }
+
+    @ViewBuilder
+    private var rulesMenu: some View {
+        if let rules = rulesValue, let useRulesValue {
+            Button("Use Rules Value (\(rules.description))", action: useRulesValue)
+        }
+    }
+
     private var rulesValue: RulesValue? {
         switch status {
         case let .overridden(rules), let .missing(rules): rules
@@ -123,14 +151,15 @@ struct StatBox: View {
 
     private var prompt: String {
         if case let .missing(rules) = status { return rules.description }
-        return "–"
+        return emptyPrompt
     }
 
     private var boxHelp: String {
+        if let warning { return "\(help ?? label). \(warning)" }
         let name = help ?? label
         switch status {
         case let .overridden(rules):
-            return "\(name). The rules give \(rules); your value is kept. Right-click to use the rules value."
+            return "\(name). The rules give \(rules); your value is kept. Click the orange dot to use the rules value."
         case let .missing(rules):
             return "\(name). The rules give \(rules) (shown in grey until you fill it in)."
         case .matches, .noRule:
@@ -159,6 +188,17 @@ struct RuledStatBox: View {
     }
 }
 
+extension VerticalAlignment {
+    private enum FieldLine: AlignmentID {
+        static func defaultValue(in context: ViewDimensions) -> CGFloat { context[VerticalAlignment.bottom] }
+    }
+
+    /// The text line of a `LineField` or `LineNumberField`. Rows of fields
+    /// align on it so their text sits level, whatever is above or below;
+    /// macOS orders Tab by position, so a field that sits higher is visited first.
+    static let fieldLine = VerticalAlignment(FieldLine.self)
+}
+
 /// A labelled line of text with an optional menu of suggestions.
 /// Suggestions only help: any text is allowed.
 struct LineField: View {
@@ -176,6 +216,7 @@ struct LineField: View {
                 TextField(label, text: $text, prompt: Text(prompt))
                     .textFieldStyle(.plain)
                     .labelsHidden()
+                    .alignmentGuide(.fieldLine) { $0[VerticalAlignment.center] }
                 if !suggestions.isEmpty {
                     Menu {
                         ForEach(suggestions, id: \.self) { suggestion in
@@ -211,6 +252,7 @@ struct LineNumberField: View {
                 .textFieldStyle(.plain)
                 .monospacedDigit()
                 .labelsHidden()
+                .alignmentGuide(.fieldLine) { $0[VerticalAlignment.center] }
             Divider()
             if let caption {
                 Text(caption)
@@ -241,7 +283,9 @@ struct NumberField: View {
         TextField(label, text: $draft, prompt: Text(prompt))
             .focused($isFocused)
             .onAppear { draft = shown }
-            .onChange(of: shown) { if !isFocused { draft = shown } }
+            // Follow changes made elsewhere (Use Rules Value, undo), even
+            // while focused, unless there's an unsaved edit in the field.
+            .onChange(of: shown) { old, new in if !isFocused || draft == old { draft = new } }
             .onChange(of: isFocused) { if !isFocused { commit() } }
             .onSubmit(commit)
     }
@@ -286,9 +330,16 @@ struct CommitTextField: View {
         TextField(prompt, text: $draft)
             .focused($isFocused)
             .onAppear { draft = value }
-            .onChange(of: value) { if !isFocused { draft = value } }
-            .onChange(of: isFocused) { if !isFocused, draft != value { commit(draft) } }
-            .onSubmit { commit(draft) }
+            .onChange(of: value) { old, new in if !isFocused || draft == old { draft = new } }
+            .onChange(of: isFocused) { if !isFocused { finish() } }
+            .onSubmit(finish)
+    }
+
+    /// Commits a change, then shows the stored value: the change once it
+    /// lands, or the old text if the change was refused.
+    private func finish() {
+        if draft != value { commit(draft) }
+        draft = value
     }
 }
 

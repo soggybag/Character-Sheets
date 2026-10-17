@@ -178,6 +178,13 @@ Decisions:
 - [ ] Final app name, App Store listing, simple website, announce to the
       OSE community
 
+### Between betas
+- [x] Party view: File → Open Party Folder… lists everyone in a folder (HP,
+      AC, attack, saves, XP) and updates as files change. Read-only.
+- [ ] OSE Advanced Fantasy: waiting on permission from Necrotic Gnome. The
+      pre-2026 Player's Tome reserves its class and race sections as Product
+      Identity; a Creative Commons SRD is announced for early 2027.
+
 ### Later
 - Quick Look preview. Deferred: character files are plain `.md`, so a
   preview extension would take over every Markdown file's preview.
@@ -187,9 +194,7 @@ Decisions:
   fields by path (`saves.death`) and calculated values by name (`str.mod`,
   `weapons.0.melee`, from `RulesAnalysis.namedValues`). Import a layout to
   get a different sheet; the character file doesn't change.
-- OSE Advanced Fantasy (separate race and class, more classes)
 - iPad version
-- Party view: open a folder, see everyone at a glance
 - More rulesets: Basic Fantasy, B/X variants, 5e (SRD 5.2, CC-BY-4.0)
 - Retainers and hirelings as linked character files
 

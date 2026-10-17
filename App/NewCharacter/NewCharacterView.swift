@@ -1,12 +1,22 @@
 import CharacterKit
 import SwiftUI
 
-/// File → New Character…
+/// File → New Character…: rolls up a character.
 struct NewCharacterButton: View {
     @Environment(\.openWindow) private var openWindow
 
     var body: some View {
         Button("New Character…") { openWindow(id: NewCharacterView.windowID) }
+            .keyboardShortcut("n", modifiers: .command)
+    }
+}
+
+/// File → New Blank Sheet: an empty sheet to fill in by hand.
+struct NewBlankSheetButton: View {
+    @Environment(\.newDocument) private var newDocument
+
+    var body: some View {
+        Button("New Blank Sheet") { newDocument(CharacterDocument()) }
             .keyboardShortcut("n", modifiers: [.command, .option])
     }
 }

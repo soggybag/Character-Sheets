@@ -7,6 +7,7 @@ struct SheetView: View {
     var placeholderName: String
 
     @State private var levelUpPlan: LevelUpPlan?
+    @State private var levelDownPlan: LevelDownPlan?
 
     var body: some View {
         let analysis = RulesAnalysis(file)
@@ -16,9 +17,9 @@ struct SheetView: View {
                     Notice(systemImage: "number",
                            text: "This file's header has # comments. They'll be removed when you save. Move them to Notes to keep them.")
                 }
-                IdentitySection(file: $file, analysis: analysis, placeholderName: placeholderName) {
-                    levelUpPlan = analysis.levelUpPlan(for: file)
-                }
+                IdentitySection(file: $file, analysis: analysis, placeholderName: placeholderName,
+                                levelUp: { levelUpPlan = RulesAnalysis(file).levelUpPlan(for: file) ?? beep() },
+                                levelDown: { levelDownPlan = RulesAnalysis(file).levelDownPlan(for: file) ?? beep() })
                 if !analysis.notes.isEmpty {
                     RulesNotesSection(notes: analysis.notes)
                 }
@@ -50,6 +51,18 @@ struct SheetView: View {
         .sheet(item: $levelUpPlan) { plan in
             LevelUpSheet(plan: plan, file: $file)
         }
+        .sheet(item: $levelDownPlan) { plan in
+            LevelDownSheet(plan: plan, file: $file)
+        }
+    }
+
+    // The plans above are made from the file as it is when clicked. A menu
+    // can keep an action from when it was built, so the `analysis` captured
+    // with it may be out of date (it once offered level 2 → 1 at level 1).
+
+    private func beep<T>() -> T? {
+        NSSound.beep()
+        return nil
     }
 
     private var showsSpells: Bool {

@@ -222,20 +222,15 @@ struct PrintedSheet {
                         .font(.system(size: 9.5).monospacedDigit())
                 }
                 VStack(alignment: .leading, spacing: 3) {
-                    PrintLabel("Spell book")
-                    ForEach(0..<file.count(["spells", "spellbook"]), id: \.self) { index in
-                        let path: NodePath = ["spells", "spellbook", .index(index)]
-                        Text(text(path + ["name"]) + (file.int(path + ["level"]).map { "  (\($0))" } ?? ""))
-                            .font(.system(size: 9.5))
-                    }
-                }
-                VStack(alignment: .leading, spacing: 3) {
-                    PrintLabel("Memorized")
-                    ForEach(0..<file.count(["spells", "memorized"]), id: \.self) { index in
-                        let path: NodePath = ["spells", "memorized", .index(index)]
+                    PrintLabel("Spells (level) · a box per memorized copy, ticked when cast")
+                    ForEach(file.spellRows.indices, id: \.self) { index in
+                        let row = file.spellRows[index]
                         HStack(spacing: 4) {
-                            PrintCheckbox(checked: file.bool(path + ["cast"]) ?? false)
-                            Text(text(path + ["name"])).font(.system(size: 9.5))
+                            Text(row.name + (row.level.map { "  (\($0))" } ?? ""))
+                                .font(.system(size: 9.5))
+                            ForEach(row.memorized, id: \.self) { copy in
+                                PrintCheckbox(checked: file.isCast(memorized: copy))
+                            }
                         }
                     }
                 }
