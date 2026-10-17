@@ -181,6 +181,18 @@ Decisions:
 ### Between betas
 - [x] Party view: File → Open Party Folder… lists everyone in a folder (HP,
       AC, attack, saves, XP) and updates as files change. Read-only.
+- [x] **Equipment from the rules:** "Add from list…" beside Add item opens
+      the ruleset's weapons, armour, ammunition and adventuring gear
+      (search, cost, damage or AC, weight). Choosing one fills in the name,
+      quantity (a quiver is 20 arrows) and damage, marks items the class
+      can't use, and offers to pay for it from the character's money,
+      making change. The same list as a shopping step in New Character,
+      spending the rolled gold. Free-text items stay as they are.
+- [ ] **Custom equipment lists:** a plain file (Markdown with a header,
+      like a character) listing changes from the rules: new prices, removed
+      items, house items. Settings → Equipment chooses the rules list or a
+      custom file; New List… starts one to edit. The shop marks house items
+      and prices. Groups share the file through a shared folder.
 - [ ] OSE Advanced Fantasy: waiting on permission from Necrotic Gnome. The
       pre-2026 Player's Tome reserves its class and race sections as Product
       Identity; a Creative Commons SRD is announced for early 2027.
@@ -197,6 +209,9 @@ Decisions:
 - iPad version
 - More rulesets: Basic Fantasy, B/X variants, 5e (SRD 5.2, CC-BY-4.0)
 - Retainers and hirelings as linked character files
+- **Campaign folders:** a party folder's own `Equipment.md` (and later
+  other house rules) applies automatically to characters opened from it.
+  Needs folder access, which the party view already has.
 
 ## Not now
 

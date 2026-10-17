@@ -6,6 +6,7 @@ public struct OSERuleset: Sendable {
     public let weapons: [WeaponData]
     public let armour: [ArmourData]
     public let ammunition: [AmmunitionData]
+    public let gear: [GearData]
     let abilities: AbilityTables
     let encumbrance: EquipmentTables.Encumbrance
     let info: RulesetInfo
@@ -32,6 +33,7 @@ public struct OSERuleset: Sendable {
         weapons = equipment.weapons
         armour = equipment.armour
         ammunition = equipment.ammunition
+        gear = equipment.gear
         encumbrance = equipment.encumbrance
         abilities = try load("abilities", as: AbilityTables.self)
         info = try load("ruleset", as: RulesetInfo.self)

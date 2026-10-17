@@ -169,3 +169,53 @@ struct CreationTests {
         #expect(fighter.adjustmentNotes == ["Lower 2 points for each point raised (lowered 1, raised 1)."])
     }
 }
+
+@Suite("Shopping for a new character")
+struct NewCharacterShoppingTests {
+    private func item(_ id: String) throws -> ShopItem {
+        try #require(OSERuleset.classic.shopItems.first { $0.id == id })
+    }
+
+    @Test func spendingStartingGold() throws {
+        var character = NewCharacter()
+        character.className = "Fighter"
+        for ability in NewCharacter.abilityOrder { character.setRolledScore(12, for: ability) }
+        character.gold = 100
+        character.buy(try item("chainmail"))
+        character.buy(try item("shield"))
+        character.buy(try item("sword"))
+        character.buy(try item("torches"), count: 2)
+        character.buy(try item("holy-symbol"), paid: false)
+        #expect(character.goldLeft == 100 - 40 - 10 - 10 - 2)
+        let file = character.makeFile()
+        #expect(file.int(["money", "gp"]) == 38)
+        #expect((0..<file.count(["equipment"])).compactMap { file.string(["equipment", .index($0), "name"]) }
+                == ["Chainmail", "Shield", "Sword", "Torches", "Holy symbol"])
+        #expect(file.int(["equipment", 3, "qty"]) == 12)
+        // With armour bought, AC is filled in: chainmail 5, shield −1.
+        #expect(file.int(["combat", "ac"]) == 4)
+        #expect(file.int(["movement"]) != nil)
+    }
+
+    @Test func aLowerGoldRollLeavesOutWhatDoesntFit() throws {
+        var character = NewCharacter()
+        character.gold = 100
+        character.buy(try item("plate"))       // 60
+        character.buy(try item("long-bow"))    // 40
+        character.gold = 70
+        #expect(character.unaffordable.map(\.item.id) == ["long-bow"])
+        #expect(character.goldLeft == 10)
+        let file = character.makeFile()
+        #expect(file.count(["equipment"]) == 1)
+        #expect(file.int(["money", "gp"]) == 10)
+    }
+
+    @Test func noGearLeavesACForLater() {
+        var character = NewCharacter()
+        character.className = "Fighter"
+        character.gold = 50
+        let file = character.makeFile()
+        #expect(file.int(["combat", "ac"]) == nil)
+        #expect(file.int(["money", "gp"]) == 50)
+    }
+}

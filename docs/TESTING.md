@@ -35,6 +35,18 @@ adding the build to the external group. Work on copies of your characters.
       it. Rename a spell: its memorized copies follow.
 - [ ] Edit → Undo reverses each of these.
 
+**Equipment**
+- [ ] Add from List…: search finds items; a Magic-User sees ⚠︎ on swords and
+      armour. Add Arrows: the sheet gets Arrows × 20 and 5 gp less. Add
+      again: the same line goes to 40.
+- [ ] Buy something costing more than the gold pieces on hand but less
+      than all the money: change comes back in gp/sp/cp and the total is
+      right. Something unaffordable can't be added until Pay is unticked.
+- [ ] A weapon added from the list shows its damage in grey.
+- [ ] New Character: roll gold, Buy Equipment…, buy armour and a weapon;
+      gold left goes down. The created sheet has the gear, the gold left,
+      and AC filled in.
+
 **Level up**
 - [ ] Give the character enough XP: Level Up… is highlighted. The changes
       listed look right; roll or type the hit die; overrides are kept.
@@ -75,6 +87,9 @@ adding the build to the external group. Work on copies of your characters.
 - [ ] Edit as Text: change a value in the header, switch back; the sheet
       shows it. Your notes and any unknown fields are untouched.
 - [ ] Open the saved file in another text editor: it's readable and tidy.
+- [ ] Undo after text editing: Edit as Text, type something, Cancel, then
+      ⌘Z a few times. Repeat with Done instead of Cancel. (A crash in Undo
+      was seen once on 17 Oct 2026; note exactly what you did if it happens.)
 
 **Whatever's new in this build**: go through `docs/WHAT-TO-TEST.txt`.
 
