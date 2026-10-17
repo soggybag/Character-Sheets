@@ -421,6 +421,9 @@ private struct Builder {
     // MARK: Everything else
 
     private mutating func otherNotes() {
+        if let current = file.int(["hp", "current"]), current <= 0 {
+            note(.warning, "At 0 hit points or fewer, a character is dead.", ["hp", "current"])
+        }
         guard let classRules else { return }
         if file.int(["hp", "max"]) == nil, let hitPointRoll {
             note(.info, "Roll hit points: \(hitPointRoll) per level (at least 1).", ["hp", "max"])

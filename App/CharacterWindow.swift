@@ -29,6 +29,12 @@ struct CharacterWindow: View {
         }
         .frame(minWidth: 640, minHeight: 480)
         .toolbar { toolbar }
+        .focusedSceneValue(\.printableCharacter, printable)
+    }
+
+    private var printable: PrintableCharacter? {
+        guard case let .sheet(file) = document.content else { return nil }
+        return PrintableCharacter(file: file, fallbackName: placeholderName)
     }
 
     private var placeholderName: String {
