@@ -28,6 +28,11 @@ the rules for you, without getting in your way.
   you roll or type the hit die, and keeps your overrides.
 - The **Rules** menu in the toolbar switches ascending AC, variable weapon
   damage and encumbrance for this character.
+- **At the table:** type an amount in **Damage / Heal** and press Return to
+  take damage, or use − and +. The − next to a quantity uses one torch or
+  arrow, and **Rest** clears your cast spells.
+- **File → Print** (⌘P) prints a one-page sheet followed by your notes.
+  **File → Export as PDF…** saves the same thing as a PDF.
 
 ## Your files
 
