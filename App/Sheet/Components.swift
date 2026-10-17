@@ -5,18 +5,30 @@ import SwiftUI
 
 extension Binding where Value == CharacterFile {
     /// A whole number. Clearing the field removes the key.
+    // Each setter does nothing when the value hasn't changed, so focusing or
+    // tabbing through a field never marks the document edited or rewrites it.
+
     func int(_ path: NodePath) -> Binding<Int?> {
-        Binding<Int?> { wrappedValue.int(path) } set: { wrappedValue.setInt($0, at: path) }
+        Binding<Int?> { wrappedValue.int(path) } set: {
+            guard $0 != wrappedValue.int(path) else { return }
+            wrappedValue.setInt($0, at: path)
+        }
     }
 
     /// Text. Clearing the field removes the key.
     func string(_ path: NodePath) -> Binding<String> {
-        Binding<String> { wrappedValue.string(path) ?? "" } set: { wrappedValue.setString($0, at: path) }
+        Binding<String> { wrappedValue.string(path) ?? "" } set: {
+            guard $0 != wrappedValue.string(path) ?? "" else { return }
+            wrappedValue.setString($0, at: path)
+        }
     }
 
     /// A checkbox. Unchecking removes the key, keeping files tidy.
     func flag(_ path: NodePath) -> Binding<Bool> {
-        Binding<Bool> { wrappedValue.bool(path) ?? false } set: { wrappedValue.setBool($0 ? true : nil, at: path) }
+        Binding<Bool> { wrappedValue.bool(path) ?? false } set: {
+            guard $0 != wrappedValue.bool(path) ?? false else { return }
+            wrappedValue.setBool($0 ? true : nil, at: path)
+        }
     }
 }
 
@@ -62,7 +74,7 @@ struct StatBox: View {
                 .foregroundStyle(.secondary)
                 .lineLimit(1)
             HStack(spacing: 2) {
-                TextField(label, value: $value, format: .number.grouping(.never), prompt: Text(prompt))
+                NumberField(label: label, value: $value, prompt: prompt)
                     .labelsHidden()
                     .textFieldStyle(.plain)
                     .multilineTextAlignment(.center)
@@ -195,7 +207,7 @@ struct LineNumberField: View {
             Text(label)
                 .font(.caption)
                 .foregroundStyle(.secondary)
-            TextField(label, value: $value, format: .number, prompt: Text(prompt))
+            NumberField(label: label, value: $value, prompt: prompt, grouping: true)
                 .textFieldStyle(.plain)
                 .monospacedDigit()
                 .labelsHidden()
@@ -208,6 +220,55 @@ struct LineNumberField: View {
                     .fixedSize()
             }
         }
+    }
+}
+
+/// A whole-number field that writes only when you change the number and press
+/// Return or leave the field. Tabbing through never rewrites the file, and a
+/// stored value that isn't a whole number ("1,200 gp") is left alone unless you
+/// type over it. Text that isn't a number is undone with a beep.
+struct NumberField: View {
+    let label: String
+    @Binding var value: Int?
+    var prompt = ""
+    /// Show thousands separators (XP, gold).
+    var grouping = false
+
+    @State private var draft = ""
+    @FocusState private var isFocused: Bool
+
+    var body: some View {
+        TextField(label, text: $draft, prompt: Text(prompt))
+            .focused($isFocused)
+            .onAppear { draft = shown }
+            .onChange(of: shown) { if !isFocused { draft = shown } }
+            .onChange(of: isFocused) { if !isFocused { commit() } }
+            .onSubmit(commit)
+    }
+
+    private var shown: String {
+        value.map { grouping ? $0.formatted() : String($0) } ?? ""
+    }
+
+    private func commit() {
+        guard draft != shown else { return }
+        let text = draft.trimmingCharacters(in: .whitespaces)
+        if text.isEmpty {
+            value = nil
+        } else if let number = Self.parse(text) {
+            value = number
+            draft = shown
+        } else {
+            NSSound.beep()
+            draft = shown
+        }
+    }
+
+    /// "1,200", "+2", "−1" (minus sign) and "1 200" all parse.
+    static func parse(_ text: String) -> Int? {
+        let separators = Set([",", " ", "\u{00A0}", "\u{202F}", Locale.current.groupingSeparator ?? ","].joined())
+        let cleaned = text.replacing("−", with: "-").filter { !separators.contains($0) }
+        return Int(cleaned.hasPrefix("+") ? String(cleaned.dropFirst()) : cleaned)
     }
 }
 

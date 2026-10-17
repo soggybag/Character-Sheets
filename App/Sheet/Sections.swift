@@ -227,7 +227,7 @@ struct SpellsSection: View {
                         HStack {
                             TextField("Spell", text: $file.string(path + ["name"]))
                                 .textFieldStyle(.plain)
-                            TextField("Lvl", value: $file.int(path + ["level"]), format: .number)
+                            NumberField(label: "Lvl", value: $file.int(path + ["level"]))
                                 .textFieldStyle(.plain)
                                 .frame(width: 28)
                                 .help("Spell level")
@@ -321,7 +321,7 @@ struct EquipmentSection: View {
                             .help("Equipped")
                         TextField("Item", text: $file.string(path + ["name"]))
                             .frame(minWidth: 160)
-                        TextField("1", value: $file.int(path + ["qty"]), format: .number)
+                        NumberField(label: "Qty", value: $file.int(path + ["qty"]), prompt: "1")
                             .frame(width: 44)
                         TextField("", text: $file.string(path + ["damage"]))
                             .frame(width: 60)
