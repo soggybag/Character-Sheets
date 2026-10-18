@@ -195,14 +195,14 @@ Decisions:
 - [x] **Sheet windows:** as narrow as 500 points (rows of boxes wrap).
       Window → Tile Character Sheets, Merge Sheets into Tabs, and an Open
       Sheets in Tabs setting.
-- [ ] **Custom equipment lists:** a plain file (Markdown with a header,
+- [x] **Custom equipment lists:** a plain file (Markdown with a header,
       like a character) listing changes from the rules: new prices, removed
       items, house items. Settings → Equipment chooses the rules list or a
       custom file; New List… starts one to edit. The shop marks house items
       and prices. Groups share the file through a shared folder.
       Format drafted in `docs/EQUIPMENT-FORMAT.md`, with an example in
-      `examples/equipment/`. Parser done (`EquipmentList`); next, prices
-      in copper through the shop and New Character, then Settings.
+      `examples/equipment/`. Parser, copper prices, and Settings →
+      Equipment done and checked by hand.
 - [ ] OSE Advanced Fantasy: waiting on permission from Necrotic Gnome. The
       pre-2026 Player's Tome reserves its class and race sections as Product
       Identity; a Creative Commons SRD is announced for early 2027.

@@ -19,10 +19,16 @@ struct TextEditorView: View {
 
 enum ParseStatus {
     case character(summary: String)
+    case equipmentList(summary: String, problems: [String])
     case notACharacter
     case error(String)
 
     init(text: String, fileURL: URL?) {
+        if EquipmentList.isEquipmentList(text), let list = try? EquipmentList(text: text) {
+            let name = list.name ?? fileURL?.deletingPathExtension().lastPathComponent ?? "Equipment list"
+            self = .equipmentList(summary: "Equipment list: \(name) · \(list.summary)", problems: list.allProblems())
+            return
+        }
         do {
             let file = try CharacterFile(text: text)
             guard file.isCharacter else {
@@ -53,6 +59,15 @@ private struct StatusBar: View {
             case let .character(summary):
                 Image(systemName: "checkmark.circle").foregroundStyle(.green)
                 Text(summary)
+            case let .equipmentList(summary, problems):
+                if let first = problems.first {
+                    Image(systemName: "exclamationmark.triangle").foregroundStyle(.orange)
+                    Text(problems.count == 1 ? first : "\(first) (and \(problems.count - 1) more)")
+                        .help(problems.joined(separator: "\n"))
+                } else {
+                    Image(systemName: "bag").foregroundStyle(.secondary)
+                    Text(summary)
+                }
             case .notACharacter:
                 Image(systemName: "doc.text").foregroundStyle(.secondary)
                 Text("Not a character file. The header needs formatVersion and rules.system.")

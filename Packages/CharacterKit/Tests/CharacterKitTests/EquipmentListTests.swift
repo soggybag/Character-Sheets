@@ -123,4 +123,103 @@ struct EquipmentListTests {
             "Sling staff: usableBy has “Ranger”, which isn't a class.",
         ])
     }
+
+    // MARK: In the shop
+
+    private func hightower() throws -> EquipmentList {
+        try EquipmentList(text: String(contentsOf: example, encoding: .utf8))
+    }
+
+    @Test func withoutAListTheShopIsTheRules() throws {
+        let rules = OSERuleset.classic
+        #expect(rules.shopItems(with: nil) == rules.shopItems)
+        #expect(rules.shopItems.allSatisfy { $0.origin == .rules && $0.price % 100 == 0 })
+        #expect(rules.shopItems.first { $0.id == "sword" }?.price == 1000)
+    }
+
+    @Test func aListChangesTheShop() throws {
+        let items = OSERuleset.classic.shopItems(with: try hightower())
+        func item(_ id: String) throws -> ShopItem { try #require(items.first { $0.id == id }, "\(id)") }
+        for removed in ["garlic", "holy-water-vial", "plate"] {
+            #expect(!items.contains { $0.id == removed }, "\(removed)")
+        }
+        #expect(try item("sword").price == 1500 && item("sword").origin == .changed(rulesPrice: 1000))
+        #expect(try item("arrows").price == 300 && item("arrows").quantity == 20)
+        #expect(try item("rope-50").price == 50)
+        #expect(try item("rations-iron-7-days").details == "Shipped in from the coast.")
+        #expect(try item("dagger").origin == .rules && item("dagger").price == 300)
+
+        let crossbow = try item("house:handcrossbow")
+        #expect(crossbow.origin == .house && crossbow.category == .weapons && crossbow.price == 4000)
+        #expect(crossbow.details == "1d4, missile, reload")
+        #expect(try item("house:gambeson").details == "AC 8 [11], light")
+        #expect(try item("house:mule").details == "Carries 2,000 coins.")
+        #expect(try item("house:luckycharm").price == 20)
+        // Still grouped and sorted.
+        let weapons = items.filter { $0.category == .weapons }.map(\.name)
+        #expect(weapons == weapons.sorted { $0.localizedStandardCompare($1) == .orderedAscending })
+    }
+
+    @Test func houseItemRestrictions() throws {
+        let rules = OSERuleset.classic
+        let items = rules.shopItems(with: try hightower())
+        let crossbow = try #require(items.first { $0.id == "house:handcrossbow" })
+        let mule = try #require(items.first { $0.id == "house:mule" })
+        #expect(rules.restriction(of: crossbow, for: rules.classRules(named: "Thief")) == nil)
+        #expect(rules.restriction(of: crossbow, for: rules.classRules(named: "Cleric")) == "Clerics don't normally use this.")
+        #expect(rules.restriction(of: mule, for: rules.classRules(named: "Cleric")) == nil)
+    }
+
+    @Test func priceScaleSkipsChangedAndHouseItems() throws {
+        let list = try list("""
+            prices: 150%
+            change: [{ item: Sword, cost: 12 }]
+            add: [{ name: Mule, category: gear, cost: 30 }]
+            """)
+        let items = OSERuleset.classic.shopItems(with: list)
+        #expect(items.first { $0.id == "sword" }?.price == 1200)
+        #expect(items.first { $0.id == "dagger" }?.price == 450)
+        #expect(items.first { $0.id == "dagger" }?.origin == .changed(rulesPrice: 300))
+        #expect(items.first { $0.id == "house:mule" }?.price == 3000)
+    }
+
+    @Test func aHouseItemReplacesTheRulesOne() throws {
+        let list = try list("add: [{ name: Sword, category: weapons, cost: 12, damage: 1d10, qualities: [melee] }]")
+        let swords = OSERuleset.classic.shopItems(with: list).filter { $0.name == "Sword" }
+        #expect(swords.count == 1 && swords[0].origin == .house && swords[0].details == "1d10, melee")
+    }
+
+    @Test func payingInSilver() throws {
+        let charm = try #require(OSERuleset.classic.shopItems(with: try hightower()).first { $0.id == "house:luckycharm" })
+        var file = try CharacterFile(text: "---\nformatVersion: 1\nrules: { system: ose }\nmoney: { gp: 1 }\n---\n")
+        let bought = file.buy(charm, pay: true)
+        #expect(bought)
+        #expect(Purse(file) == Purse(sp: 8))
+        #expect(Purse.priceText(250) == "2 gp, 5 sp" && Purse.priceText(0) == "free")
+
+        var character = NewCharacter()
+        character.gold = 10
+        character.buy(charm, count: 3)
+        #expect(character.moneyLeft == Purse(gp: 9, sp: 4))
+        let made = character.makeFile()
+        #expect(made.int(["money", "gp"]) == 9 && made.int(["money", "sp"]) == 4 && made.int(["money", "cp"]) == nil)
+    }
+
+    @Test func theStartingFileReadsCleanly() throws {
+        for name in ["My Market", "No", "Yes: the market", "Mag's #1 stall"] {
+            let list = try EquipmentList(text: EquipmentList.template(name: name))
+            #expect(list.name == name)
+            #expect(list.allProblems().isEmpty, "\(list.allProblems())")
+            #expect(list.summary == "No changes yet")
+            #expect(list.body.contains("# \(name)"))
+        }
+    }
+
+    @Test func summaryAndHouseItemLookup() throws {
+        let list = try hightower()
+        #expect(list.summary == "Removes 3, changes 4, adds 5")
+        #expect(try self.list("prices: 150%").summary == "Rules prices at 150%")
+        #expect(list.houseItem(named: "hand crossbow")?.damage == "1d4")
+        #expect(list.houseItem(named: "Sword") == nil)
+    }
 }

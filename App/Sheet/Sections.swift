@@ -476,9 +476,14 @@ struct EquipmentSection: View {
 
     /// The rules damage for a weapon, shown in grey when none is typed.
     private func rulesDamage(at index: Int) -> String {
-        guard let name = file.string(["equipment", .index(index), "name"]),
-              let weapon = OSERuleset.classic.weapon(named: name) else { return "" }
-        return file.bool(["rules", "options", "variableWeaponDamage"]) == true ? weapon.damage : "1d6"
+        guard let name = file.string(["equipment", .index(index), "name"]) else { return "" }
+        let variable = file.bool(["rules", "options", "variableWeaponDamage"]) == true
+        // A house weapon from the custom list comes first: it may share a rules name.
+        if let house = EquipmentListStore.shared.list?.houseItem(named: name), house.category == .weapons {
+            return variable ? house.damage ?? "" : "1d6"
+        }
+        guard let weapon = OSERuleset.classic.weapon(named: name) else { return "" }
+        return variable ? weapon.damage : "1d6"
     }
 }
 

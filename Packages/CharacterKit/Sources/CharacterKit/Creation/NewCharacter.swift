@@ -35,7 +35,8 @@ public struct NewCharacter: Sendable {
             self.paid = paid
         }
 
-        public var cost: Int { paid ? item.cost * count : 0 }
+        /// In copper; 0 when given.
+        public var price: Int { paid ? item.price * count : 0 }
     }
 
     public init(rules: OSERuleset = .classic) {
@@ -159,19 +160,20 @@ public struct NewCharacter: Sendable {
 
     // MARK: Shopping
 
-    /// Gold left after the purchases that fit.
-    public var goldLeft: Int? {
+    /// Money left after the purchases that fit, with change in gold,
+    /// silver and copper.
+    public var moneyLeft: Purse? {
         guard let gold else { return nil }
-        return gold - purchases.filter { !unaffordable.contains($0) }.reduce(0) { $0 + $1.cost }
+        return Purse(copper: gold * 100 - purchases.filter { !unaffordable.contains($0) }.reduce(0) { $0 + $1.price })
     }
 
     /// Paid purchases the gold doesn't stretch to (after a lower gold roll),
     /// in order. They're left out of the character.
     public var unaffordable: [Purchase] {
-        var left = gold ?? 0
+        var left = (gold ?? 0) * 100
         var over: [Purchase] = []
         for purchase in purchases {
-            if purchase.cost > left { over.append(purchase) } else { left -= purchase.cost }
+            if purchase.price > left { over.append(purchase) } else { left -= purchase.price }
         }
         return over
     }
@@ -221,7 +223,11 @@ public struct NewCharacter: Sendable {
             if let actual, !languages.contains(actual) { languages.append(actual) }
         }
         file.setStrings(languages, at: ["languages"])
-        file.setInt(goldLeft, at: ["money", "gp"])
+        if let left = moneyLeft {
+            // Gold is written even at 0; silver and copper only if there are some.
+            file.setInt(left.gp, at: ["money", "gp"])
+            file.setPurse(left)
+        }
         let over = unaffordable
         for purchase in purchases where !over.contains(purchase) {
             file.addEquipment(purchase.item, count: purchase.count)

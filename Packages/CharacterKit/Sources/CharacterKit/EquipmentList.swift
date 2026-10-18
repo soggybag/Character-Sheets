@@ -75,6 +75,60 @@ extension EquipmentList {
     static let qualities: Set<String> = ["blunt", "brace", "charge", "melee", "missile", "reload", "slow",
                                          "splash", "two-handed"]
 
+    /// A short starting file: one commented-out example of each section.
+    public static func template(name: String) -> String {
+        """
+        ---
+        formatVersion: 1
+        kind: equipment
+        system: ose
+        name: \(YAMLWriter().scalarText(.text(name), inFlow: false))
+        # Remove the # from a line to use it. Costs are gold pieces (15),
+        # or coins in quotes ("5 sp"). See Help for every field.
+
+        # Every rules price, scaled:
+        # prices: 150%
+
+        # Rules items this market doesn't sell:
+        remove:
+        # - Garlic
+
+        # New prices and details for rules items:
+        change:
+        # - { item: Sword, cost: 15 }
+        # - { item: Arrows, cost: "3 gp 5 sp", notes: Fletched locally. }
+
+        # House items:
+        add:
+        # - { name: Mule, category: gear, cost: 30, notes: "Carries 2,000 coins." }
+        # - { name: Hand crossbow, category: weapons, cost: 40, damage: 1d4, qualities: [missile, reload] }
+        ---
+
+        # \(name)
+
+        Notes for the group: where the market is, who runs it, haggling.
+
+        """
+    }
+
+    /// One line: what the list changes. "Changes 4 prices, adds 5 items".
+    public var summary: String {
+        var parts: [String] = []
+        if priceScale != 100 { parts.append("rules prices at \(priceScale)%") }
+        if !removals.isEmpty { parts.append("removes \(removals.count)") }
+        if !changes.isEmpty { parts.append("changes \(changes.count)") }
+        if !additions.isEmpty { parts.append("adds \(additions.count)") }
+        guard let first = parts.first else { return "No changes yet" }
+        return ([first.prefix(1).uppercased() + first.dropFirst()] + parts.dropFirst()).joined(separator: ", ")
+    }
+
+    /// The house item an equipment line refers to, if any.
+    public func houseItem(named name: String) -> HouseItem? {
+        let key = OSERuleset.matchKey(name)
+        guard !key.isEmpty else { return nil }
+        return additions.first { OSERuleset.matchKey($0.name) == key }
+    }
+
     /// Whether the text is an equipment list, without reading the entries.
     public static func isEquipmentList(_ text: String) -> Bool {
         guard let file = try? CharacterFile(text: text) else { return false }
@@ -123,7 +177,8 @@ extension EquipmentList {
 
     /// The items of a list, or nothing (with a problem) if it isn't one.
     private static func entries(_ node: Node?, key: String, problems: inout [String]) -> [Node] {
-        guard let node else { return [] }
+        // `change:` with nothing after it (the starting file) is no changes.
+        guard let node, !["", "~", "null"].contains(node.scalar?.string.lowercased() ?? "-") else { return [] }
         guard case let .sequence(sequence) = node else {
             problems.append("\(key) should be a list (one entry per line starting with -).")
             return []

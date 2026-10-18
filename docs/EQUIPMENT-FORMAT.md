@@ -127,12 +127,15 @@ does now.
 - **New List…** saves a short starting file (a commented-out example of
   each section) and opens it to edit. Lists are edited as text, in the app
   or anywhere else.
-- **The shop** shows the list's name, marks house items and changed prices,
-  and lists any mistakes in the file.
-- **The sheet** matches item names against the chosen list, so house
-  weapons get damage suggestions like rules weapons.
+- **The shop** shows the list's name, tags house items, shows the rules
+  price beside a changed one, and counts any problems in the file. A file
+  that can't be read at all leaves the shop on the rules list.
+- **Settings and Edit as Text** list the problems. The status bar names the
+  list and what it changes.
+- **The sheet** suggests a house weapon's damage, like a rules weapon's.
+  The Weapons section (to-hit and ranges) covers rules weapons only for now.
 - **Shared lists:** keep the file in a shared folder (iCloud Drive,
-  Dropbox). The app rereads it when it changes.
+  Dropbox). The app rereads it each time a shop or Settings opens.
 
 ## Decided
 
