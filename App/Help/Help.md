@@ -48,6 +48,9 @@ the rules for you, without getting in your way.
 - **File → Open Party Folder…** (⇧⌘O) shows every character in a folder at
   a glance: hit points, AC, attack, saves and XP. It updates as files are
   saved. Double-click a character to open the sheet.
+- **Window → Tile Character Sheets** lays the open sheets side by
+  side. **Merge Sheets into Tabs** puts them in one window, a tab per
+  character, and **Open Sheets in Tabs** keeps new sheets opening as tabs.
 - **File → Print** (⌘P) prints a one-page sheet followed by your notes.
   **File → Export as PDF…** saves the same thing as a PDF.
 

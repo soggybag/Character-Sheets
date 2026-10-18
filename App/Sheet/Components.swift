@@ -51,6 +51,64 @@ struct SheetSection<Content: View>: View {
     }
 }
 
+/// Lays boxes out in a row, wrapping onto more rows when the window is
+/// narrow. Order is kept, so Tab still moves left to right, then down.
+struct FlowLayout: Layout {
+    var spacing: CGFloat = 12
+    var lineSpacing: CGFloat = 12
+    var alignment: VerticalAlignment = .center
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let rows = rows(for: subviews, width: proposal.width)
+        let width = rows.map(\.width).max() ?? 0
+        let height = rows.map(\.height).reduce(0, +) + lineSpacing * CGFloat(max(rows.count - 1, 0))
+        return CGSize(width: width, height: height)
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        var y = bounds.minY
+        for row in rows(for: subviews, width: bounds.width) {
+            var x = bounds.minX
+            for index in row.indices {
+                let size = subviews[index].sizeThatFits(.unspecified)
+                let offset: CGFloat = switch alignment {
+                case .top: 0
+                case .bottom: row.height - size.height
+                default: (row.height - size.height) / 2
+                }
+                subviews[index].place(at: CGPoint(x: x, y: y + offset), proposal: ProposedViewSize(size))
+                x += size.width + spacing
+            }
+            y += row.height + lineSpacing
+        }
+    }
+
+    private struct Row {
+        var indices: [Int] = []
+        var width: CGFloat = 0
+        var height: CGFloat = 0
+    }
+
+    private func rows(for subviews: Subviews, width: CGFloat?) -> [Row] {
+        let maxWidth = width ?? .infinity
+        var rows: [Row] = []
+        var row = Row()
+        for index in subviews.indices {
+            let size = subviews[index].sizeThatFits(.unspecified)
+            let needed = row.indices.isEmpty ? size.width : row.width + spacing + size.width
+            if !row.indices.isEmpty && needed > maxWidth {
+                rows.append(row)
+                row = Row()
+            }
+            row.width = row.indices.isEmpty ? size.width : row.width + spacing + size.width
+            row.height = max(row.height, size.height)
+            row.indices.append(index)
+        }
+        if !row.indices.isEmpty { rows.append(row) }
+        return rows
+    }
+}
+
 // MARK: - Fields
 
 /// A labelled number in a small box: ability scores, saves, AC.

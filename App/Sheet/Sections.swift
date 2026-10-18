@@ -13,22 +13,43 @@ struct IdentitySection: View {
             TextField("Name", text: $file.string(["name"]), prompt: Text(placeholderName))
                 .textFieldStyle(.plain)
                 .font(.system(size: 30, weight: .semibold, design: .serif))
-            HStack(alignment: .fieldLine, spacing: 20) {
-                LineField(label: "Class", text: $file.string(["class"]), suggestions: OSE.classes)
-                LineField(label: "Alignment", text: $file.string(["alignment"]), suggestions: OSE.alignments)
-                LineNumberField(label: "Level", value: $file.int(["level"]))
-                    .frame(width: 60)
-                LineNumberField(label: "XP", value: $file.int(["xp"]), caption: xpCaption)
-                    .frame(width: 110)
-                    .help(xpHelp)
-                levelUpButton
-                    .alignmentGuide(.fieldLine) { $0[VerticalAlignment.center] }
+            // One line when there's room; in a narrow window, level and XP
+            // move under class and alignment.
+            ViewThatFits(in: .horizontal) {
+                HStack(alignment: .fieldLine, spacing: 20) {
+                    classAndAlignment
+                    levelAndXP
+                }
+                VStack(alignment: .leading, spacing: 14) {
+                    HStack(alignment: .fieldLine, spacing: 20) { classAndAlignment }
+                    HStack(alignment: .fieldLine, spacing: 20) {
+                        levelAndXP
+                        Spacer(minLength: 0)
+                    }
+                }
             }
             HStack(spacing: 20) {
                 LineField(label: "Title", text: $file.string(["title"]))
                 LineField(label: "Player", text: $file.string(["player"]))
             }
         }
+    }
+
+    @ViewBuilder private var classAndAlignment: some View {
+        LineField(label: "Class", text: $file.string(["class"]), suggestions: OSE.classes)
+            .frame(minWidth: 110)
+        LineField(label: "Alignment", text: $file.string(["alignment"]), suggestions: OSE.alignments)
+            .frame(minWidth: 110)
+    }
+
+    @ViewBuilder private var levelAndXP: some View {
+        LineNumberField(label: "Level", value: $file.int(["level"]))
+            .frame(width: 60)
+        LineNumberField(label: "XP", value: $file.int(["xp"]), caption: xpCaption)
+            .frame(width: 110)
+            .help(xpHelp)
+        levelUpButton
+            .alignmentGuide(.fieldLine) { $0[VerticalAlignment.center] }
     }
 
     private var xpCaption: String? {
@@ -77,7 +98,7 @@ struct AbilityScoresSection: View {
 
     var body: some View {
         SheetSection(title: "Ability Scores") {
-            HStack(spacing: 12) {
+            FlowLayout {
                 ForEach(scores, id: \.1) { label, key, name in
                     let effects = analysis.abilities[key]
                     StatBox(label: label, value: $file.int(["abilityScores", .key(key)]), help: name,
@@ -99,7 +120,7 @@ struct CombatSection: View {
 
     var body: some View {
         SheetSection(title: "Combat") {
-            HStack(alignment: .top, spacing: 12) {
+            FlowLayout(alignment: .top) {
                 StatBox(label: "HP", value: $file.int(["hp", "current"]), help: "Current hit points",
                         warning: warning(at: ["hp", "current"]))
                 HitPointAdjuster(file: $file)
@@ -182,7 +203,7 @@ struct SavesSection: View {
 
     var body: some View {
         SheetSection(title: "Saving Throws") {
-            HStack(spacing: 12) {
+            FlowLayout {
                 ForEach(saves, id: \.1) { label, key, help in
                     RuledStatBox(label: label, path: ["saves", .key(key)], file: $file, analysis: analysis,
                                  width: 72, help: help)
@@ -205,7 +226,7 @@ struct ExplorationSection: View {
 
     var body: some View {
         SheetSection(title: "Exploration") {
-            HStack(spacing: 12) {
+            FlowLayout {
                 inSix("Listen", "listen", help: "Listen at doors")
                 inSix("Secret doors", "secretDoors", help: "Find secret doors")
                 inSix("Open doors", "openDoors", help: "Force open stuck doors")
@@ -215,7 +236,7 @@ struct ExplorationSection: View {
                 }
             }
             if className == "Thief" || file.count(["thiefSkills"]) > 0 {
-                HStack(spacing: 12) {
+                FlowLayout {
                     percent("Climb", "climb", help: "Climb sheer surfaces")
                     percent("Traps", "traps", help: "Find or remove treasure traps")
                     RuledStatBox(label: "Hear", path: ["thiefSkills", "hearNoise"], file: $file, analysis: analysis,
@@ -267,7 +288,7 @@ struct SpellsSection: View {
 
     var body: some View {
         SheetSection(title: "Spells") {
-            HStack(alignment: .bottom, spacing: 12) {
+            FlowLayout(alignment: .bottom) {
                 ForEach(0..<max(file.count(["spells", "slots"]), 1), id: \.self) { level in
                     StatBox(label: ordinals[min(level, ordinals.count - 1)], value: slot(level),
                             help: "Spells per day of level \(level + 1)",
@@ -415,7 +436,7 @@ struct EquipmentSection: View {
                             .labelsHidden()
                             .help("Equipped")
                         TextField("Item", text: $file.string(path + ["name"]))
-                            .frame(minWidth: 160)
+                            .frame(minWidth: 120)
                         HStack(spacing: 2) {
                             NumberField(label: "Qty", value: $file.int(path + ["qty"]), prompt: "1")
                                 .frame(width: 40)
@@ -429,7 +450,7 @@ struct EquipmentSection: View {
                         TextField("", text: $file.string(path + ["damage"]), prompt: Text(rulesDamage(at: index)))
                             .frame(width: 60)
                         TextField("", text: $file.string(path + ["notes"]))
-                            .frame(minWidth: 140)
+                            .frame(minWidth: 100)
                         ListButton(title: "Remove item", systemImage: "minus.circle") {
                             file.removeItem(at: path)
                         }
@@ -469,7 +490,7 @@ struct MoneySection: View {
 
     var body: some View {
         SheetSection(title: "Money") {
-            HStack(spacing: 12) {
+            FlowLayout {
                 ForEach(coins, id: \.1) { label, key, name in
                     StatBox(label: label, value: $file.int(["money", .key(key)]), width: 80, help: "\(name) pieces")
                 }
