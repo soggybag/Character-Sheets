@@ -3,9 +3,11 @@ New in this build:
 - Narrower windows: a character sheet can be made much narrower. Rows of boxes wrap onto a second line.
 - Window menu: Tile Character Sheets lays the open sheets side by side. Merge Sheets into Tabs puts them in one window with a tab per character, and Open Sheets in Tabs keeps new sheets opening as tabs.
 - Undo works one edit at a time: undoing a name or an item takes back the whole change, not one letter. A crash when undoing after Edit as Text is fixed.
+- Your own equipment list: Settings → Equipment → New List… makes a file of changes to the rules' equipment: new prices, items the market doesn't sell, and house items. Every shop (on the sheet and in New Character) uses it, and prices can be in silver or copper ("5 sp"). Keep the file in a shared folder so the whole group shops from the same list.
 
 Things to try:
 - Keep the party's sheets side by side or in tabs during a session. Is a narrow sheet still easy to read?
 - Use Edit → Undo and Redo freely. Tell us if anything comes back wrong.
+- Make a list for your campaign's market. Was anything in the file hard to work out? Settings shows any problems it finds; tell us if one was confusing.
 
 Send feedback from Help → Send Feedback…, or with TestFlight's screenshot feedback.
