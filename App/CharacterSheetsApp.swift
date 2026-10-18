@@ -50,6 +50,10 @@ struct CharacterSheetsApp: App {
             CommandGroup(replacing: .printItem) {
                 PrintCommands()
             }
+            CommandGroup(before: .windowArrangement) {
+                CharacterWindowCommands()
+                Divider()
+            }
             CommandGroup(replacing: .help) {
                 HelpCommands()
             }

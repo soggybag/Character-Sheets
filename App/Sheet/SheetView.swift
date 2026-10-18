@@ -8,6 +8,8 @@ struct SheetView: View {
 
     @State private var levelUpPlan: LevelUpPlan?
     @State private var levelDownPlan: LevelDownPlan?
+    /// Narrow windows get narrower margins.
+    @State private var isNarrow = false
 
     var body: some View {
         let analysis = RulesAnalysis(file)
@@ -42,12 +44,13 @@ struct SheetView: View {
                            text: "This file also has: \(file.unknownTopLevelKeys.joined(separator: ", ")). They're kept as they are; use Edit as Text to change them.")
                 }
             }
-            .padding(.horizontal, 40)
+            .padding(.horizontal, isNarrow ? 20 : 40)
             .padding(.vertical, 32)
             .frame(maxWidth: 820)
             .frame(maxWidth: .infinity)
         }
         .background(.background)
+        .onGeometryChange(for: Bool.self) { $0.size.width < 640 } action: { isNarrow = $0 }
         .sheet(item: $levelUpPlan) { plan in
             LevelUpSheet(plan: plan, file: $file)
         }

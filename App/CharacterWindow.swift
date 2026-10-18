@@ -3,6 +3,8 @@ import SwiftUI
 
 /// One document window: the sheet, or the file's text.
 struct CharacterWindow: View {
+    static let minWidth: CGFloat = 500
+
     @Binding var document: CharacterDocument
     var fileURL: URL?
 
@@ -30,7 +32,8 @@ struct CharacterWindow: View {
                 ImportBanner(text: summary) { document.importSummary = nil }
             }
         }
-        .frame(minWidth: 640, minHeight: 480)
+        .frame(minWidth: Self.minWidth, minHeight: 480)
+        .background { CharacterWindowRegistration() }
         .toolbar { toolbar }
         .focusedSceneValue(\.printableCharacter, printable)
     }
