@@ -200,6 +200,9 @@ Decisions:
       items, house items. Settings → Equipment chooses the rules list or a
       custom file; New List… starts one to edit. The shop marks house items
       and prices. Groups share the file through a shared folder.
+      Format drafted in `docs/EQUIPMENT-FORMAT.md`, with an example in
+      `examples/equipment/`. Parser done (`EquipmentList`); next, prices
+      in copper through the shop and New Character, then Settings.
 - [ ] OSE Advanced Fantasy: waiting on permission from Necrotic Gnome. The
       pre-2026 Player's Tome reserves its class and race sections as Product
       Identity; a Creative Commons SRD is announced for early 2027.

@@ -10,6 +10,8 @@ A character is a UTF-8 Markdown file (`.md`) made of two parts:
 See [`examples/Elowen Thistledown.md`](../examples/Elowen%20Thistledown.md) for
 a complete file, and [`schema/character.schema.json`](../schema/character.schema.json)
 for a machine-checkable definition of the header.
+Custom equipment lists use the same kind of file; see
+[`EQUIPMENT-FORMAT.md`](EQUIPMENT-FORMAT.md).
 
 ## Ground rules
 
