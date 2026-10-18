@@ -188,6 +188,9 @@ Decisions:
       can't use, and offers to pay for it from the character's money,
       making change. The same list as a shopping step in New Character,
       spending the rolled gold. Free-text items stay as they are.
+- [x] **Sheet windows:** as narrow as 500 points (rows of boxes wrap).
+      Window → Tile Character Sheets, Merge Sheets into Tabs, and an Open
+      Sheets in Tabs setting.
 - [ ] **Custom equipment lists:** a plain file (Markdown with a header,
       like a character) listing changes from the rules: new prices, removed
       items, house items. Settings → Equipment chooses the rules list or a
@@ -238,7 +241,32 @@ Anything here needs a strong case before it moves up:
 
 - App name (avoid "OSE" and "D&D" in it). The bundle id is
   `com.mitchellhudson.CharacterSheets`; the signing team is still to set.
-- Whether to sign up for Necrotic Gnome's third-party license. Without
-  it the app must not claim compatibility with Old-School Essentials
-  (OGL section 7), so the ruleset is labelled "Classic Fantasy".
+- Whether to use Necrotic Gnome's third-party license (v1.7, in
+  `docs/Old-School Essentials Third Party License-…/`). Without it the
+  app must not claim compatibility with Old-School Essentials (OGL
+  section 7), so the ruleset is labelled "Classic Fantasy". The license
+  is free and needs no approval. It allows:
+  - "Old-School Essentials" in the app, Help, listing and website, and
+    classes, spells and rules referred to by name
+  - "OSE" in a subtitle (App Store subtitle), never in the app's name
+  - the "Designed for use with Old-School Essentials" logo
+
+  It requires:
+  - nothing that implies the app is official or approved, and our own
+    look
+  - their trademark line in the legal text (About, the license window,
+    website)
+  - a copy for Necrotic Gnome after release (a promo code)
+
+  Open questions, asked by email to summon@necroticgnome.com (sent: —,
+  answer: —):
+  1. The license is written for books (logo "on the cover", "Requires
+     Old-School Essentials" on "the back cover"). Does it cover an app,
+     and where do the logo and that line go?
+  2. It says a product "must not replicate any text from the Player
+     Characters or Adventuring sections". Is shipping the SRD's class
+     tables (saves, XP, THAC0) as data, under the OGL, compatible?
+  3. Would they allow Advanced Fantasy class data before the Creative
+     Commons SRD? The license allows naming those classes, not including
+     their rules.
 - Free, paid, or pay-what-you-want
