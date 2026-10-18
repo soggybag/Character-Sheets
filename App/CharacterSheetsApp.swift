@@ -80,5 +80,9 @@ struct CharacterSheetsApp: App {
             LicenseView()
         }
         .defaultSize(width: 640, height: 720)
+
+        Settings {
+            SettingsView()
+        }
     }
 }

@@ -305,7 +305,7 @@ private struct StartingEquipmentSection: View {
                     Text(purchase.item.itemName + (amount > 1 ? " × \(amount)" : ""))
                         .strikethrough(over.contains(purchase))
                     Spacer()
-                    Text(purchase.paid ? "\(purchase.cost.formatted()) gp" : "given")
+                    Text(purchase.paid ? Purse.priceText(purchase.price) : "given")
                         .monospacedDigit()
                         .foregroundStyle(.secondary)
                     Button("Remove", systemImage: "minus.circle") { character.purchases.remove(at: index) }
@@ -321,16 +321,16 @@ private struct StartingEquipmentSection: View {
                 Button(character.purchases.isEmpty ? "Buy Equipment…" : "Buy More…") { isShopping = true }
                     .disabled(character.gold == nil)
                 Spacer()
-                if let left = character.goldLeft {
-                    Text("\(left.formatted()) gp left").monospacedDigit()
+                if let left = character.moneyLeft {
+                    Text("\(left.description) left").monospacedDigit()
                 } else {
                     Text("Roll gold first").foregroundStyle(.secondary)
                 }
             }
         }
         .sheet(isPresented: $isShopping) {
-            ShopView(classRules: character.classRules, purse: Purse(gp: character.goldLeft ?? 0)) { item, count, pay in
-                if pay, item.cost * count > character.goldLeft ?? 0 { return false }
+            ShopView(classRules: character.classRules, purse: character.moneyLeft ?? Purse()) { item, count, pay in
+                if pay, item.price * count > character.moneyLeft?.totalCP ?? 0 { return false }
                 character.buy(item, count: count, paid: pay)
                 return true
             }

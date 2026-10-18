@@ -15,14 +15,38 @@ public struct ShopItem: Identifiable, Equatable, Sendable {
     public let name: String
     /// As written on a sheet, e.g. `Arrows`.
     public let itemName: String
-    /// In gold pieces, for `quantity` items.
-    public let cost: Int
-    /// How many come for the cost; nil for a single item.
-    public let quantity: Int?
+    /// In copper pieces, for `quantity` items.
+    public var price: Int
+    /// How many come for the price; nil for a single item.
+    public var quantity: Int?
     /// A short description: damage and qualities, AC, or notes.
-    public let details: String
+    public var details: String
     /// In coins, when the rules give one.
-    public let weight: Int?
+    public var weight: Int?
+    public var origin: Origin = .rules
+    /// House items only: classes that can normally use it. Empty: anyone.
+    public var usableBy: [String] = []
+
+    /// Where an item's price and details come from.
+    public enum Origin: Equatable, Sendable {
+        case rules
+        /// A rules item a custom list changes; `rulesPrice` is in copper.
+        case changed(rulesPrice: Int)
+        /// An item only the custom list has.
+        case house
+    }
+
+    public init(id: String, category: Category, name: String, itemName: String, price: Int, quantity: Int?,
+                details: String, weight: Int?) {
+        self.id = id
+        self.category = category
+        self.name = name
+        self.itemName = itemName
+        self.price = price
+        self.quantity = quantity
+        self.details = details
+        self.weight = weight
+    }
 }
 
 extension OSERuleset {
@@ -33,7 +57,7 @@ extension OSERuleset {
             let qualities = weapon.qualities.filter { $0 != "melee" && $0 != "missile" }
             let kind = [weapon.isMelee ? "melee" : nil, weapon.isMissile ? "missile" : nil].compactMap { $0 }
             items.append(ShopItem(id: weapon.id, category: .weapons, name: weapon.name, itemName: weapon.name,
-                                  cost: weapon.cost, quantity: nil,
+                                  price: weapon.cost * 100, quantity: nil,
                                   details: ([weapon.damage, kind.joined(separator: " and ")] + qualities)
                                       .joined(separator: ", "),
                                   weight: weapon.weight))
@@ -44,21 +68,81 @@ extension OSERuleset {
             let itemName = isShield || armour.name.lowercased().contains("mail") ? armour.name : armour.name + " armour"
             let details = armour.ac.map { "AC \($0) [\(19 - $0)]" } ?? armour.acBonus.map { "+\($0) AC" } ?? ""
             items.append(ShopItem(id: armour.id, category: .armour, name: armour.name, itemName: itemName,
-                                  cost: armour.cost, quantity: nil,
+                                  price: armour.cost * 100, quantity: nil,
                                   details: details + (armour.encumbrance.map { ", \($0)" } ?? ""),
                                   weight: armour.weight))
         }
         for ammo in ammunition {
             items.append(ShopItem(id: ammo.id, category: .ammunition, name: ammo.name,
-                                  itemName: ammo.itemName ?? ammo.name, cost: ammo.cost, quantity: ammo.quantity,
+                                  itemName: ammo.itemName ?? ammo.name, price: ammo.cost * 100, quantity: ammo.quantity,
                                   details: ammo.cost == 0 ? "Free" : "", weight: nil))
         }
         for gear in gear {
             let weapon = weapons.first { $0.soldAs == gear.id }
             let details = [weapon.map { "\($0.damage) thrown" }, gear.notes].compactMap { $0 }.joined(separator: ". ")
             items.append(ShopItem(id: gear.id, category: .gear, name: gear.name, itemName: gear.itemName ?? gear.name,
-                                  cost: gear.cost, quantity: gear.quantity, details: details, weight: nil))
+                                  price: gear.cost * 100, quantity: gear.quantity, details: details, weight: nil))
         }
+        return Self.sorted(items)
+    }
+
+    /// The rules items with a custom list's changes, or the rules items
+    /// alone when there's no list.
+    public func shopItems(with list: EquipmentList?) -> [ShopItem] {
+        guard let list else { return shopItems }
+        let rulesItems = shopItems
+        let houseKeys = Set(list.additions.map { Self.matchKey($0.name) })
+        let removed = Set(list.removals.compactMap { EquipmentList.rulesItem(named: $0, in: rulesItems)?.id })
+        var items: [ShopItem] = []
+        for var item in rulesItems where !removed.contains(item.id) {
+            // A house item by the same name replaces it.
+            guard !houseKeys.contains(Self.matchKey(item.name)), !houseKeys.contains(Self.matchKey(item.itemName))
+            else { continue }
+            let rulesPrice = item.price
+            let change = list.changes.last { EquipmentList.rulesItem(named: $0.item, in: [item]) != nil }
+            item.price = change?.price ?? (rulesPrice * list.priceScale + 50) / 100
+            if let quantity = change?.quantity { item.quantity = quantity }
+            if let weight = change?.weight { item.weight = weight }
+            if let notes = change?.notes {
+                // Notes replace the rules' notes; weapon and armour stats stay.
+                let ruleNotes = gear.first { $0.id == item.id }?.notes
+                let stats = ruleNotes.map { item.details.replacingOccurrences(of: $0, with: "") } ?? item.details
+                let trimmed = stats.trimmingCharacters(in: CharacterSet(charactersIn: ". "))
+                item.details = trimmed.isEmpty ? notes : "\(trimmed). \(notes)"
+            }
+            if item.price != rulesPrice || change?.quantity != nil { item.origin = .changed(rulesPrice: rulesPrice) }
+            items.append(item)
+        }
+        for house in list.additions {
+            var item = ShopItem(id: "house:" + Self.matchKey(house.name), category: house.category, name: house.name,
+                                itemName: house.name, price: house.price, quantity: house.quantity,
+                                details: Self.details(of: house), weight: house.weight)
+            item.origin = .house
+            item.usableBy = house.usableBy
+            items.removeAll { $0.id == item.id }
+            items.append(item)
+        }
+        return Self.sorted(items)
+    }
+
+    private static func details(of house: EquipmentList.HouseItem) -> String {
+        var parts: [String] = []
+        switch house.category {
+        case .weapons:
+            let qualities = house.qualities.filter { $0 != "melee" && $0 != "missile" }
+            let kind = ["melee", "missile"].filter(house.qualities.contains).joined(separator: " and ")
+            parts = ([house.damage, kind.isEmpty ? nil : kind].compactMap { $0 } + qualities)
+        case .armour:
+            parts = [house.ac.map { "AC \($0) [\(19 - $0)]" } ?? house.acBonus.map { "+\($0) AC" }, house.encumbrance]
+                .compactMap { $0 }
+        case .ammunition, .gear:
+            break
+        }
+        let stats = parts.joined(separator: ", ")
+        return [stats.isEmpty ? nil : stats, house.notes].compactMap { $0 }.joined(separator: ". ")
+    }
+
+    private static func sorted(_ items: [ShopItem]) -> [ShopItem] {
         let order = ShopItem.Category.allCases
         return items.sorted {
             ($0.category == $1.category)
@@ -70,6 +154,11 @@ extension OSERuleset {
     /// Why a class wouldn't normally use an item, or nil if it can.
     public func restriction(of item: ShopItem, for classRules: ClassRules?) -> String? {
         guard let classRules else { return nil }
+        if item.origin == .house {
+            guard !item.usableBy.isEmpty,
+                  !item.usableBy.contains(where: { self.classRules(named: $0)?.id == classRules.id }) else { return nil }
+            return "\(classRules.plural) don't normally use this."
+        }
         switch item.category {
         case .weapons:
             if let allowed = classRules.weapons.allowed, !allowed.contains(item.id) {
@@ -120,6 +209,16 @@ public struct Purse: Equatable, Sendable, CustomStringConvertible {
             default: cp = newValue
             }
         }
+    }
+
+    /// An amount in copper as coins: gold, silver and copper.
+    public init(copper: Int) {
+        self.init(gp: copper / 100, sp: copper % 100 / 10, cp: copper % 10)
+    }
+
+    /// A price for showing: "2 gp, 5 sp", or "free".
+    public static func priceText(_ copper: Int) -> String {
+        copper == 0 ? "free" : Purse(copper: copper).description
     }
 
     /// Everything, in copper pieces.
@@ -194,7 +293,7 @@ extension CharacterFile {
     @discardableResult
     public mutating func buy(_ item: ShopItem, count: Int = 1, pay: Bool) -> Bool {
         if pay {
-            guard let purse = Purse(self).paying(item.cost * count * 100) else { return false }
+            guard let purse = Purse(self).paying(item.price * count) else { return false }
             setPurse(purse)
         }
         addEquipment(item, count: count)

@@ -41,6 +41,11 @@ the rules for you, without getting in your way.
   copper), or untick **Pay** for something found or given. Items the class
   can't normally use are marked ⚠︎ but can still be added. **New
   Character** has the same list for spending starting gold.
+- **Your own prices and items:** Settings → Equipment → New List… makes an
+  equipment list: a Markdown file of changes to the rules list (prices,
+  items the market doesn't sell, house items). Keep it in a shared folder
+  so the whole group shops from the same list. The file explains each
+  section; Settings shows any problems in it.
 - **Spells** are one list: the spell book, with how many copies of each are
   memorized today (− and +) and a **Cast** box for each copy. **Rest** clears
   the Cast boxes. A memorized spell that isn't in the book (a cleric's

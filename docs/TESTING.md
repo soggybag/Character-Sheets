@@ -43,6 +43,19 @@ adding the build to the external group. Work on copies of your characters.
       than all the money: change comes back in gp/sp/cp and the total is
       right. Something unaffordable can't be added until Pay is unticked.
 - [ ] A weapon added from the list shows its damage in grey.
+- [ ] Settings → Equipment → New List…: the file opens as text, with
+      "Equipment list: … · No changes yet" in the status bar. Uncomment the
+      Sword and Mule lines and save: Settings says "Changes 1, adds 1".
+      The shop says "Prices from …", Sword costs 15 gp (rules price in its
+      tooltip), and Mule is tagged House.
+- [ ] Misspell an item in the list: Settings and the status bar show the
+      problem, and the shop counts it. The rest of the list still applies.
+- [ ] Choose `examples/equipment/Hightower Market.md`: a lucky charm costs
+      2 sp and paying for it makes change. New Character shows money left
+      in gp and sp. A hand crossbow shows 1d4 in grey on the sheet (with
+      variable weapon damage on).
+- [ ] Quit and relaunch: the same list is still chosen. Use Rules List:
+      the shop is back to rules prices.
 - [ ] New Character: roll gold, Buy Equipment…, buy armour and a weapon;
       gold left goes down. The created sheet has the gear, the gold left,
       and AC filled in.

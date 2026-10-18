@@ -186,7 +186,7 @@ struct NewCharacterShoppingTests {
         character.buy(try item("sword"))
         character.buy(try item("torches"), count: 2)
         character.buy(try item("holy-symbol"), paid: false)
-        #expect(character.goldLeft == 100 - 40 - 10 - 10 - 2)
+        #expect(character.moneyLeft == Purse(gp: 100 - 40 - 10 - 10 - 2))
         let file = character.makeFile()
         #expect(file.int(["money", "gp"]) == 38)
         #expect((0..<file.count(["equipment"])).compactMap { file.string(["equipment", .index($0), "name"]) }
@@ -204,7 +204,7 @@ struct NewCharacterShoppingTests {
         character.buy(try item("long-bow"))    // 40
         character.gold = 70
         #expect(character.unaffordable.map(\.item.id) == ["long-bow"])
-        #expect(character.goldLeft == 10)
+        #expect(character.moneyLeft == Purse(gp: 10))
         let file = character.makeFile()
         #expect(file.count(["equipment"]) == 1)
         #expect(file.int(["money", "gp"]) == 10)
