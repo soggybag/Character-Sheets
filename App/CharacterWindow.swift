@@ -68,8 +68,13 @@ struct CharacterWindow: View {
                 }
                 ToolbarItem(placement: .primaryAction) {
                     Button("Edit as Text", systemImage: "curlybraces") {
-                        textDraft = file.text()
-                        isEditingText = true
+                        // Finish the field being typed in first, so its
+                        // edit is in the text.
+                        NSApp.keyWindow?.makeFirstResponder(nil)
+                        DispatchQueue.main.async {
+                            textDraft = sheet.wrappedValue.text()
+                            isEditingText = true
+                        }
                     }
                     .help("Edit the file's text directly")
                 }

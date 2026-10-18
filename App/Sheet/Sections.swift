@@ -10,7 +10,7 @@ struct IdentitySection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            TextField("Name", text: $file.string(["name"]), prompt: Text(placeholderName))
+            CommitTextField("Name", text: $file.string(["name"]), prompt: placeholderName)
                 .textFieldStyle(.plain)
                 .font(.system(size: 30, weight: .semibold, design: .serif))
             // One line when there's room; in a narrow window, level and XP
@@ -435,7 +435,7 @@ struct EquipmentSection: View {
                         Toggle("Equipped", isOn: $file.flag(path + ["equipped"]))
                             .labelsHidden()
                             .help("Equipped")
-                        TextField("Item", text: $file.string(path + ["name"]))
+                        CommitTextField("Item", text: $file.string(path + ["name"]), prompt: "Item")
                             .frame(minWidth: 120)
                         HStack(spacing: 2) {
                             NumberField(label: "Qty", value: $file.int(path + ["qty"]), prompt: "1")
@@ -447,9 +447,9 @@ struct EquipmentSection: View {
                             }
                         }
                         .frame(width: 64, alignment: .leading)
-                        TextField("", text: $file.string(path + ["damage"]), prompt: Text(rulesDamage(at: index)))
+                        CommitTextField("Damage", text: $file.string(path + ["damage"]), prompt: rulesDamage(at: index))
                             .frame(width: 60)
-                        TextField("", text: $file.string(path + ["notes"]))
+                        CommitTextField("Notes", text: $file.string(path + ["notes"]))
                             .frame(minWidth: 100)
                         ListButton(title: "Remove item", systemImage: "minus.circle") {
                             file.removeItem(at: path)
@@ -504,10 +504,7 @@ struct NotesSection: View {
 
     var body: some View {
         SheetSection(title: "Notes") {
-            TextEditor(text: $text)
-                .font(.body)
-                .scrollContentBackground(.hidden)
-                .padding(8)
+            PlainTextEditor(text: $text)
                 .frame(minHeight: 280)
                 .background(.quaternary.opacity(0.3), in: .rect(cornerRadius: 8))
         }

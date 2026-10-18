@@ -271,7 +271,7 @@ struct LineField: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
             HStack(spacing: 4) {
-                TextField(label, text: $text, prompt: Text(prompt))
+                CommitTextField(label, text: $text, prompt: prompt)
                     .textFieldStyle(.plain)
                     .labelsHidden()
                     .alignmentGuide(.fieldLine) { $0[VerticalAlignment.center] }
@@ -377,6 +377,7 @@ struct NumberField: View {
 /// A text field that only writes back when you press Return or leave it,
 /// for values that are reshaped on save (e.g. a comma-separated list).
 struct CommitTextField: View {
+    var label: String?
     let prompt: String
     let value: String
     let commit: (String) -> Void
@@ -384,8 +385,21 @@ struct CommitTextField: View {
     @State private var draft = ""
     @FocusState private var isFocused: Bool
 
+    init(_ label: String? = nil, prompt: String, value: String, commit: @escaping (String) -> Void) {
+        self.label = label
+        self.prompt = prompt
+        self.value = value
+        self.commit = commit
+    }
+
+    /// Edits a string in the file. Each edit is one undo step, not one per
+    /// keystroke: the document is written only on Return or leaving the field.
+    init(_ label: String, text: Binding<String>, prompt: String = "") {
+        self.init(label, prompt: prompt, value: text.wrappedValue) { text.wrappedValue = $0 }
+    }
+
     var body: some View {
-        TextField(prompt, text: $draft)
+        TextField(label ?? prompt, text: $draft, prompt: Text(prompt))
             .focused($isFocused)
             .onAppear { draft = value }
             .onChange(of: value) { old, new in if !isFocused || draft == old { draft = new } }

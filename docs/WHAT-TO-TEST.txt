@@ -1,11 +1,11 @@
 New in this build:
 
-- Buying equipment: under Equipment, Add from List… shows the rules' weapons, armour, ammunition and adventuring gear with costs. Add an item and it's paid for from the character's money, with change in gold, silver and copper. Untick Pay for something found or given. Items your class can't normally use are marked but can still be added.
-- New Character has the same list: roll your starting gold, then Buy Equipment… to kit out the character before creating them. AC is filled in from the armour you buy.
-- Weapons on the sheet show their rules damage in grey.
+- Narrower windows: a character sheet can be made much narrower. Rows of boxes wrap onto a second line.
+- Window menu: Tile Character Sheets lays the open sheets side by side. Merge Sheets into Tabs puts them in one window with a tab per character, and Open Sheets in Tabs keeps new sheets opening as tabs.
+- Undo works one edit at a time: undoing a name or an item takes back the whole change, not one letter. A crash when undoing after Edit as Text is fixed.
 
 Things to try:
-- Kit out a new character from scratch.
-- Go shopping between adventures with an existing character: does the money come out right?
+- Keep the party's sheets side by side or in tabs during a session. Is a narrow sheet still easy to read?
+- Use Edit → Undo and Redo freely. Tell us if anything comes back wrong.
 
 Send feedback from Help → Send Feedback…, or with TestFlight's screenshot feedback.

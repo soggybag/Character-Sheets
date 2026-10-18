@@ -134,8 +134,12 @@ Decisions:
 - [x] Notes area (the Markdown body)
 - [x] "Edit as Text" for anything the sheet doesn't show; unknown keys and
       header comments are pointed out
-- [ ] Check undo/redo, autosave and versions by hand (they come from the
-      document architecture). Undo is currently per keystroke in text fields
+- [x] Undo is one step per field edit, not per keystroke: text fields
+      write to the document on Return or leaving the field, like the number
+      fields. Notes and Edit as Text have their own typing undo while you're
+      in them (the shared one crashed after Edit as Text → Cancel).
+- [x] Check undo/redo, autosave and versions by hand (`docs/TESTING.md`,
+      "Undo, autosave and versions")
 - [ ] Polish pass after using it at the table
 
 ### M3: Rules assist ← first outside testers

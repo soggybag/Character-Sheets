@@ -73,6 +73,13 @@ adding the build to the external group. Work on copies of your characters.
 - [ ] Nothing is cut off; notes start on a new page; headings aren't left
       alone at the bottom of a page. Try Letter and A4 (File → Page Setup).
 
+**Windows**
+- [ ] Make a sheet as narrow as it goes: rows of boxes wrap, nothing is
+      clipped, and there's no sideways scrolling.
+- [ ] Window → Tile Character Sheets with 2, 3 and 4 sheets open.
+- [ ] Window → Merge Sheets into Tabs; then turn on Open Sheets in Tabs and
+      open another character: it opens as a tab.
+
 **Party** (File → Open Party Folder…, ⇧⌘O)
 - [ ] Choose a folder of characters: everyone is listed, by name, with the
       same HP, AC, attack and saves as their sheets. Non-character files are
@@ -87,9 +94,27 @@ adding the build to the external group. Work on copies of your characters.
 - [ ] Edit as Text: change a value in the header, switch back; the sheet
       shows it. Your notes and any unknown fields are untouched.
 - [ ] Open the saved file in another text editor: it's readable and tidy.
-- [ ] Undo after text editing: Edit as Text, type something, Cancel, then
-      ⌘Z a few times. Repeat with Done instead of Cancel. (A crash in Undo
-      was seen once on 17 Oct 2026; note exactly what you did if it happens.)
+
+**Undo, autosave and versions**
+- [ ] Type a new name, press Tab, then ⌘Z: the whole name goes back in one
+      step, not one letter at a time. ⇧⌘Z puts it back. Same for Class, an
+      equipment item, and a number box.
+- [ ] Type in Notes, then ⌘Z while still in Notes: typing is undone a word
+      or so at a time.
+- [ ] Edit as Text, type something, Cancel, then ⌘Z a few times: no crash,
+      and nothing from the cancelled typing comes back. Repeat with Done:
+      one ⌘Z undoes the whole text edit. (Undo crashed here on 17 Oct 2026.)
+- [ ] Type in a box, then click Edit as Text without pressing Return: the
+      text shows the new value.
+- [ ] Make a change and wait: the title bar shows "Edited", then goes
+      quiet once it autosaves. Quit and relaunch: the change is there.
+- [ ] Change a few things over a few minutes, then File → Revert To →
+      Browse All Versions…: earlier versions are listed, and restoring one
+      brings its values back on the sheet.
+- [ ] Open a character, change its file in another text editor and save
+      there: the sheet updates (or asks, if it has unsaved changes).
+- [ ] Untitled sheets (New Character, Import): quit without saving and
+      relaunch; they come back.
 
 **Whatever's new in this build**: go through `docs/WHAT-TO-TEST.txt`.
 
