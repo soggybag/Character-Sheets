@@ -8,11 +8,8 @@ struct TextEditorView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            TextEditor(text: $text)
-                .font(.system(.body, design: .monospaced))
-                .autocorrectionDisabled()
-                .scrollContentBackground(.hidden)
-                .padding(8)
+            PlainTextEditor(text: $text, font: .monospacedSystemFont(ofSize: NSFont.systemFontSize, weight: .regular),
+                            inset: CGSize(width: 12, height: 12))
             Divider()
             StatusBar(status: ParseStatus(text: text, fileURL: fileURL))
         }
