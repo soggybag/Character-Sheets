@@ -44,6 +44,7 @@ struct LevelUpSheet: View {
                                 Text(FieldNames.name(for: change.path))
                                 Text(change.from?.description ?? "–").foregroundStyle(.secondary)
                                 Image(systemName: "arrow.right").foregroundStyle(.tertiary)
+                                    .accessibilityLabel("becomes")
                                 Text(change.to.description).fontWeight(.medium)
                             }
                             .monospacedDigit()
@@ -168,6 +169,7 @@ struct LevelDownSheet: View {
                                 Text(FieldNames.name(for: change.path))
                                 Text(change.from?.description ?? "–").foregroundStyle(.secondary)
                                 Image(systemName: "arrow.right").foregroundStyle(.tertiary)
+                                    .accessibilityLabel("becomes")
                                 Text(change.to.description).fontWeight(.medium)
                             }
                             .monospacedDigit()

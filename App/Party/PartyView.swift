@@ -139,6 +139,8 @@ struct PartyView: View {
                         Image(systemName: "exclamationmark.triangle.fill")
                             .foregroundStyle(.orange)
                             .help(member.warnings.joined(separator: "\n"))
+                            .accessibilityLabel(member.warnings.count == 1 ? "Warning" : "\(member.warnings.count) warnings")
+                            .accessibilityValue(member.warnings.joined(separator: " "))
                     }
                 }
             }
@@ -170,6 +172,7 @@ struct PartyView: View {
                         Image(systemName: "arrow.up.circle.fill")
                             .foregroundStyle(.green)
                             .help("Ready to level up")
+                            .accessibilityLabel("Ready to level up")
                     }
                     Text(member.xp?.formatted() ?? "").monospacedDigit()
                 }
