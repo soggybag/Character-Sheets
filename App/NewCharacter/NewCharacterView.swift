@@ -202,6 +202,7 @@ private struct ScoresSection: View {
         .menuIndicator(.hidden)
         .fixedSize()
         .help("Swap \(ability.uppercased()) with another score")
+        .accessibilityLabel("Swap \(ability.uppercased())")
         .disabled(character.rolledScores[ability] == nil)
     }
 }

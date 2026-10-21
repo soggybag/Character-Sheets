@@ -104,6 +104,8 @@ struct ShopView: View {
                         Image(systemName: "exclamationmark.triangle.fill")
                             .foregroundStyle(.orange)
                             .help(restriction)
+                            .accessibilityLabel("Class warning")
+                            .accessibilityValue(restriction)
                     }
                 }
                 if !item.details.isEmpty {

@@ -140,8 +140,9 @@ struct StatBox: View {
                 // own menu, so the label and the dot carry this one.
                 .contextMenu { rulesMenu }
             HStack(spacing: 2) {
-                NumberField(label: label, value: $value, prompt: prompt, fillOnReturn: missingValue)
+                NumberField(label: spokenName, value: $value, prompt: prompt, fillOnReturn: missingValue)
                     .focusedValue(\.rulesValueAction, rulesValueAction)
+                    .accessibilityHint(spokenHint)
                     .labelsHidden()
                     .textFieldStyle(.plain)
                     .multilineTextAlignment(.center)
@@ -228,6 +229,17 @@ struct StatBox: View {
         return emptyPrompt
     }
 
+    /// What VoiceOver calls the box: "Current hit points" rather than "HP".
+    private var spokenName: String {
+        help.map { String($0.prefix { $0 != "." }) } ?? label
+    }
+
+    /// The rest of the tooltip, read after a pause: the warning, or the
+    /// rules value.
+    private var spokenHint: String {
+        boxHelp.split(separator: ". ", maxSplits: 1).dropFirst().first.map(String.init) ?? ""
+    }
+
     private var boxHelp: String {
         if let warning { return "\(help ?? label). \(warning)" }
         let name = help ?? label
@@ -311,6 +323,9 @@ struct ValueBox: View {
                     .help(captionHelp ?? "")
             }
         }
+        // Read as one thing: "Travel, 24, mi, per day".
+        .accessibilityElement(children: .combine)
+        .accessibilityHint(help ?? "")
     }
 }
 
@@ -410,6 +425,8 @@ struct NumberField: View {
 
     var body: some View {
         TextField(label, text: $draft, prompt: Text(prompt))
+            // The title is hidden on the sheet; VoiceOver still needs it.
+            .accessibilityLabel(label)
             .focused($isFocused)
             .onAppear { draft = shown }
             // Follow changes made elsewhere (Use Rules Value, undo), even
@@ -485,6 +502,7 @@ struct CommitTextField: View {
 
     var body: some View {
         TextField(label ?? prompt, text: $draft, prompt: Text(prompt))
+            .accessibilityLabel(label ?? prompt)
             .focused($isFocused)
             .onAppear { draft = value }
             .onChange(of: value) { old, new in if !isFocused || draft == old { draft = new } }

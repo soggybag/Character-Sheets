@@ -73,8 +73,8 @@ branches, one theme at a time.
   lists, sign formatting, legal text, defaults).
 - **Where logic lives.** Views should show and edit; rules, calculations
   and file changes belong in CharacterKit.
-- **Size.** Files and views that do too much (`Sections.swift`,
-  `Components.swift`, `NewCharacterView.swift`, `RulesAnalysis.swift`).
+- **Size.** Files and views that do too much (`Components.swift`,
+  `NewCharacterView.swift`, `RulesAnalysis.swift`).
 - **Performance.** Work repeated on every redraw (e.g. building a
   `RulesAnalysis` more than once per change), file watching, large parties.
 - **Concurrency.** Swift 6 strictness, main-actor use, no warnings
@@ -254,5 +254,15 @@ at the character's level, later ones listed by level; names on the
 printout). The Travel box on the printout shows the number, with "mi a day"
 under it (it was cramped).
 
-**Left for next time:** S6, S7, I1, U1, H2, and D2 (once there are steps to
-reproduce it).
+**Fixed in `split-sections`:** S6 for `Sections.swift`, now
+`App/Sheet/Sections/`, one file per section (Identity, Combat, Weapons,
+Exploration, Spells, Equipment, Notes) with no code changes. U1: status
+icons have VoiceOver labels (party warnings, ready to level up, class
+warnings in the shop, rules notes, the text editor's status bar, the score
+swap menu); decorative icons are hidden; the equipped and cast checkboxes
+name their item or spell; text fields say their name ("Current hit
+points, 7"), with the warning or rules value as a hint after it; outline
+boxes read as one element.
+
+**Left for next time:** S6 for `Components.swift` (542 lines), S7, I1, H2,
+and D2 (once there are steps to reproduce it).
