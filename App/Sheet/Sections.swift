@@ -586,7 +586,12 @@ struct EquipmentSection: View {
                                         fillOnReturn: damage)
                             .help(damage.isEmpty ? "Damage" : "Damage. The rules give \(damage); press Return to fill it in.")
                             .zoomFrame(width: 60)
-                        CommitTextField("Notes", text: $file.string(path + ["notes"]))
+                        // What the item is, from the rules or the custom list.
+                        let details = analysis.itemDetails[index] ?? ""
+                        CommitTextField("Notes", text: $file.string(path + ["notes"]), prompt: details,
+                                        fillOnReturn: details)
+                            .help(details.isEmpty ? "Notes"
+                                  : "Notes. In grey: \(details.trimmingCharacters(in: ["."])). Press Return to keep it in the file.")
                             .zoomFrame(minWidth: 100)
                         ListButton(title: "Remove item", systemImage: "minus.circle") {
                             file.removeItem(at: path)

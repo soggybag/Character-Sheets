@@ -69,6 +69,10 @@ adding the build to the external group. Work on copies of your characters.
       90'. Make the character a cleric: a rules note says clerics don't
       normally use a hand crossbow. Switch to the rules list: the crossbow
       leaves the Weapons section and AC goes back to 9.
+- [ ] Equipment Notes: an empty Notes box shows what the item is in grey
+      (leather armour: "AC 7 [12], light"; a gambeson from the Hightower
+      list: "AC 8 [11], light"; a two-handed sword: "melee, slow,
+      two-handed"). Return in Notes keeps it; tabbing past leaves it empty.
 - [ ] Class warnings read the same in the shop and in the rules notes
       (a cleric with a sword: "Clerics normally use blunt weapons only, not
       a sword.").

@@ -255,6 +255,23 @@ struct EquipmentListTests {
         #expect(fixedDamage.itemDamage == [0: "1d6"])
     }
 
+    @Test func itemDetailsForTheNotes() throws {
+        let file = try sheet("Thief", items: """
+            [{ name: Hand crossbow }, { name: Gambeson }, { name: Mule }, { name: Leather armour },
+             { name: Two-handed sword }, { name: Torches }, { name: A lucky stone }]
+            """)
+        let withList = RulesAnalysis(file, equipmentList: try hightower()).itemDetails
+        #expect(withList[0] == "missile, reload")         // the damage is in its own column
+        #expect(withList[1] == "AC 8 [11], light")
+        #expect(withList[2] == "Carries 2,000 coins.")
+        #expect(withList[3] == "AC 7 [12], light")
+        #expect(withList[4] == "melee, slow, two-handed")
+        #expect(withList[6] == nil)                        // not an item the rules know
+        // Without the list, only rules items are described.
+        let plain = RulesAnalysis(file).itemDetails
+        #expect(plain[1] == nil && plain[2] == nil && plain[3] == "AC 7 [12], light")
+    }
+
     @Test func houseItemsFollowTheirUsableBy() throws {
         let analysis = RulesAnalysis(try sheet("Cleric", items: "[{ name: Hand crossbow }, { name: Gambeson }]"),
                                      equipmentList: try hightower())

@@ -96,6 +96,10 @@ public struct RulesAnalysis: Sendable {
     public let rules: OSERuleset
     /// The custom equipment list whose house items count as rules items.
     public let equipmentList: EquipmentList?
+    /// What each recognised item in `equipment` is, by index, as the shop
+    /// describes it ("AC 8 [11], light", "Carries 2,000 coins."). A weapon's
+    /// damage is left out: the Damage column has it.
+    public let itemDetails: [Int: String]
     /// The CON modifier to hit points per die (0 without a CON score).
     public let conModifier: Int
     /// The damage the rules give each weapon in `equipment`, by index: the
@@ -122,6 +126,7 @@ public struct RulesAnalysis: Sendable {
         hitPointRoll = builder.hitPointRoll
         movement = builder.movement
         itemDamage = builder.itemDamage
+        itemDetails = builder.itemDetails
         conModifier = builder.mod("con") { $0.con.hitPoints }
     }
 
@@ -195,6 +200,7 @@ private struct Builder {
     var hitPointRoll: String?
     var movement: MovementInfo?
     var itemDamage: [Int: String] = [:]
+    var itemDetails: [Int: String] = [:]
     let equipmentList: EquipmentList?
 
     init(file: CharacterFile, rules: OSERuleset, equipmentList: EquipmentList?) {
@@ -257,6 +263,7 @@ private struct Builder {
         savesAndSkills()
         experience()
         weaponLines()
+        describeItems()
         otherNotes()
     }
 
@@ -504,6 +511,23 @@ private struct Builder {
                                                    isArmour: false, isShield: false) {
                 note(.warning, message, path)
             }
+        }
+    }
+
+    // MARK: Items
+
+    /// The shop's description of each item the rules or the custom list know.
+    private mutating func describeItems() {
+        let count = file.count(["equipment"])
+        guard count > 0 else { return }
+        let items = rules.shopItems(with: equipmentList)
+        for index in 0..<count {
+            guard let name = file.string(["equipment", .index(index), "name"]),
+                  let item = EquipmentList.rulesItem(named: name, in: items) else { continue }
+            var parts = item.details.split(separator: ", ").map(String.init)
+            if item.category == .weapons, !parts.isEmpty { parts.removeFirst() }
+            let details = parts.joined(separator: ", ")
+            if !details.isEmpty { itemDetails[index] = details }
         }
     }
 
