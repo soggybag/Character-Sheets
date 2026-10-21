@@ -1,7 +1,34 @@
 # Character Sheets
 
-A small native Mac app for tabletop RPG characters, stored as Markdown files
-with a YAML header. Starting with Old-School Essentials (Classic Fantasy).
+A small native Mac app for Old-School Essentials characters. The sheet fills
+in what the rules decide (saves, attacks, AC, movement, level-ups) and keeps
+every character in a plain Markdown file with a YAML header.
+
+## Try the beta
+
+The app is in open beta on TestFlight:
+**[Join the beta](https://testflight.apple.com/join/dzUYmAAh)**
+
+- You need macOS 15 or later and Apple's TestFlight app (the link offers it).
+- Requires Old-School Essentials. The app knows the Classic Fantasy
+  classes' numbers; the rules themselves are in the books.
+- It's a beta: keep copies of characters you care about. Each one is a
+  plain text file, so a backup is just a copy of the file.
+- Send feedback from Help → Send Feedback… in the app, with TestFlight's
+  screenshot feedback, or by opening an issue here.
+
+<picture>
+  <source srcset="site/images/designed-for-ose-dark.png" media="(prefers-color-scheme: dark)">
+  <img src="site/images/designed-for-ose-light.png" alt="Designed for use with Old-School Essentials" width="180">
+</picture>
+
+Character Sheets is an independent app. It isn't an official Old-School
+Essentials product, and isn't affiliated with or approved by Necrotic Gnome.
+Old-School Essentials is a trademark of Necrotic Gnome. The trademark and
+Old-School Essentials logo are used with permission of Necrotic Gnome, under
+license.
+
+## Docs
 
 - Plan and roadmap: [`docs/PLAN.md`](docs/PLAN.md)
 - File format: [`docs/FILE-FORMAT.md`](docs/FILE-FORMAT.md)
@@ -34,6 +61,7 @@ The bundle id is `com.mitchellhudson.CharacterSheets`, signed automatically
 with team `753UQ7TNXJ`. To send a build to TestFlight, run
 `scripts/testflight.sh` (see `docs/RELEASING.md`).
 
-Third-party notices (Yams, MIT; OSE SRD rules data, OGL 1.0a) appear in
-the About window from `App/Credits.html`. The full OGL text ships in the
+Third-party notices (Yams, MIT; OSE SRD rules data, OGL 1.0a; the
+Old-School Essentials third-party license) are in `App/Help/Legal.swift`,
+shown in About and Help → Licenses and Legal. The full OGL text ships in the
 CharacterKit resource bundle.
