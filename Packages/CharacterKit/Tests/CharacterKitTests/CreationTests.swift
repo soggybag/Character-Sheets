@@ -41,6 +41,17 @@ struct DiceTests {
         #expect(DiceRoll(dice: Dice("1d8-1")!, results: [6]).description == "6 − 1 = 5")
     }
 
+    @Test func keepHighestDice() throws {
+        let dice = try #require(Dice("4d6kh3"))
+        #expect(dice == Dice(count: 4, sides: 6, keepHighest: 3))
+        #expect(dice.description == "4d6 drop lowest" && dice.range == 3...18)
+        #expect(Dice("5d6kh3")?.description == "5d6kh3")
+        let roll = DiceRoll(dice: dice, results: [4, 2, 6, 2])
+        #expect(roll.total == 12 && roll.dropped == [1])
+        #expect(roll.description == "4 + 6 + 2 = 12 (dropped 2)")
+        #expect(DiceRoll(dice: Dice(count: 3, sides: 6), results: [1, 2, 3]).dropped.isEmpty)
+    }
+
     @Test func rollsWithinRange() {
         var generator = SeededGenerator(state: 7)
         for _ in 0..<500 {

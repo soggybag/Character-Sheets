@@ -88,8 +88,8 @@ private struct EquipmentSettings: View {
     }
 
     private func edit(_ url: URL) {
-        // The bookmark's access lasts while the document is open.
-        _ = url.startAccessingSecurityScopedResource()
+        // The document must still be able to save after it opens.
+        ScopedAccess.keep(url)
         Task { try? await openDocument(at: url) }
     }
 }

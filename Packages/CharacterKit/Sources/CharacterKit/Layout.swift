@@ -14,7 +14,9 @@ enum Layout {
         }.joined(separator: ".")
     }
 
-    private static let keyOrders: [String: [String]] = [
+    /// Known keys, in the order they're written, by path pattern (`equipment.*`).
+    /// The schema test checks these against `schema/character.schema.json`.
+    static let keyOrders: [String: [String]] = [
         "": ["formatVersion", "rules", "name", "player", "title", "portrait", "class", "race", "level",
              "alignment", "xp", "abilityScores", "hp", "combat", "saves", "movement", "carryingTreasure", "exploration",
              "thiefSkills", "languages", "spells", "equipment", "money"],

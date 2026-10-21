@@ -17,6 +17,17 @@ build=$(date -u +%Y%m%d%H%M)
 out="build/testflight/$build"
 mkdir -p "$out"
 
+# The build is made from the working tree. Record the commit, and say so
+# when the tree has changes the commit doesn't (new files included: Xcode
+# builds every file in the app's folders).
+commit=$(git rev-parse --short HEAD)
+echo "$commit" > "$out/commit.txt"
+if [[ -n "$(git status --porcelain)" ]]; then
+    echo "⚠︎ Uncommitted changes: build $build won't match commit $commit."
+    git status --short
+    echo
+fi
+
 echo "→ Running CharacterKit tests"
 (cd Packages/CharacterKit && swift test --quiet)
 
@@ -43,7 +54,7 @@ xcodebuild -exportArchive \
     -allowProvisioningUpdates
 
 if $upload; then
-    echo "✓ Uploaded build $build. It appears in App Store Connect → TestFlight after processing (about 10–30 minutes)."
+    echo "✓ Uploaded build $build (commit $commit). It appears in App Store Connect → TestFlight after processing (about 10–30 minutes)."
     notes=docs/WHAT-TO-TEST.txt
     if [[ -f "$notes" ]]; then
         pbcopy < "$notes"

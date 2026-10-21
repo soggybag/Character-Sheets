@@ -163,6 +163,11 @@
       "type": "integer",
       "minimum": 0
     },
+    "carryingTreasure": {
+      "type": "boolean",
+      "default": false,
+      "description": "Basic encumbrance: carrying a lot of treasure, which slows the character to the next rate down."
+    },
     "exploration": {
       "type": "object",
       "properties": {
@@ -253,6 +258,11 @@
             "properties": {
               "name": {
                 "type": "string"
+              },
+              "level": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Only for a spell that isn't in the spell book."
               },
               "cast": {
                 "type": "boolean",

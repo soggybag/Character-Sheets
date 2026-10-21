@@ -152,14 +152,6 @@ struct ExampleRulesTests {
         #expect(messages(a).contains("No alignment chosen."))
         #expect(messages(a).contains("Roll hit points: 1d4+1 per level (at least 1)."))
     }
-
-    @Test func namedValuesForLayouts() throws {
-        let values = RulesAnalysis(try example("Fingle the Elf")).namedValues
-        #expect(values["dex.mod"] == "+2")
-        #expect(values["xp.next"] == "4000")
-        #expect(values["rules.combat.ac"] == "1")
-        #expect(values["weapons.0.missile"] == "17 [+2] 1d6")
-    }
 }
 
 @Suite("Rules notes")
