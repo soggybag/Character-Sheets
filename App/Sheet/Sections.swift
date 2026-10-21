@@ -56,14 +56,14 @@ struct IdentitySection: View {
     private var xpCaption: String? {
         guard let xp = analysis.xp else { return nil }
         let next = xp.nextLevel.map { "next \($0.formatted())" } ?? "max level"
-        return xp.bonusPercent == 0 ? next : "\(next) · \(xp.bonusPercent > 0 ? "+" : "")\(xp.bonusPercent)%"
+        return xp.bonusPercent == 0 ? next : "\(next) · \(xp.bonusPercent.signedText)%"
     }
 
     private var xpHelp: String {
         guard let xp = analysis.xp else { return "Experience points" }
         var lines = ["Experience points"]
         if let next = xp.nextLevel { lines.append("Next level at \(next.formatted()) XP") }
-        if xp.bonusPercent != 0 { lines.append("Prime requisite: \(xp.bonusPercent > 0 ? "+" : "")\(xp.bonusPercent)% to XP awards") }
+        if xp.bonusPercent != 0 { lines.append("Prime requisite: \(xp.bonusPercent.signedText)% to XP awards") }
         return lines.joined(separator: "\n")
     }
 
@@ -135,11 +135,11 @@ struct CombatSection: View {
                     RuledStatBox(label: "THAC0", path: ["combat", "thac0"], file: $file, analysis: analysis,
                                  help: "To hit AC 0")
                 }
-                let movement = Movement(file: file, analysis: analysis)
-                ValueBox(label: "Move", value: movement.rate.map(MovementInfo.encounter), suffix: "'",
+                let movement = MovementSummary(file: file, analysis: analysis)
+                ValueBox(label: "Move", value: movement.encounterRate, suffix: "'",
                          help: "Encounter movement: a third of the rate per turn. Change the rate under Exploration.",
                          caption: movement.isEncumbered ? "encumbered" : "per round",
-                         captionHelp: movement.isEncumbered ? movement.encumberedHelp : "Feet per round",
+                         captionHelp: movement.isEncumbered ? movement.explanation : "Feet per round",
                          highlighted: movement.isEncumbered)
             }
         }
@@ -235,9 +235,9 @@ struct RollHitPointsView: View {
     }
 
     private var explanation: String {
-        let con = analysis.abilities["con"].flatMap { Int($0.headline) } ?? 0
+        let con = analysis.conModifier
         var text = "Hit dice at level \(analysis.level ?? 1): \(dice.description)."
-        text += con == 0 ? " Each die gives at least 1." : " Each die adds CON (\(con > 0 ? "+" : "−")\(abs(con))) and gives at least 1."
+        text += con == 0 ? " Each die gives at least 1." : " Each die adds CON (\(con.signedText)) and gives at least 1."
         if dice.modifier != 0 { text += " The +\(dice.modifier) is added once." }
         return text + " Current HP is set too, if it's empty."
     }
@@ -312,36 +312,6 @@ struct SavesSection: View {
     }
 }
 
-/// The character's movement rate, stored or from the rules, and whether
-/// it's slowed by what they carry.
-struct Movement {
-    let rate: Int?
-    let info: MovementInfo?
-
-    init(file: CharacterFile, analysis: RulesAnalysis) {
-        rate = file.int(["movement"]) ?? analysis.movement?.rate
-        info = analysis.movement
-    }
-
-    var isEncumbered: Bool {
-        guard let rate, let info, info.load != .untracked else { return false }
-        return rate < info.unencumbered
-    }
-
-    /// Why the rate is what it is.
-    var encumberedHelp: String {
-        guard let info else { return "" }
-        let unburdened = "Unencumbered: \(info.unencumbered)' per turn, \(MovementInfo.encounter(info.unencumbered))' per round."
-        switch info.load {
-        case .untracked: return ""
-        case let .basic(treasure):
-            return (treasure ? "Carrying treasure. " : "") + unburdened
-        case let .detailed(coins):
-            return "Carrying \(coins.formatted()) coins of weight. " + unburdened
-        }
-    }
-}
-
 /// Movement while exploring: the rate per turn, overland travel, and (for
 /// basic encumbrance) whether the character carries a lot of treasure.
 struct MovementRow: View {
@@ -349,21 +319,21 @@ struct MovementRow: View {
     let analysis: RulesAnalysis
 
     var body: some View {
-        let movement = Movement(file: file, analysis: analysis)
+        let movement = MovementSummary(file: file, analysis: analysis)
         FlowLayout(alignment: .top) {
             RuledStatBox(label: "Move", path: ["movement"], file: $file, analysis: analysis, suffix: "'",
                          width: 72, help: "Movement rate: feet per turn while exploring",
                          caption: movement.isEncumbered ? "encumbered" : "per turn",
-                         captionHelp: movement.isEncumbered ? movement.encumberedHelp : "Feet per turn (10 minutes)",
+                         captionHelp: movement.isEncumbered ? movement.explanation : "Feet per turn (10 minutes)",
                          highlighted: movement.isEncumbered)
-            ValueBox(label: "Travel", value: movement.rate.map(MovementInfo.travel), suffix: "mi", width: 72,
+            ValueBox(label: "Travel", value: movement.travelRate, suffix: "mi", width: 72,
                      help: "Overland travel: a fifth of the rate per turn, in miles a day. "
                          + "Terrain and forced marches change it.",
                      caption: "per day", highlighted: movement.isEncumbered)
             if case let .basic(treasure) = analysis.movement?.load {
                 Toggle("Carrying treasure", isOn: Binding(
                     get: { treasure },
-                    set: { file.setCarryingTreasure($0) }))
+                    set: { file.setCarryingTreasure($0, equipmentList: analysis.equipmentList) }))
                     .toggleStyle(.checkbox)
                     .help("Basic encumbrance: a lot of treasure slows the character to the next rate down")
                     .padding(.top, 24)
@@ -567,6 +537,7 @@ struct SpellsSection: View {
 
 struct EquipmentSection: View {
     @Binding var file: CharacterFile
+    let analysis: RulesAnalysis
     @State private var isShopping = false
     /// Marks drags from this sheet, so a row dropped from another sheet's
     /// list isn't taken for one of these.
@@ -609,7 +580,8 @@ struct EquipmentSection: View {
                             }
                         }
                         .zoomFrame(width: 64, alignment: .leading)
-                        let damage = rulesDamage(at: index)
+                        // The rules damage, shown in grey when none is typed.
+                        let damage = analysis.itemDamage[index] ?? ""
                         CommitTextField("Damage", text: $file.string(path + ["damage"]), prompt: damage,
                                         fillOnReturn: damage)
                             .help(damage.isEmpty ? "Damage" : "Damage. The rules give \(damage); press Return to fill it in.")
@@ -646,7 +618,7 @@ struct EquipmentSection: View {
             }
         }
         .sheet(isPresented: $isShopping) {
-            ShopView(rules: file.ruleset, classRules: file.ruleset.classRules(named: file.string(["class"]) ?? ""),
+            ShopView(rules: analysis.rules, classRules: analysis.classRules,
                      purse: Purse(file)) { item, count, pay in
                 file.buy(item, count: count, pay: pay)
             }
@@ -677,18 +649,6 @@ struct EquipmentSection: View {
 
     private func move(_ from: Int, to: Int) {
         file.moveItem(in: ["equipment"], from: from, to: to)
-    }
-
-    /// The rules damage for a weapon, shown in grey when none is typed.
-    private func rulesDamage(at index: Int) -> String {
-        guard let name = file.string(["equipment", .index(index), "name"]) else { return "" }
-        let variable = file.bool(["rules", "options", "variableWeaponDamage"]) == true
-        // A house weapon from the custom list comes first: it may share a rules name.
-        if let house = EquipmentListStore.shared.list?.houseItem(named: name), house.category == .weapons {
-            return variable ? house.damage ?? "" : "1d6"
-        }
-        guard let weapon = file.ruleset.weapon(named: name) else { return "" }
-        return variable ? weapon.damage : "1d6"
     }
 }
 
@@ -759,7 +719,7 @@ struct WeaponsSection: View {
             if let attack {
                 Text("\(attack.notation)  \(attack.damage)")
                     .monospacedDigit()
-                    .help("THAC0 \(attack.thac0) (attack bonus \(attack.bonus >= 0 ? "+" : "")\(attack.bonus)), damage \(attack.damage)")
+                    .help("THAC0 \(attack.thac0) (attack bonus \(attack.bonus.signedText)), damage \(attack.damage)")
             } else {
                 Text("—").foregroundStyle(.tertiary)
             }

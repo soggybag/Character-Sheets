@@ -49,7 +49,7 @@ extension RulesAnalysis {
                 hitPoints = .fixed(newRow.hitPointBonus - oldRow.hitPointBonus)
             } else {
                 let sides = Int(classRules.hitDie.dropFirst()) ?? 6
-                hitPoints = .roll(sides: sides, conModifier: abilities["con"].flatMap { Int($0.headline) } ?? 0)
+                hitPoints = .roll(sides: sides, conModifier: conModifier)
             }
         } else {
             hitPoints = nil
@@ -92,7 +92,7 @@ extension RulesAnalysis {
         if let fromRow, let toRow, fromRow.conModifier == false {
             loss = fromRow.hitPointBonus - toRow.hitPointBonus
         } else if file.count(["hp", "rolls"]) >= level, let last = file.int(["hp", "rolls", .index(level - 1)]) {
-            loss = max(1, last + (abilities["con"].flatMap { Int($0.headline) } ?? 0))
+            loss = max(1, last + conModifier)
         } else {
             loss = nil
         }
@@ -105,7 +105,7 @@ extension RulesAnalysis {
     fileprivate func ruleChanges(for file: CharacterFile, toLevel: Int) -> ([LevelUpPlan.Change], [NodePath]) {
         var next = file
         next.setInt(toLevel, at: ["level"])
-        let after = RulesAnalysis(next, rules: rules)
+        let after = RulesAnalysis(next, rules: rules, equipmentList: equipmentList)
         var changes: [LevelUpPlan.Change] = []
         var kept: [NodePath] = []
         for (path, newValue) in after.suggestions.sorted(by: { $0.key.dotted < $1.key.dotted }) {
@@ -133,8 +133,7 @@ extension RulesAnalysis {
     /// +2 in 9d8+2, gained when CON no longer counts) is added once.
     public func hitPoints(fromDice results: [Int]) -> Int? {
         guard let dice = hitDiceToRoll else { return nil }
-        let con = abilities["con"].flatMap { Int($0.headline) } ?? 0
-        return results.reduce(0) { $0 + max(1, $1 + con) } + dice.modifier
+        return results.reduce(0) { $0 + max(1, $1 + conModifier) } + dice.modifier
     }
 }
 
@@ -199,10 +198,13 @@ extension CharacterFile {
     /// Basic encumbrance: whether the character carries a lot of treasure.
     /// A movement rate that followed the rules follows them to the new rate;
     /// one set by hand is kept.
-    public mutating func setCarryingTreasure(_ carrying: Bool, rules: OSERuleset? = nil) {
-        let followed = RulesAnalysis(self, rules: rules).status(of: ["movement"], in: self) == .matches
+    public mutating func setCarryingTreasure(_ carrying: Bool, rules: OSERuleset? = nil,
+                                             equipmentList: EquipmentList? = nil) {
+        let followed = RulesAnalysis(self, rules: rules, equipmentList: equipmentList)
+            .status(of: ["movement"], in: self) == .matches
         setBool(carrying ? true : nil, at: ["carryingTreasure"])
-        if followed, let rate = RulesAnalysis(self, rules: rules).suggestions[["movement"]] {
+        if followed, let rate = RulesAnalysis(self, rules: rules, equipmentList: equipmentList)
+            .suggestions[["movement"]] {
             setRulesValue(rate, at: ["movement"])
         }
     }

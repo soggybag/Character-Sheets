@@ -63,6 +63,15 @@ adding the build to the external group. Work on copies of your characters.
       All text on the sheet grows, including Notes; boxes widen to fit and
       rows wrap in a narrow window. Every open sheet follows, and the size
       is kept after relaunching. Printing is unchanged.
+- [ ] With the Hightower Market list chosen (Settings → Equipment), a thief
+      with a Hand crossbow and a Gambeson: the crossbow is in the Weapons
+      section (1d4 with variable damage, 30 / 60 / 90'), AC is 8 and Move
+      90'. Make the character a cleric: a rules note says clerics don't
+      normally use a hand crossbow. Switch to the rules list: the crossbow
+      leaves the Weapons section and AC goes back to 9.
+- [ ] Class warnings read the same in the shop and in the rules notes
+      (a cleric with a sword: "Clerics normally use blunt weapons only, not
+      a sword.").
 - [ ] Detailed encumbrance: add chainmail and 200 gp. The rates drop and
       say "encumbered"; the tooltip gives the coins carried. No checkbox.
 - [ ] Print: Combat shows the per-round rate; Exploration shows the rate

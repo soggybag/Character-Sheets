@@ -132,8 +132,11 @@ does now.
   that can't be read at all leaves the shop on the rules list.
 - **Settings and Edit as Text** list the problems. The status bar names the
   list and what it changes.
-- **The sheet** suggests a house weapon's damage, like a rules weapon's.
-  The Weapons section (to-hit and ranges) covers rules weapons only for now.
+- **The sheet** treats house weapons and armour like the rules' own: a
+  house weapon's damage is suggested and it's in the Weapons section (to-hit,
+  ranges); house armour and shields count for AC and movement (and weight,
+  with detailed encumbrance). `usableBy` gives the class warnings. The party
+  window and the printed sheet do the same.
 - **Shared lists:** keep the file in a shared folder (iCloud Drive,
   Dropbox). The app rereads it each time a shop or Settings opens.
 

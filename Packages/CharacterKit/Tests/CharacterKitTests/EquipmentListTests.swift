@@ -166,7 +166,7 @@ struct EquipmentListTests {
         let crossbow = try #require(items.first { $0.id == "house:handcrossbow" })
         let mule = try #require(items.first { $0.id == "house:mule" })
         #expect(rules.restriction(of: crossbow, for: rules.classRules(named: "Thief")) == nil)
-        #expect(rules.restriction(of: crossbow, for: rules.classRules(named: "Cleric")) == "Clerics don't normally use this.")
+        #expect(rules.restriction(of: crossbow, for: rules.classRules(named: "Cleric")) == "Clerics don't normally use a hand crossbow.")
         #expect(rules.restriction(of: mule, for: rules.classRules(named: "Cleric")) == nil)
     }
 
@@ -213,6 +213,77 @@ struct EquipmentListTests {
             #expect(list.summary == "No changes yet")
             #expect(list.body.contains("# \(name)"))
         }
+    }
+
+    // MARK: On the sheet
+
+    private func sheet(_ className: String, variable: Bool = true, items: String) throws -> CharacterFile {
+        try CharacterFile(text: """
+            ---
+            formatVersion: 1
+            rules: { system: ose, options: { variableWeaponDamage: \(variable) } }
+            class: \(className)
+            level: 1
+            abilityScores: { str: 10, int: 10, wis: 10, dex: 10, con: 10, cha: 10 }
+            equipment: \(items)
+            ---
+
+            """)
+    }
+
+    @Test func houseItemsCountOnTheSheet() throws {
+        let list = try hightower()
+        let file = try sheet("Thief", items: "[{ name: Hand crossbow }, { name: Gambeson }]")
+
+        // Without the list they're unknown items.
+        let plain = RulesAnalysis(file)
+        #expect(plain.weapons.isEmpty && plain.itemDamage.isEmpty)
+        #expect(plain.suggestions[["combat", "ac"]] == .int(9) && plain.movement?.rate == 120)
+
+        let analysis = RulesAnalysis(file, equipmentList: list)
+        let crossbow = try #require(analysis.weapons.first)
+        #expect(crossbow.name == "Hand crossbow" && crossbow.melee == nil)
+        #expect(crossbow.missile?.damage == "1d4" && crossbow.missile?.thac0 == 19)
+        #expect(crossbow.range == WeaponData.Range(short: 30, medium: 60, long: 90))
+        #expect(analysis.itemDamage == [0: "1d4"])
+        // Gambeson: AC 8, light armour.
+        #expect(analysis.suggestions[["combat", "ac"]] == .int(8) && analysis.movement?.rate == 90)
+        #expect(!analysis.notes.contains { $0.kind == .warning })
+
+        let fixedDamage = RulesAnalysis(try sheet("Thief", variable: false, items: "[{ name: Hand crossbow }]"),
+                                        equipmentList: list)
+        #expect(fixedDamage.itemDamage == [0: "1d6"])
+    }
+
+    @Test func houseItemsFollowTheirUsableBy() throws {
+        let analysis = RulesAnalysis(try sheet("Cleric", items: "[{ name: Hand crossbow }, { name: Gambeson }]"),
+                                     equipmentList: try hightower())
+        let warnings = analysis.notes.filter { $0.kind == .warning }.map(\.message)
+        // The crossbow lists its classes; the gambeson lists none, so anyone may wear it.
+        #expect(warnings == ["Clerics don't normally use a hand crossbow."])
+    }
+
+    @Test func aHouseShieldGivesItsBonus() throws {
+        let list = try list("add: [{ name: Tower shield, category: armour, cost: 20, acBonus: 2 }]")
+        let analysis = RulesAnalysis(try sheet("Fighter", items: "[{ name: Tower shield }, { name: Shield }]"),
+                                     equipmentList: list)
+        #expect(analysis.suggestions[["combat", "ac"]] == .int(7))
+    }
+
+    @Test func theShopAndTheSheetAgree() throws {
+        let rules = OSERuleset.classic
+        let cleric = rules.classRules(named: "Cleric")
+        let magicUser = rules.classRules(named: "Magic-User")
+        func shop(_ id: String, _ classRules: ClassRules?) throws -> String? {
+            try rules.restriction(of: #require(rules.shopItems.first { $0.id == id }), for: classRules)
+        }
+        func sheet(_ className: String, _ item: String) throws -> [String] {
+            RulesAnalysis(try self.sheet(className, items: "[{ name: \(item) }]")).notes
+                .filter { $0.kind == .warning }.map(\.message)
+        }
+        #expect(try sheet("Cleric", "Sword") == [shop("sword", cleric)])
+        #expect(try sheet("Magic-User", "Leather") == [shop("leather", magicUser)])
+        #expect(try sheet("Magic-User", "Shield") == [shop("shield", magicUser)])
     }
 
     @Test func summaryAndHouseItemLookup() throws {

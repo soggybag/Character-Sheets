@@ -101,3 +101,13 @@ final class EquipmentListStore {
         return url
     }
 }
+
+extension RulesAnalysis {
+    /// The analysis the app shows: the file's rules, with the custom
+    /// equipment list's house items (its weapons and armour count like the
+    /// rules' own). Reading the store in a view's body keeps it up to date.
+    @MainActor
+    static func ofSheet(_ file: CharacterFile) -> RulesAnalysis {
+        RulesAnalysis(file, equipmentList: EquipmentListStore.shared.list)
+    }
+}

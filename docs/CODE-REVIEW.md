@@ -239,5 +239,15 @@ plans, shop and sheet all use them; the app's `OSE` enum is gone; new
 characters record their rules) and S2 (thief skills, construction tricks
 and spells are decided by the class's rules, not its name).
 
+**Fixed in `rules-in-kit`:** S3 (the analysis takes the custom equipment
+list: house weapons get damage and a Weapons line, house armour and shields
+count for AC, movement and weight, `usableBy` gives class warnings; the
+sheet, level plans, party and printout all pass the list), S4 (one wording
+for class restrictions, shared by the shop and the rules notes, with a test
+that they agree), S5 (`Int.signedText`, `RulesAnalysis.value(at:in:)` and
+`conModifier` replace the copies; CON is no longer parsed back out of
+display text), T2 (`MovementSummary` and `TextFileStatus` moved into
+CharacterKit with tests; house damage comes from the analysis).
+
 **Left for next time:** S6, S7, I1, U1, H2, D2 (once there are steps to
 reproduce it), and S8 (a plan decision).

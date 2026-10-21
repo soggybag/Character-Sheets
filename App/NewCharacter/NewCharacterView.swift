@@ -248,7 +248,7 @@ private struct ClassRow: View {
                      "Prime " + classRules.primeRequisites.map { $0.uppercased() }.joined(separator: " & ")]
         if character.hasAllScores {
             let bonus = character.xpBonus(for: classRules)
-            if bonus != 0 { parts.append("XP \(bonus > 0 ? "+" : "−")\(abs(bonus))%") }
+            if bonus != 0 { parts.append("XP \(bonus.signedText)%") }
         }
         return parts.joined(separator: " · ")
     }
@@ -290,7 +290,7 @@ private struct AdjustSection: View {
     }
 
     private func adjustmentText(_ change: Int) -> String {
-        change == 0 ? "0" : (change > 0 ? "+\(change)" : "−\(-change)")
+        change == 0 ? "0" : change.signedText
     }
 }
 

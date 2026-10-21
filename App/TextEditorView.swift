@@ -11,47 +11,14 @@ struct TextEditorView: View {
             PlainTextEditor(text: $text, font: .monospacedSystemFont(ofSize: NSFont.systemFontSize, weight: .regular),
                             inset: CGSize(width: 12, height: 12))
             Divider()
-            StatusBar(status: ParseStatus(text: text, fileURL: fileURL))
+            StatusBar(status: TextFileStatus(text: text, fileName: fileURL?.deletingPathExtension().lastPathComponent))
         }
         .background(.background)
     }
 }
 
-enum ParseStatus {
-    case character(summary: String)
-    case equipmentList(summary: String, problems: [String])
-    case notACharacter
-    case error(String)
-
-    init(text: String, fileURL: URL?) {
-        if EquipmentList.isEquipmentList(text), let list = try? EquipmentList(text: text) {
-            let name = list.name ?? fileURL?.deletingPathExtension().lastPathComponent ?? "Equipment list"
-            self = .equipmentList(summary: "Equipment list: \(name) · \(list.summary)", problems: list.allProblems())
-            return
-        }
-        do {
-            let file = try CharacterFile(text: text)
-            guard file.isCharacter else {
-                self = .notACharacter
-                return
-            }
-            let name = file.name
-                ?? fileURL?.deletingPathExtension().lastPathComponent
-                ?? "Unnamed character"
-            let details = [file.string(["class"]), file.int(["level"]).map { "level \($0)" }]
-                .compactMap { $0 }
-                .filter { !$0.isEmpty }
-            self = .character(summary: ([name] + details).joined(separator: " · "))
-        } catch let error as CharacterFileError {
-            self = error == .noFrontMatter ? .notACharacter : .error(error.description)
-        } catch {
-            self = .error(error.localizedDescription)
-        }
-    }
-}
-
 private struct StatusBar: View {
-    let status: ParseStatus
+    let status: TextFileStatus
 
     var body: some View {
         HStack(spacing: 6) {

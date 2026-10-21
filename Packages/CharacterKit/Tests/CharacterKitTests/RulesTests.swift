@@ -173,14 +173,14 @@ struct RuleNoteTests {
 
     @Test func armourAndWeaponRestrictions() throws {
         let mu = try analysis("class: Magic-User\nlevel: 1\nequipment:\n  - { name: Chainmail }\n")
-        #expect(messages(mu).contains("Magic-Users can't normally wear armour."))
+        #expect(messages(mu).contains("Magic-Users can't wear armour."))
 
         let thief = try analysis("class: Thief\nlevel: 1\nequipment:\n  - { name: Plate mail }\n  - { name: Shield }\n")
         #expect(messages(thief).contains("Thieves can't normally wear plate mail."))
         #expect(messages(thief).contains("Thieves can't normally use a shield."))
 
         let cleric = try analysis("class: Cleric\nlevel: 1\nequipment:\n  - { name: Sword }\n  - { name: Holy symbol }\n")
-        #expect(messages(cleric).contains("Clerics normally use: blunt weapons only. Sword isn't one."))
+        #expect(messages(cleric).contains("Clerics normally use blunt weapons only, not a sword."))
 
         let dwarf = try analysis("class: Dwarf\nlevel: 1\nequipment:\n  - { name: Two-handed sword }\n")
         #expect(messages(dwarf).contains("Dwarves can't normally use a two-handed sword."))
