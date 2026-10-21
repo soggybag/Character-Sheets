@@ -253,6 +253,9 @@ public struct NewCharacter: Sendable {
     private func baseFile() -> CharacterFile {
         // The template is covered by the tests.
         var file = try! CharacterFile(text: CharacterFile.newCharacterTemplate)
+        // The rules this character was made with.
+        file.setString(rules.system, at: ["rules", "system"])
+        file.setString(rules.variant, at: ["rules", "variant"])
         file.setAscendingAC(ascendingAC)
         file.setString(name.trimmingCharacters(in: .whitespaces), at: ["name"])
         file.setString(classRules?.name ?? className, at: ["class"])

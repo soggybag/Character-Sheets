@@ -34,7 +34,7 @@ struct SheetView: View {
                 SavesSection(file: $file, analysis: analysis)
                 ExplorationSection(file: $file, analysis: analysis)
                 LanguagesSection(file: $file)
-                if showsSpells {
+                if showsSpells(analysis) {
                     SpellsSection(file: $file, analysis: analysis)
                 }
                 EquipmentSection(file: $file)
@@ -72,8 +72,8 @@ struct SheetView: View {
         return nil
     }
 
-    private var showsSpells: Bool {
-        file.count(["spells"]) > 0 || OSE.spellcastingClasses.contains(file.string(["class"]) ?? "")
+    private func showsSpells(_ analysis: RulesAnalysis) -> Bool {
+        file.count(["spells"]) > 0 || analysis.classRules?.spellcasting != nil
     }
 }
 
@@ -91,9 +91,3 @@ private struct Notice: View {
     }
 }
 
-/// Classic Fantasy names used as suggestions.
-enum OSE {
-    static let classes = ["Cleric", "Dwarf", "Elf", "Fighter", "Halfling", "Magic-User", "Thief"]
-    static let alignments = ["Lawful", "Neutral", "Chaotic"]
-    static let spellcastingClasses: Set<String> = ["Cleric", "Elf", "Magic-User"]
-}

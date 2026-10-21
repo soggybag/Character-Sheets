@@ -200,7 +200,7 @@ struct PrintedSheet {
     }
 
     private var showsThiefSkills: Bool {
-        analysis.classRules?.name == "Thief" || file.count(["thiefSkills"]) > 0
+        analysis.classRules?.hasFeature("thief-skills") == true || file.count(["thiefSkills"]) > 0
     }
 
     private var thiefSkills: some View {

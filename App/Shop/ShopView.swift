@@ -5,6 +5,8 @@ import SwiftUI
 /// paying from their money or not. Stays open for buying several things.
 /// Items the class can't normally use are marked, never hidden.
 struct ShopView: View {
+    /// The rules the character is played with: their items and restrictions.
+    let rules: OSERuleset
     let classRules: ClassRules?
     /// The money available; the shop shows it and checks costs against it.
     let purse: Purse
@@ -19,7 +21,6 @@ struct ShopView: View {
     @State private var pay = true
     @State private var lastAdded: String?
 
-    private let rules = OSERuleset.classic
     @State private var store = EquipmentListStore.shared
     /// The list chosen in Settings, or nil for the rules list.
     private var customList: EquipmentList? { store.list }

@@ -233,5 +233,11 @@ is touched; **leave** = no change, with the reason.
 that fails when the schema and the app's keys differ), L1, L2, L3, L5,
 T1, D1 (`App/ScopedAccess.swift`), H1. No visible change in the app.
 
+**Fixed in `ruleset-lookup`:** S1 (a file's rules come from its
+`rules.system` and `variant` through `OSERuleset.named`; the analysis, level
+plans, shop and sheet all use them; the app's `OSE` enum is gone; new
+characters record their rules) and S2 (thief skills, construction tricks
+and spells are decided by the class's rules, not its name).
+
 **Left for next time:** S6, S7, I1, U1, H2, D2 (once there are steps to
 reproduce it), and S8 (a plan decision).

@@ -29,6 +29,11 @@ adding the build to the external group. Work on copies of your characters.
 - [ ] Tab through every box without typing anything, then close. The app
       doesn't ask to save (nothing changed).
 - [ ] Rules menu: switch ascending AC on and off; the combat boxes follow.
+- [ ] Type the class in lower case ("thief", "dwarf", "cleric"): thief
+      skills, construction tricks and spells still appear, as for "Thief".
+- [ ] Edit as Text, change `variant: classic` to `variant: advanced`, Done:
+      a rules note says Classic Fantasy is used where the rules match, and
+      saves and attacks still fill in. Change it back: the note goes.
 - [ ] Movement: Combat → Move is a third of Exploration → Move, and
       Travel is a fifth (120' → 40' per round, 24 mi per day). Change the
       rate under Exploration; both follow. The two worked-out boxes are

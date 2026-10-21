@@ -214,6 +214,12 @@ struct EquipmentTables: Decodable, Sendable {
 }
 
 struct RulesetInfo: Decodable, Sendable {
+    /// `rules.system` in a character file, e.g. `ose`.
+    let id: String
+    /// `rules.variant`, e.g. `classic`.
+    let variant: String
+    /// e.g. "Classic Fantasy".
+    let displayName: String
     let alignments: [String]
     let combat: Combat
     let exploration: Exploration
