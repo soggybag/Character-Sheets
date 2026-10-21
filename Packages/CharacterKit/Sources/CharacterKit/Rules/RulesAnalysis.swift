@@ -88,6 +88,8 @@ public struct RulesAnalysis: Sendable {
     public let hitDice: String?
     /// The die rolled for hit points each level, with the CON modifier, e.g. "1d4+2".
     public let hitPointRoll: String?
+    /// The rules' movement rate and what slows the character down.
+    public let movement: MovementInfo?
 
     public init(_ file: CharacterFile, rules: OSERuleset = .classic) {
         var builder = Builder(file: file, rules: rules)
@@ -101,6 +103,7 @@ public struct RulesAnalysis: Sendable {
         notes = builder.notes
         hitDice = builder.row?.hd
         hitPointRoll = builder.hitPointRoll
+        movement = builder.movement
     }
 
     /// How the stored value at `path` compares with the rules.
@@ -146,6 +149,30 @@ func signed(_ value: Int) -> String {
 
 // MARK: - Working it out
 
+/// Movement by the rules. The stored `movement` is the rate per turn;
+/// encounters use a third of it, and overland travel a fifth, in miles a day.
+public struct MovementInfo: Equatable, Sendable {
+    public enum Load: Equatable, Sendable {
+        /// Encumbrance isn't tracked.
+        case untracked
+        /// From armour, and whether the character carries a lot of treasure.
+        case basic(carryingTreasure: Bool)
+        /// From the weight of armour, weapons, treasure and gear, in coins.
+        case detailed(coins: Int)
+    }
+
+    public let load: Load
+    /// The rate unburdened: for the armour worn (basic), or the lightest load (detailed).
+    public let unencumbered: Int
+    /// The rate the rules give now.
+    public let rate: Int
+
+    /// Feet per round in an encounter.
+    public static func encounter(_ rate: Int) -> Int { rate / 3 }
+    /// Miles a day overland.
+    public static func travel(_ rate: Int) -> Int { rate / 5 }
+}
+
 private struct Builder {
     let file: CharacterFile
     let rules: OSERuleset
@@ -159,6 +186,7 @@ private struct Builder {
     var weapons: [WeaponLine] = []
     var notes: [RuleNote] = []
     var hitPointRoll: String?
+    var movement: MovementInfo?
 
     init(file: CharacterFile, rules: OSERuleset) {
         self.file = file
@@ -235,7 +263,7 @@ private struct Builder {
             if className.isEmpty {
                 note(.info, "Choose a class to see what the rules suggest.", ["class"])
             } else {
-                note(.info, "No Classic Fantasy rules for “\(className)”, so saves, attacks and class abilities aren't suggested.", ["class"])
+                note(.info, "No Old-School Essentials Classic Fantasy rules for “\(className)”, so saves, attacks and class abilities aren't suggested.", ["class"])
             }
             return
         }
@@ -254,11 +282,14 @@ private struct Builder {
 
     /// Armour and shield from equipment. Items marked `equipped` count; if no
     /// item is marked at all, every armour item listed counts.
-    private func wornArmour() -> (armour: ArmourData?, shield: Bool) {
+    /// The armour worn: what's ticked Equipped, or if nothing is ticked, the
+    /// best armour listed. `suits` is every suit of armour considered.
+    private func wornArmour() -> (armour: ArmourData?, shield: Bool, suits: [ArmourData]) {
         let count = file.count(["equipment"])
         let anyMarked = (0..<count).contains { file.bool(["equipment", .index($0), "equipped"]) != nil }
         var best: ArmourData?
         var shield = false
+        var suits: [ArmourData] = []
         for index in 0..<count {
             let path: NodePath = ["equipment", .index(index)]
             guard !anyMarked || file.bool(path + ["equipped"]) == true,
@@ -266,15 +297,21 @@ private struct Builder {
                   let armour = rules.armour(named: name) else { continue }
             if armour.acBonus != nil {
                 shield = true
-            } else if let ac = armour.ac, ac < (best?.ac ?? .max) {
-                best = armour
+            } else if let ac = armour.ac {
+                suits.append(armour)
+                if ac < (best?.ac ?? .max) { best = armour }
             }
         }
-        return (best, shield)
+        return (best, shield, suits)
     }
 
     private mutating func combat() {
-        let (armour, shield) = wornArmour()
+        let (armour, shield, suits) = wornArmour()
+        if suits.count > 1, let armour {
+            let names = suits.map { $0.name.lowercased() }
+            note(.info, "More than one suit of armour (\(names.joined(separator: ", "))), so AC and movement "
+                 + "use the best: \(armour.name.lowercased()). Tick Equipped on the one worn.", ["equipment"])
+        }
         let descending = (armour?.ac ?? rules.info.combat.unarmouredAC) - (shield ? 1 : 0)
             - mod("dex") { $0.dex.ac }
         if score("dex") != nil {
@@ -289,8 +326,9 @@ private struct Builder {
             }
         }
 
-        if let movement = movementRate(armour: armour) {
-            suggestions[["movement"]] = .int(movement)
+        if let movement = movementInfo(armour: armour) {
+            self.movement = movement
+            suggestions[["movement"]] = .int(movement.rate)
         }
 
         guard let classRules else { return }
@@ -304,10 +342,10 @@ private struct Builder {
         }
     }
 
-    private func movementRate(armour: ArmourData?) -> Int? {
+    private func movementInfo(armour: ArmourData?) -> MovementInfo? {
         switch file.string(["rules", "options", "encumbrance"]) ?? "basic" {
         case "none":
-            return 120
+            return MovementInfo(load: .untracked, unencumbered: 120, rate: 120)
         case "detailed":
             var weight = 0
             var hasGear = false
@@ -327,10 +365,15 @@ private struct Builder {
             }
             if hasGear { weight += rules.encumbrance.detailed.miscGear }
             weight += ["pp", "gp", "ep", "sp", "cp"].reduce(0) { $0 + (file.int(["money", .key($1)]) ?? 0) }
-            return rules.encumbrance.detailed.movement.first { weight <= $0.upTo }?.rate ?? 0
+            let bands = rules.encumbrance.detailed.movement
+            return MovementInfo(load: .detailed(coins: weight), unencumbered: bands.first?.rate ?? 120,
+                                rate: bands.first { weight <= $0.upTo }?.rate ?? 0)
         default:
             let kind = armour?.encumbrance ?? "none"
-            return rules.encumbrance.basic.movement[kind]?.normal
+            guard let rates = rules.encumbrance.basic.movement[kind] else { return nil }
+            let treasure = file.bool(["carryingTreasure"]) == true
+            return MovementInfo(load: .basic(carryingTreasure: treasure), unencumbered: rates.normal,
+                                rate: treasure ? rates.treasure : rates.normal)
         }
     }
 
