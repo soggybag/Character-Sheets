@@ -33,7 +33,6 @@ struct SafetyTests {
     func rulesNeverCrashOnOddValues(_ index: Int) throws {
         var character = try file(Self.oddHeaders[index])
         let analysis = RulesAnalysis(character)
-        _ = analysis.namedValues
         for path in analysis.suggestions.keys { _ = analysis.status(of: path, in: character) }
         if let plan = analysis.levelUpPlan(for: character) {
             var levelled = character

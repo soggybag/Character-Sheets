@@ -3,11 +3,10 @@ import SwiftUI
 
 // MARK: - Bindings into the file
 
+// Each setter does nothing when the value hasn't changed, so focusing or
+// tabbing through a field never marks the document edited or rewrites it.
 extension Binding where Value == CharacterFile {
     /// A whole number. Clearing the field removes the key.
-    // Each setter does nothing when the value hasn't changed, so focusing or
-    // tabbing through a field never marks the document edited or rewrites it.
-
     func int(_ path: NodePath) -> Binding<Int?> {
         Binding<Int?> { wrappedValue.int(path) } set: {
             guard $0 != wrappedValue.int(path) else { return }

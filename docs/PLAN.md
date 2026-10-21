@@ -68,23 +68,35 @@ format that keeps changing.
 - **Test the rules tables.** A unit test per class checks saves, THAC0, XP and
   hit dice at every level against the published tables.
 
-## Architecture sketch
+## Architecture
+
+As built (checked in code review 1, 21 Oct 2026):
 
 ```
-CharacterSheetsApp (SwiftUI, DocumentGroup)
-├── CharacterDocument      FileDocument: split front matter / body, read & write
-├── Model
-│   ├── Character          Codable struct mirroring the YAML header
-│   └── RawFrontMatter     keeps unknown keys so nothing is ever dropped
-├── Rules
-│   ├── Ruleset            protocol: derived values, notes, level-up advice
-│   ├── OSEClassic         implementation backed by data tables
-│   └── Data/ose/*.json    classes, saves, XP, ability modifiers, spells per day
-└── Views
-    ├── SheetView          the main uncluttered sheet
-    ├── NotesEditor        Markdown body
-    └── Inspector          rules notes, derived-value explanations
+Packages/CharacterKit        Swift package, no AppKit (builds for iOS)
+├── CharacterFile            YAML header kept as a node tree (order, style,
+│   Paths, Layout,           unknown keys survive) + Markdown body;
+│   YAMLWriter               path-based reads and writes; our own emitter
+├── Rules/
+│   ├── OSERuleset           Classic Fantasy tables from Resources/ose/*.json
+│   ├── RulesData            decoded classes, abilities, equipment
+│   ├── RulesAnalysis        suggestions, notes, weapons, movement; never
+│   │                        changes the file
+│   └── LevelUp              level up and down plans, applied to the file
+├── Creation/                NewCharacter, RandomCharacter, Dice
+├── Shop, EquipmentList      buying, prices in copper, custom lists
+├── Spells, TableActions,    spell rows, HP and "use one", party summaries
+│   Party
+└── Import/                  PDF character sheets
+App (SwiftUI, macOS)
+├── CharacterDocument        FileDocument: a sheet, or plain text
+├── CharacterWindow(s)       one window per file; tiling and tabs
+├── Sheet/                   SheetView, sections, components, zoom, level up
+├── NewCharacter/, Shop/, Party/, Settings/, Help/, Print/
 ```
+
+Rules are data plus `RulesAnalysis`; there's no ruleset protocol yet (see
+`docs/CODE-REVIEW.md`, S1, before Advanced Fantasy).
 
 Decisions:
 
@@ -155,7 +167,10 @@ Decisions:
       restrictions, holy symbol, unused languages, HP to roll, XP to level up
 - [x] Level-up helper: shows every change, keeps overrides, rolls HP (fixed
       gains after 9th level), then applies
-- [x] Calculated values have stable names (`namedValues`) for custom layouts
+- [x] Calculated values have stable names (`namedValues`) for custom layouts.
+      Removed in code review 1 (21 Oct 2026) as unused; it's in git history
+      (`RulesAnalysis.namedValues`, before cleanup-small) for when custom
+      layouts start.
 - [ ] Layout pass with your sheet design (see Later: custom layouts)
 
 ### M4: At the table
@@ -254,7 +269,7 @@ Decisions:
   rolls; the app only rolls in character creation and level-up.
 - **Custom sheet layouts:** a layout file (likely YAML or JSON) that places
   fields by path (`saves.death`) and calculated values by name (`str.mod`,
-  `weapons.0.melee`, from `RulesAnalysis.namedValues`). Import a layout to
+  `weapons.0.melee`; bring back `RulesAnalysis.namedValues` from git). Import a layout to
   get a different sheet; the character file doesn't change.
 - iPad version
 - More rulesets: Basic Fantasy, B/X variants, 5e (SRD 5.2, CC-BY-4.0)

@@ -45,7 +45,7 @@ final class PartyModel {
 
     func start(_ partyFolder: PartyFolder?) {
         stop()
-        guard let url = partyFolder?.url, url.startAccessingSecurityScopedResource() else {
+        guard let url = partyFolder?.url, ScopedAccess.keep(url) else {
             folder = nil
             return
         }

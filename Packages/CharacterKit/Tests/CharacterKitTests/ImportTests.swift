@@ -119,8 +119,11 @@ struct ImportTests {
         #expect(throws: SheetImportError.nothingRecognised) { try SheetImport(fields: ["Invoice": "42"]) }
     }
 
-    /// Only the PDFs with fixtures: the folder also holds other PDFs, such as
-    /// sheets exported from the app.
+    /// Checks the fixtures against the real PDFs they came from, on the
+    /// developer's Mac only: the PDFs aren't in the repo, so elsewhere this
+    /// passes without checking anything. Only the PDFs with fixtures: the
+    /// folder also holds other PDFs, such as sheets exported from the app.
+    /// `the Halfling-1.json` is used only here.
     @Test func realPDFsWhenPresent() throws {
         let folder = URL(filePath: NSHomeDirectory()).appending(path: "Documents/Game/OSR/OSE/OSE Characters")
         let pdfs = (try? FileManager.default.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil))?

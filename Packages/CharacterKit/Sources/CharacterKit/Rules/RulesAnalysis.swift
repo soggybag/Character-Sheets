@@ -116,31 +116,6 @@ public struct RulesAnalysis: Sendable {
         guard let stored else { return .missing(rules: rules) }
         return stored == rules ? .matches : .overridden(rules: rules)
     }
-
-    /// Calculated values by name, for future custom layouts, e.g.
-    /// `str.melee`, `xp.next`, `weapons.0.melee`, `rules.saves.death`.
-    public var namedValues: [String: String] {
-        var values: [String: String] = [:]
-        for (key, ability) in abilities {
-            values["\(key).score"] = String(ability.score)
-            values["\(key).mod"] = ability.headline
-        }
-        if let xp {
-            values["xp.bonus"] = signed(xp.bonusPercent) + "%"
-            values["xp.next"] = xp.nextLevel.map(String.init)
-        }
-        values["hitDice"] = hitDice
-        values["hitPointRoll"] = hitPointRoll
-        for (path, value) in suggestions {
-            values["rules." + path.dotted] = value.description
-        }
-        for (index, weapon) in weapons.enumerated() {
-            values["weapons.\(index).name"] = weapon.name
-            values["weapons.\(index).melee"] = weapon.melee.map { "\($0.notation) \($0.damage)" }
-            values["weapons.\(index).missile"] = weapon.missile.map { "\($0.notation) \($0.damage)" }
-        }
-        return values
-    }
 }
 
 func signed(_ value: Int) -> String {
@@ -280,10 +255,9 @@ private struct Builder {
 
     // MARK: Combat
 
-    /// Armour and shield from equipment. Items marked `equipped` count; if no
-    /// item is marked at all, every armour item listed counts.
-    /// The armour worn: what's ticked Equipped, or if nothing is ticked, the
-    /// best armour listed. `suits` is every suit of armour considered.
+    /// The armour and shield worn. If any item is marked `equipped`, only
+    /// marked items count; otherwise every item listed does, and the best
+    /// armour is used. `suits` is every suit of armour that counted.
     private func wornArmour() -> (armour: ArmourData?, shield: Bool, suits: [ArmourData]) {
         let count = file.count(["equipment"])
         let anyMarked = (0..<count).contains { file.bool(["equipment", .index($0), "equipped"]) != nil }

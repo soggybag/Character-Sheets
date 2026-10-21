@@ -25,6 +25,9 @@ scripts/testflight.sh
 
 This runs the CharacterKit tests, archives a universal Release build with a
 new build number (UTC date and time, e.g. `202610161530`), and uploads it.
+Commit first: the build is made from the working tree, and the script warns
+when that has uncommitted changes. The commit is saved in
+`build/testflight/<build>/commit.txt`.
 `--no-upload` archives and exports without uploading.
 
 Before uploading, update `docs/WHAT-TO-TEST.txt`; the script prints it and
