@@ -13,7 +13,12 @@ adding the build to the external group. Work on copies of your characters.
 **Launch**
 - [ ] The app opens. Help → Character Sheets Help opens and reads correctly.
 - [ ] App menu → About Character Sheets shows the right version and build,
-      and the acknowledgments.
+      the "Designed for use with Old-School Essentials" logo (white in light
+      mode, black in dark mode, not stretched, narrower than the app name),
+      "Requires Old-School Essentials." and the trademark line. Licenses and
+      Legal… opens the license window.
+- [ ] Help → Licenses and Legal: the Old-School Essentials notices and logo,
+      then the Open Game License, then Yams.
 
 **Sample character** (Help → Open Sample Character, then save a copy)
 - [ ] The sheet looks right: no clipped text, overlapping boxes, or empty
@@ -24,6 +29,39 @@ adding the build to the external group. Work on copies of your characters.
 - [ ] Tab through every box without typing anything, then close. The app
       doesn't ask to save (nothing changed).
 - [ ] Rules menu: switch ascending AC on and off; the combat boxes follow.
+- [ ] Movement: Combat → Move is a third of Exploration → Move, and
+      Travel is a fifth (120' → 40' per round, 24 mi per day). Change the
+      rate under Exploration; both follow. The two worked-out boxes are
+      outlines with no fill, so they don't look like they can be typed in.
+- [ ] Basic encumbrance, wearing leather: tick Carrying treasure. The rate
+      drops from 90' to 60' and all three boxes are outlined and say
+      "encumbered"; the tooltip gives the unencumbered rate. Untick: back
+      to 90'. With a hand-typed rate (240'), the checkbox doesn't change it.
+- [ ] List leather armour and chainmail with neither ticked Equipped: AC
+      and movement use chainmail, and a rules note says so. Tick leather:
+      AC and movement follow it and the note goes.
+- [ ] Equipment: drag a row by its ≡ handle onto another row; a line shows
+      where it goes and it moves there. Right-click the handle: Move Up,
+      Down, to Top and to Bottom. One ⌘Z undoes one move. Dragging a row
+      into a text field doesn't type anything; dragging between two sheets
+      does nothing.
+- [ ] An empty box showing a grey rules value: click in it and press
+      Return; the value is filled in. Tabbing out without Return leaves it
+      empty. Edit → Use Rules Value (⌥⌘R) works in any box with a rules
+      value, empty or overridden. A weapon's grey damage (1d6): click in
+      Damage, press Return; it's filled in.
+- [ ] Clear Max HP: a "Roll 3d8…" link appears under it. Roll shows each
+      die and the total (CON added per die, at least 1 each); typing a total
+      works too. Use sets Max HP, and Current HP if it was empty. One ⌘Z
+      undoes it.
+- [ ] View → Zoom In (⌘+) a few times, Zoom Out (⌘−), Actual Size (⌘0).
+      All text on the sheet grows, including Notes; boxes widen to fit and
+      rows wrap in a narrow window. Every open sheet follows, and the size
+      is kept after relaunching. Printing is unchanged.
+- [ ] Detailed encumbrance: add chainmail and 200 gp. The rates drop and
+      say "encumbered"; the tooltip gives the coins carried. No checkbox.
+- [ ] Print: Combat shows the per-round rate; Exploration shows the rate
+      per turn and travel per day.
 
 **At the table**
 - [ ] Damage / Heal: type 3, press Return; HP drops by 3. Heal can't go
@@ -77,6 +115,20 @@ adding the build to the external group. Work on copies of your characters.
 **New character** (File → New Character…, ⌘N; File → New Blank Sheet, ⌥⌘N)
 - [ ] Roll scores, pick a class (an unmet requirement shows in orange),
       adjust, roll HP and gold, Create. The new sheet matches what you chose.
+- [ ] Buy equipment, Create, then open New Character again: it starts
+      empty (no scores, class or equipment from last time). Same after Cancel.
+- [ ] Random Character a few times: each fills every section, the class
+      has no unmet requirement, adjustments show no warnings, the kit fits
+      the gold and the class (no armour for a magic-user, a holy symbol for
+      a cleric, thieves' tools for a thief). The name and AC style are kept.
+      With a custom equipment list, the kit comes from that list.
+- [ ] Roll: 4d6, drop the lowest. Each score shows four dice with the
+      lowest struck through. The choice is kept after closing the window.
+- [ ] Allow swapping scores: a swap button per score; swapping moves the
+      score and its dice and clears adjustments. Off hides the buttons.
+- [ ] Type in very poor scores (all 8 or less, or 6, 7, 6, 8, 12, 14):
+      the optional sub-par rule is pointed out under the scores. With only
+      one score below 7 (6, 7, 7, 8, 12, 14) it isn't.
 
 **Import** (File → Import PDF Character Sheet…, ⇧⌘I)
 - [ ] Import a filled-in sheet. The banner lists what was skipped; the
