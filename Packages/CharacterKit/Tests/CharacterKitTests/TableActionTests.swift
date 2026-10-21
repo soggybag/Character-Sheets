@@ -173,3 +173,52 @@ struct LevelDownTests {
         #expect(try notes("class: Fighter\nlevel: 2\nhp: { max: 16 }").isEmpty)
     }
 }
+
+@Suite("Changing max hit points")
+struct MaxHitPointTests {
+    private func file(max: Int?, current: Int?) throws -> CharacterFile {
+        var lines = ""
+        if let max { lines += "  max: \(max)\n" }
+        if let current { lines += "  current: \(current)\n" }
+        return try CharacterFile(text: "---\nformatVersion: 1\nrules: { system: ose }\nhp:\n\(lines)---\n")
+    }
+
+    @Test func loweringMaxBringsCurrentDown() throws {
+        var full = try file(max: 9, current: 9)
+        full.setMaxHitPoints(7)
+        #expect(full.int(["hp", "max"]) == 7 && full.int(["hp", "current"]) == 7)
+
+        var wounded = try file(max: 9, current: 4)
+        wounded.setMaxHitPoints(7)
+        #expect(wounded.int(["hp", "current"]) == 4)
+    }
+
+    @Test func raisingMaxLeavesCurrentAlone() throws {
+        var file = try file(max: 7, current: 5)
+        file.setMaxHitPoints(12)
+        #expect(file.int(["hp", "max"]) == 12 && file.int(["hp", "current"]) == 5)
+    }
+
+    @Test func aTemporaryBonusIsKept() throws {
+        // 12 against a max of 9: a bonus, kept when max is corrected.
+        var file = try file(max: 9, current: 12)
+        file.setMaxHitPoints(8)
+        #expect(file.int(["hp", "max"]) == 8 && file.int(["hp", "current"]) == 12)
+    }
+
+    @Test func clearingOrSettingFirstMax() throws {
+        var cleared = try file(max: 9, current: 6)
+        cleared.setMaxHitPoints(nil)
+        #expect(cleared.int(["hp", "max"]) == nil && cleared.int(["hp", "current"]) == 6)
+
+        var first = try file(max: nil, current: 10)
+        first.setMaxHitPoints(8)
+        #expect(first.int(["hp", "current"]) == 8)
+    }
+
+    @Test func currentAboveMaxIsPointedOut() throws {
+        let note = "Current HP (12) is above max (9). If it isn't a temporary bonus, lower it."
+        #expect(RulesAnalysis(try file(max: 9, current: 12)).notes.map(\.message).contains(note))
+        #expect(!RulesAnalysis(try file(max: 9, current: 9)).notes.contains { $0.message.hasPrefix("Current HP") })
+    }
+}
