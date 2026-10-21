@@ -71,7 +71,7 @@ struct LevelUpSheet: View {
                     .keyboardShortcut(.cancelAction)
                 Button("Level Up") {
                     if file.int(["hp", "max"]) == nil, let startingMax {
-                        file.setInt(startingMax, at: ["hp", "max"])
+                        file.setMaxHitPoints(startingMax)
                         if file.int(["hp", "current"]) == nil { file.setInt(startingMax, at: ["hp", "current"]) }
                     }
                     file.apply(plan, hitPointRoll: roll, raiseXP: raiseXP)

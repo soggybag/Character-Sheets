@@ -18,6 +18,18 @@ extension CharacterFile {
         return new
     }
 
+    /// Sets max hit points. Lowering it below current hit points brings
+    /// current down to match, unless current was already above the old max
+    /// (a temporary bonus, which healing keeps too). Raising it leaves
+    /// current alone: the character may be wounded.
+    public mutating func setMaxHitPoints(_ value: Int?) {
+        let oldMax = int(["hp", "max"])
+        setInt(value, at: ["hp", "max"])
+        guard let value, let current = int(["hp", "current"]), current > value else { return }
+        if let oldMax, current > oldMax { return }
+        setInt(value, at: ["hp", "current"])
+    }
+
     /// Uses one of an equipment item (a torch, an arrow). An item with no
     /// quantity counts as one. Stops at 0; the item stays on the list.
     public mutating func useOne(ofItemAt index: Int) {

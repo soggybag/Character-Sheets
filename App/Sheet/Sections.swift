@@ -158,7 +158,10 @@ struct MaxHitPointsBox: View {
         let isEmpty = file.int(["hp", "max"]) == nil
         let dice = analysis.hitDiceToRoll
         VStack(spacing: 4) {
-            StatBox(label: "Max HP", value: $file.int(["hp", "max"]),
+            // Lowering max brings current HP down with it (one undo step).
+            StatBox(label: "Max HP", value: Binding(
+                        get: { file.int(["hp", "max"]) },
+                        set: { if $0 != file.int(["hp", "max"]) { file.setMaxHitPoints($0) } }),
                     help: "Maximum hit points. They're rolled, so the rules can't fill them in"
                         + (analysis.hitPointRoll.map { ": \($0) per level (at least 1)" } ?? ""),
                     caption: isEmpty && dice != nil ? nil : analysis.hitDice.map { "HD \($0)" },
@@ -222,7 +225,7 @@ struct RollHitPointsView: View {
                     .keyboardShortcut(.cancelAction)
                 Button("Use \(total.map(String.init) ?? "")") {
                     guard let total, total > 0 else { return }
-                    file.setInt(total, at: ["hp", "max"])
+                    file.setMaxHitPoints(total)
                     if file.int(["hp", "current"]) == nil { file.setInt(total, at: ["hp", "current"]) }
                     done()
                 }

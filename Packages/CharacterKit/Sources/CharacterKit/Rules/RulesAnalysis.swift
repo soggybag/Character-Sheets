@@ -548,6 +548,10 @@ private struct Builder {
         if let current = file.int(["hp", "current"]), current <= 0 {
             note(.warning, "At 0 hit points or fewer, a character is dead.", ["hp", "current"])
         }
+        if let current = file.int(["hp", "current"]), let max = file.int(["hp", "max"]), current > max {
+            note(.info, "Current HP (\(current)) is above max (\(max)). If it isn't a temporary bonus, lower it.",
+                 ["hp", "current"])
+        }
         guard let classRules else { return }
         if file.int(["hp", "max"]) == nil, let hitPointRoll {
             note(.info, "Roll hit points: \(hitPointRoll) per level (at least 1).", ["hp", "max"])

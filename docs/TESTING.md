@@ -89,6 +89,10 @@ adding the build to the external group. Work on copies of your characters.
 **At the table**
 - [ ] Damage / Heal: type 3, press Return; HP drops by 3. Heal can't go
       above max.
+- [ ] Max HP 9, HP 9: change Max HP to 7; HP follows to 7, and one ⌘Z
+      puts both back. With HP 4, lowering Max HP to 7 leaves HP at 4.
+      Raising Max HP never changes HP. Type HP 12 with Max HP 9: a rules
+      note says it's above max; lowering Max HP to 8 then keeps the 12.
 - [ ] HP at 0 shows the "dead" rules note.
 - [ ] The − next to an item quantity uses one, and stops at 0.
 - [ ] Spells: + memorizes a copy (a Cast box appears), − forgets one, and

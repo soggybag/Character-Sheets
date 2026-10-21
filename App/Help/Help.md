@@ -30,6 +30,8 @@ details.
   marks it as your override (a magic item, a house rule). Click the dot for
   **Use Rules Value**, or choose **Edit → Use Rules Value** (⌥⌘R) while
   typing in the box. Overrides are never changed behind your back.
+- Lowering **Max HP** below current HP brings HP down with it. HP that's
+  already above max (a temporary bonus) is kept, with a note.
 - **Rules Notes** at the top point out things worth knowing, like a class
   restriction or hit points still to roll. They're suggestions only.
 - **Level Up…** shows every change, lets you roll or type the hit die, and
