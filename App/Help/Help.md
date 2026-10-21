@@ -44,6 +44,9 @@ details.
   bigger or smaller; **Actual Size** (⌘0) goes back.
 - An empty **Max HP** box offers **Roll…**: roll the hit dice for the
   character's level (each die shown) or type in your own total.
+- An item's empty **Notes** show what it is in grey (its AC, qualities or
+  the rules' notes), including house items from a custom equipment list.
+  Press Return in Notes to keep that in the file.
 - Drag equipment by its **≡** handle to rearrange it, or right-click the
   handle to move an item up, down, to the top or bottom.
 - **Movement** is set once, under Exploration (feet per turn). Combat shows

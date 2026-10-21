@@ -137,6 +137,9 @@ does now.
   ranges); house armour and shields count for AC and movement (and weight,
   with detailed encumbrance). `usableBy` gives the class warnings. The party
   window and the printed sheet do the same.
+- **Item notes** show what a rules or house item is, in grey ("AC 8 [11],
+  light"). Press Return in Notes to keep it in the character file, so the
+  file still says what a house item is for someone without the list.
 - **Shared lists:** keep the file in a shared folder (iCloud Drive,
   Dropbox). The app rereads it each time a shop or Settings opens.
 

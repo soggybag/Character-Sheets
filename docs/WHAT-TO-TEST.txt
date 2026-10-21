@@ -1,18 +1,14 @@
 New in this build:
 
-- Random character: New Character → Random Character rolls a whole character in one click: the class the scores suit best, hit points, gold and a starting kit. Change anything before creating it.
-- House rules in New Character: roll 4d6 and drop the lowest, and swap scores. The window remembers your choice. Very poor rolls point out the optional rule for rolling a new character.
-- Movement where you use it: the encounter rate (per round) is under Combat, and the rate per turn and overland travel (miles a day) are under Exploration. When a character is encumbered, the rates are outlined. With basic encumbrance, tick Carrying treasure when hauling loot.
-- Rearrange equipment: drag an item by its ≡ handle, or right-click the handle to move it.
-- Grey rules values: press Return in an empty box (or a weapon's Damage) to fill in the grey value, or use Edit → Use Rules Value.
-- Empty Max HP: Roll… under the box rolls the hit dice for the character's level, or type in your own total.
-- Bigger text: View → Zoom In (⌘+) and Zoom Out (⌘−) change the sheet's text size.
-- About Character Sheets and Help → Licenses and Legal now show the Old-School Essentials notices and logo.
-- Fixes: New Character starts empty each time instead of keeping the last character's equipment. With two suits of armour and neither ticked Equipped, a rules note says which one AC and movement use.
+- Your equipment list on the sheet: with a custom list chosen in Settings → Equipment, house weapons now appear in the Weapons section (to-hit, damage, ranges), and house armour and shields count for AC and movement. Class warnings use each house item's usableBy.
+- Item notes: an empty Notes box in Equipment shows what the item is in grey, such as "AC 8 [11], light" or "melee, slow, two-handed". Press Return in Notes to keep it in the file.
+- Class warnings read the same in the shop and on the sheet, and name the item: "Clerics normally use blunt weapons only, not a sword."
+- A class typed in lower case ("thief", "dwarf") gets its thief skills, construction tricks and spells, like "Thief".
+- A file set to rules the app doesn't have yet (variant: advanced) says so in the rules notes, and uses Classic Fantasy where the rules match.
 
 Things to try:
-- Roll a few random characters. Did the class and kit make sense? Was anything missing that you'd buy?
-- Play a session with Zoom at a size you can read across the table. Does anything get cut off?
+- Make a list with Settings → Equipment → New List… (the starting file has an example of each section, ready to uncomment), add a house weapon and some house armour, buy them, and check the sheet. Is anything unclear about what a house item does?
+- Look through a character's Equipment. Do the grey notes help, or get in the way?
 - Use Edit → Undo and Redo freely, especially in boxes you've just typed in. Tell us if a value flips back and forth.
 
 Send feedback from Help → Send Feedback…, or with TestFlight's screenshot feedback.
