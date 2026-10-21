@@ -209,7 +209,7 @@ struct RuleNoteTests {
 
     @Test func unknownClass() throws {
         let a = try analysis("class: Barbarian\nlevel: 1\n")
-        #expect(messages(a) == ["No Classic Fantasy rules for “Barbarian”, so saves, attacks and class abilities aren't suggested."])
+        #expect(messages(a) == ["No Old-School Essentials Classic Fantasy rules for “Barbarian”, so saves, attacks and class abilities aren't suggested."])
         #expect(Array(a.suggestions.keys) == [["movement"]])     // armour-based, so still suggested
     }
 

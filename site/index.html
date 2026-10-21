@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Character Sheets for Mac</title>
-<meta name="description" content="A lightweight Mac app for old-school RPG characters, kept in plain text files.">
+<meta name="description" content="A lightweight Mac app for Old-School Essentials characters, kept in plain text files.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap">
@@ -80,7 +80,9 @@
     overflow-wrap: anywhere;
   }
   .links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; }
-  footer { color: var(--muted); font-size: 0.875rem; }
+  footer { color: var(--muted); font-size: 0.875rem; display: grid; gap: 0.5rem; }
+  /* The license forbids altering the logo: shown as supplied, aspect kept. */
+  .ose-logo img { display: block; width: 180px; height: auto; }
 </style>
 </head>
 <body>
@@ -92,8 +94,17 @@
   </header>
 
   <div class="summary">
-    <p>A lightweight Mac app for old-school RPG characters. It fills in saves, attacks and level-ups from the rules without getting in your way, and keeps every character in a plain text file you own.</p>
+    <p>A lightweight Mac app for Old-School Essentials characters. It fills in saves, attacks and level-ups from the rules without getting in your way, and keeps every character in a plain text file you own.</p>
   </div>
+
+  <section>
+    <h2>Old-School Essentials</h2>
+    <picture class="ose-logo">
+      <source srcset="images/designed-for-ose-dark.png" media="(prefers-color-scheme: dark)">
+      <img src="images/designed-for-ose-light.png" alt="Designed for use with Old-School Essentials" width="180" height="80">
+    </picture>
+    <p><strong>Requires Old-School Essentials.</strong> The app knows the Classic Fantasy classes' numbers (saves, attacks, experience, spells per day) and leaves the rules themselves to the books.</p>
+  </section>
 
   <section>
     <h2>Support</h2>
@@ -105,7 +116,11 @@
     <p>The app collects no personal information and can't connect to the internet. Read the <a href="privacy.html">privacy policy</a>.</p>
   </section>
 
-  <footer>© 2026 Mitchell Hudson</footer>
+  <footer>
+    <p>© 2026 Mitchell Hudson</p>
+    <p>Character Sheets is an independent app. It isn't an official Old-School Essentials product, and isn't affiliated with or approved by Necrotic Gnome.</p>
+    <p>Old-School Essentials is a trademark of Necrotic Gnome. The trademark and Old-School Essentials logo are used with permission of Necrotic Gnome, under license.</p>
+  </footer>
 </main>
 </body>
 </html>

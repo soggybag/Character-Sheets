@@ -1,13 +1,18 @@
 New in this build:
 
-- Narrower windows: a character sheet can be made much narrower. Rows of boxes wrap onto a second line.
-- Window menu: Tile Character Sheets lays the open sheets side by side. Merge Sheets into Tabs puts them in one window with a tab per character, and Open Sheets in Tabs keeps new sheets opening as tabs.
-- Undo works one edit at a time: undoing a name or an item takes back the whole change, not one letter. A crash when undoing after Edit as Text is fixed.
-- Your own equipment list: Settings → Equipment → New List… makes a file of changes to the rules' equipment: new prices, items the market doesn't sell, and house items. Every shop (on the sheet and in New Character) uses it, and prices can be in silver or copper ("5 sp"). Keep the file in a shared folder so the whole group shops from the same list.
+- Random character: New Character → Random Character rolls a whole character in one click: the class the scores suit best, hit points, gold and a starting kit. Change anything before creating it.
+- House rules in New Character: roll 4d6 and drop the lowest, and swap scores. The window remembers your choice. Very poor rolls point out the optional rule for rolling a new character.
+- Movement where you use it: the encounter rate (per round) is under Combat, and the rate per turn and overland travel (miles a day) are under Exploration. When a character is encumbered, the rates are outlined. With basic encumbrance, tick Carrying treasure when hauling loot.
+- Rearrange equipment: drag an item by its ≡ handle, or right-click the handle to move it.
+- Grey rules values: press Return in an empty box (or a weapon's Damage) to fill in the grey value, or use Edit → Use Rules Value.
+- Empty Max HP: Roll… under the box rolls the hit dice for the character's level, or type in your own total.
+- Bigger text: View → Zoom In (⌘+) and Zoom Out (⌘−) change the sheet's text size.
+- About Character Sheets and Help → Licenses and Legal now show the Old-School Essentials notices and logo.
+- Fixes: New Character starts empty each time instead of keeping the last character's equipment. With two suits of armour and neither ticked Equipped, a rules note says which one AC and movement use.
 
 Things to try:
-- Keep the party's sheets side by side or in tabs during a session. Is a narrow sheet still easy to read?
-- Use Edit → Undo and Redo freely. Tell us if anything comes back wrong.
-- Make a list for your campaign's market. Was anything in the file hard to work out? Settings shows any problems it finds; tell us if one was confusing.
+- Roll a few random characters. Did the class and kit make sense? Was anything missing that you'd buy?
+- Play a session with Zoom at a size you can read across the table. Does anything get cut off?
+- Use Edit → Undo and Redo freely, especially in boxes you've just typed in. Tell us if a value flips back and forth.
 
 Send feedback from Help → Send Feedback…, or with TestFlight's screenshot feedback.

@@ -78,7 +78,8 @@ This means hand edits always win, and the file never needs extra metadata.
 | `combat.thac0` | integer | Descending style. |
 | `combat.attackBonus` | integer | Ascending style. |
 | `saves` | map | `death`, `wands`, `paralysis`, `breath`, `spells`: target numbers. |
-| `movement` | integer | Base movement rate in feet per turn (encounter rate = ÷3). |
+| `movement` | integer | Movement rate in feet per turn, with what the character carries (encounter rate = ÷3 feet per round; overland travel = ÷5 miles a day). |
+| `carryingTreasure` | bool | Basic encumbrance: the character carries a lot of treasure, which slows them to the next rate down. Default `false`. |
 | `exploration` | map | X-in-6 chances: `listen`, `secretDoors`, `openDoors`, `findTraps`, `constructionTricks` (dwarves). |
 | `thiefSkills` | map | Percentages: `climb`, `hide`, `moveSilently`, `openLocks`, `pickPockets`, `traps` (find/remove treasure traps); `hearNoise` is X-in-6. |
 | `languages` | list of strings | |

@@ -12,7 +12,7 @@ struct HelpCommands: View {
             .keyboardShortcut("?", modifiers: .command)
         Button("Open Sample Character") { openSample() }
         Divider()
-        Button("Open Game License") { openWindow(id: LicenseView.windowID) }
+        Button("Licenses and Legal") { openWindow(id: LicenseView.windowID) }
         Divider()
         Button("Send Feedback…") { Feedback.compose() }
     }
@@ -70,18 +70,43 @@ struct HelpView: View {
 }
 
 /// The Open Game License for the rules data.
+/// Help → Licenses and Legal: the third-party license's notices, the Open
+/// Game License the rules data is used under, and the code's licenses.
 struct LicenseView: View {
     static let windowID = "license"
 
     var body: some View {
         ScrollView {
-            MarkdownBlocksView(text: OSERuleset.licenseText)
-                .textSelection(.enabled)
+            LegalContent()
                 .padding(24)
                 .frame(maxWidth: 640, alignment: .leading)
                 .frame(maxWidth: .infinity)
         }
         .frame(minWidth: 520, minHeight: 480)
+    }
+}
+
+/// What Licenses and Legal shows, without its scroll view.
+struct LegalContent: View {
+    var body: some View {
+            VStack(alignment: .leading, spacing: 20) {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Old-School Essentials").font(.title2.bold())
+                    DesignedForOSELogo(width: 180)
+                    Text(Legal.requires).fontWeight(.semibold)
+                    Text(Legal.independent)
+                    Text(Legal.trademark)
+                    Text(Legal.rulesData)
+                }
+                Divider()
+                MarkdownBlocksView(text: OSERuleset.licenseText)
+                Divider()
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Yams").font(.title2.bold())
+                    Text(Legal.yams).font(.callout)
+                }
+            }
+            .textSelection(.enabled)
     }
 }
 

@@ -197,6 +197,17 @@ extension CharacterFile {
         }
     }
 
+    /// Basic encumbrance: whether the character carries a lot of treasure.
+    /// A movement rate that followed the rules follows them to the new rate;
+    /// one set by hand is kept.
+    public mutating func setCarryingTreasure(_ carrying: Bool, rules: OSERuleset = .classic) {
+        let followed = RulesAnalysis(self, rules: rules).status(of: ["movement"], in: self) == .matches
+        setBool(carrying ? true : nil, at: ["carryingTreasure"])
+        if followed, let rate = RulesAnalysis(self, rules: rules).suggestions[["movement"]] {
+            setRulesValue(rate, at: ["movement"])
+        }
+    }
+
     /// Writes the rules value into every field that's empty. Returns how many
     /// fields were filled.
     @discardableResult

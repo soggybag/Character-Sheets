@@ -203,9 +203,49 @@ Decisions:
       Format drafted in `docs/EQUIPMENT-FORMAT.md`, with an example in
       `examples/equipment/`. Parser, copper prices, and Settings →
       Equipment done and checked by hand.
-- [ ] OSE Advanced Fantasy: waiting on permission from Necrotic Gnome. The
-      pre-2026 Player's Tome reserves its class and race sections as Product
-      Identity; a Creative Commons SRD is announced for early 2027.
+- [ ] **Random character and house rules in New Character:** a Random
+      Character button rolls everything (the best class for the scores,
+      adjustments that reach a better XP bonus without losing a modifier,
+      a starting kit from the shop), then everything can be changed. House
+      rules, remembered between characters: roll 4d6 and drop the lowest,
+      and swap scores. The thief's "can't lower STR" from the class data is
+      now pointed out. Sub-par characters (optional rule) are pointed out,
+      and the random roll uses that rule and the 1st-level HP reroll.
+      Sub-par: every score below 9, or two or more below 7 (checked
+      against the rules site).
+- [ ] **Rearrange equipment:** drag rows by a handle, or right-click it
+      for Move Up / Down / to Top / to Bottom.
+- [ ] **Rules values within reach:** Return in an empty box fills in the
+      grey rules value; Edit → Use Rules Value (⌥⌘R) for the box being
+      typed in. (Right-clicking a box shows the text field's own menu.)
+- [ ] **Zoom:** View → Zoom In / Zoom Out / Actual Size (⌘+ ⌘− ⌘0) for
+      the sheet's text, 85%–200%, for every sheet, remembered. Fonts and box
+      widths scale together (sharp text, same layout).
+- [ ] **Roll Max HP** from the sheet when it's empty: every hit die at the
+      current level, dice shown, or a typed total. Return fills a weapon's
+      grey damage.
+- [ ] **Movement where it's used:** Combat shows the encounter rate (feet
+      per round); Exploration shows the rate per turn and overland travel
+      (miles a day). Both are worked out from the one stored rate. When the
+      load slows the character, the rates are outlined and say
+      "encumbered", with the unencumbered rate in the tooltip. Basic
+      encumbrance gets a Carrying treasure checkbox (`carryingTreasure` in
+      the file); a rate that followed the rules follows the checkbox. The
+      printed sheet matches.
+- [ ] OSE Advanced Fantasy: Necrotic Gnome offered special permission
+      (21 Oct 2026) for the class names and advancement tables. The
+      Creative Commons SRD (early 2027) will only be the B/X material, so it
+      won't add these classes. Next: confirm the scope with them (see Open
+      decisions), get their permission note, then add the classes.
+- [ ] **Use the third-party license** (decided 21 Oct 2026, see Open
+      decisions). Done, to check by hand: a new About window (logo,
+      "Requires Old-School Essentials", trademark line, "independent app"
+      note); Help → Licenses and Legal (was Open Game License) with the same
+      notices, then the OGL and Yams; Help and the website name the game; the
+      logo is in the asset catalogue and `site/images/`. Still to do: the App
+      Store listing (description says Old-School Essentials and "Requires
+      Old-School Essentials"; subtitle may say OSE), and after release a
+      promo code for Necrotic Gnome (summon@necroticgnome.com).
 
 ### Later
 - Quick Look preview. Deferred: character files are plain `.md`, so a
@@ -240,7 +280,7 @@ Anything here needs a strong case before it moves up:
 | Saving reformats files that users edited by hand (comments lost, key order changed) | Our own emitter with fixed order. Document that YAML comments go in the notes body. Preserve unknown keys. |
 | YAML gotchas (`no` → false, indentation) | Emitter quotes strings when needed. The app shows a friendly parse error with the line number instead of refusing to open the file. |
 | Rules tables contain typos | Unit tests against the published tables for every class and level. |
-| Licensing | Ship numbers and short text written by us. Use the OSE SRD under OGL 1.0a with the required notices. Never use "OSE" or "D&D" as product branding. Check the license terms again before release. |
+| Licensing | Ship numbers and short text written by us. Use the OSE SRD under OGL 1.0a with the required notices, and Necrotic Gnome's third-party license for the name and logo (`App/Help/Legal.swift` has its required text). Never put "OSE", "Old-School Essentials" or "D&D" in the app's name ("OSE" may go in the App Store subtitle). Check the license terms again before release. |
 | PDF import meets sheet layouts we haven't seen | Detect the layout from its field names. Import whatever maps, list what didn't, and never fail outright. |
 | Format needs to change | `formatVersion` plus a migration step on load. The app writes only the newest version. |
 
@@ -248,11 +288,12 @@ Anything here needs a strong case before it moves up:
 
 - App name (avoid "OSE" and "D&D" in it). The bundle id is
   `com.mitchellhudson.CharacterSheets`; the signing team is still to set.
-- Whether to use Necrotic Gnome's third-party license (v1.7, in
-  `docs/Old-School Essentials Third Party License-…/`). Without it the
-  app must not claim compatibility with Old-School Essentials (OGL
-  section 7), so the ruleset is labelled "Classic Fantasy". The license
-  is free and needs no approval. It allows:
+- **Decided (21 Oct 2026): use Necrotic Gnome's third-party license**
+  (v1.7, in `docs/Old-School Essentials Third Party License-…/`). Their
+  answers removed the open questions. Without the license the app couldn't
+  claim compatibility with Old-School Essentials (OGL section 7), which is
+  why the ruleset is labelled "Classic Fantasy" for now. The license is
+  free and needs no approval. It allows:
   - "Old-School Essentials" in the app, Help, listing and website, and
     classes, spells and rules referred to by name
   - "OSE" in a subtitle (App Store subtitle), never in the app's name
@@ -265,15 +306,23 @@ Anything here needs a strong case before it moves up:
     website)
   - a copy for Necrotic Gnome after release (a promo code)
 
-  Open questions, asked by email to summon@necroticgnome.com (sent: —,
-  answer: —):
-  1. The license is written for books (logo "on the cover", "Requires
-     Old-School Essentials" on "the back cover"). Does it cover an app,
-     and where do the logo and that line go?
-  2. It says a product "must not replicate any text from the Player
-     Characters or Adventuring sections". Is shipping the SRD's class
-     tables (saves, XP, THAC0) as data, under the OGL, compatible?
-  3. Would they allow Advanced Fantasy class data before the Creative
-     Commons SRD? The license allows naming those classes, not including
-     their rules.
+  Questions asked by email to summon@necroticgnome.com, answered by
+  their customer support on 21 Oct 2026:
+  1. *Does it cover an app, and where do the logo and "Requires" line
+     go?* Yes. An about page or legal page is a good place for the logo.
+  2. *Can the SRD's class tables ship as data?* Yes, that's correct
+     under the license. (The advancement tables are in the Character
+     Classes section, not Player Characters.)
+  3. *Advanced Fantasy before the Creative Commons SRD?* That SRD will
+     only be the B/X material, so it won't add the classes. They're happy
+     to give special permission for **class names and advancement
+     tables**, and will send a suggested permission note once we confirm
+     that's what we want.
+
+  Still to settle with them: whether that permission also covers the
+  short facts the app uses for Classic Fantasy classes (requirements,
+  prime requisites, XP modifiers, armour and weapons allowed, languages,
+  infravision, level limits, and races' ability limits). Without them,
+  the Advanced Fantasy classes get tables only, and the player types
+  restrictions themselves. Reply drafted 21 Oct 2026, not sent yet.
 - Free, paid, or pay-what-you-want

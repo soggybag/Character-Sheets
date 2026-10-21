@@ -1,13 +1,19 @@
 # Welcome to Character Sheets
 
-Character Sheets keeps old-school characters in plain text files and fills in
-the rules for you, without getting in your way.
+Character Sheets keeps Old-School Essentials characters in plain text files
+and fills in the rules for you, without getting in your way. It's designed
+for use with Old-School Essentials Classic Fantasy. **Requires Old-School
+Essentials:** the app knows the numbers (saves, attacks, experience, spells
+per day), and the books have the rules. Help → Licenses and Legal has the
+details.
 
 ## Getting started
 
 - **File → New Character…** (⌘N) rolls up a 1st-level character: 3d6 in
   order, a class, hit points and gold. Roll in the app or type in your own
-  dice. **File → New Blank Sheet** (⌥⌘N) starts an empty sheet instead.
+  dice. **Random Character** rolls the whole thing at once, kit and all,
+  for you to change. Two common house rules are there to turn on: 4d6 drop
+  the lowest, and swapping scores. **File → New Blank Sheet** (⌥⌘N) starts an empty sheet instead.
 - **File → Import PDF Character Sheet…** (⇧⌘I) turns a filled-in fillable PDF
   sheet into a character.
 - **File → Open…** (⌘O) opens a character file. Any Markdown file with a
@@ -18,10 +24,12 @@ the rules for you, without getting in your way.
 
 - Values the rules can work out (saves, THAC0 or attack bonus, AC, skills,
   spell slots) are filled in for you. Empty boxes show the rules value in
-  grey; choose **Rules → Fill In Missing Values** to write them all in.
+  grey. Press Return in a box to fill in its value, or choose **Rules → Fill
+  In Missing Values** in the toolbar to write them all in.
 - Type any value you like. If it differs from the rules, a small orange dot
   marks it as your override (a magic item, a house rule). Click the dot for
-  **Use Rules Value**. Overrides are never changed behind your back.
+  **Use Rules Value**, or choose **Edit → Use Rules Value** (⌥⌘R) while
+  typing in the box. Overrides are never changed behind your back.
 - **Rules Notes** at the top point out things worth knowing, like a class
   restriction or hit points still to roll. They're suggestions only.
 - **Level Up…** shows every change, lets you roll or type the hit die, and
@@ -32,6 +40,17 @@ the rules for you, without getting in your way.
   choose the hit points lost and whether XP drops.
 - The **Rules** menu in the toolbar switches ascending AC, variable weapon
   damage and encumbrance for this character.
+- **View → Zoom In** (⌘+) and **Zoom Out** (⌘−) make the sheet's text
+  bigger or smaller; **Actual Size** (⌘0) goes back.
+- An empty **Max HP** box offers **Roll…**: roll the hit dice for the
+  character's level (each die shown) or type in your own total.
+- Drag equipment by its **≡** handle to rearrange it, or right-click the
+  handle to move an item up, down, to the top or bottom.
+- **Movement** is set once, under Exploration (feet per turn). Combat shows
+  the encounter rate (a third, per round) and Exploration shows overland
+  travel (a fifth, in miles a day). When what the character carries slows
+  them, the rates are outlined and say "encumbered". With basic
+  encumbrance, tick **Carrying treasure** when they're hauling loot.
 - **At the table:** type an amount in **Damage / Heal** and press Return to
   take damage, or use − and +. The − next to a quantity uses one torch or
   arrow.

@@ -42,7 +42,7 @@ struct SheetSection<Content: View>: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text(title.uppercased())
-                .font(.caption.weight(.semibold))
+                .zoomFont(.caption, weight: .semibold)
                 .tracking(1.2)
                 .foregroundStyle(.secondary)
             content
@@ -128,36 +128,41 @@ struct StatBox: View {
     var emptyPrompt = "–"
     /// A rules warning about this value; the box gets an orange outline.
     var warning: String?
+    /// Drawn with an accent outline and caption, e.g. an encumbered rate.
+    var highlighted = false
 
     var body: some View {
         VStack(spacing: 4) {
             Text(label)
-                .font(.caption)
+                .zoomFont(.caption)
                 .foregroundStyle(.secondary)
                 .lineLimit(1)
                 // Right-clicking the box itself reaches the text field's
                 // own menu, so the label and the dot carry this one.
                 .contextMenu { rulesMenu }
             HStack(spacing: 2) {
-                NumberField(label: label, value: $value, prompt: prompt)
+                NumberField(label: label, value: $value, prompt: prompt, fillOnReturn: missingValue)
+                    .focusedValue(\.rulesValueAction, rulesValueAction)
                     .labelsHidden()
                     .textFieldStyle(.plain)
                     .multilineTextAlignment(.center)
-                    .font(.title3.monospacedDigit())
+                    .zoomFont(.title3, monospacedDigit: true)
                 if let suffix {
                     Text(suffix)
-                        .font(.caption)
+                        .zoomFont(.caption)
                         .foregroundStyle(.secondary)
                         .fixedSize()
                 }
             }
             .padding(.vertical, 6)
             .padding(.horizontal, 6)
-            .frame(width: width)
+            .zoomFrame(width: width)
             .background(.quaternary.opacity(0.6), in: .rect(cornerRadius: 8))
             .overlay {
                 if warning != nil {
                     RoundedRectangle(cornerRadius: 8).strokeBorder(.orange, lineWidth: 1.5)
+                } else if highlighted {
+                    RoundedRectangle(cornerRadius: 8).strokeBorder(Color.accentColor, lineWidth: 1.5)
                 }
             }
             .overlay(alignment: .topTrailing) {
@@ -168,8 +173,8 @@ struct StatBox: View {
             .help(boxHelp)
             if let caption {
                 Text(caption)
-                    .font(.caption.monospacedDigit())
-                    .foregroundStyle(.secondary)
+                    .zoomFont(.caption, monospacedDigit: true)
+                    .foregroundStyle(highlighted ? AnyShapeStyle(Color.accentColor) : AnyShapeStyle(.secondary))
                     .help(captionHelp ?? "")
             }
         }
@@ -200,6 +205,18 @@ struct StatBox: View {
         }
     }
 
+    /// The grey rules value of an empty box, filled in by Return.
+    private var missingValue: Int? {
+        if case let .missing(.int(number)) = status { return number }
+        return nil
+    }
+
+    /// For Edit → Use Rules Value while this box is being typed in.
+    private var rulesValueAction: RulesValueAction? {
+        guard let rules = rulesValue, let useRulesValue else { return nil }
+        return RulesValueAction(value: rules.description, perform: useRulesValue)
+    }
+
     private var rulesValue: RulesValue? {
         switch status {
         case let .overridden(rules), let .missing(rules): rules
@@ -217,9 +234,10 @@ struct StatBox: View {
         let name = help ?? label
         switch status {
         case let .overridden(rules):
-            return "\(name). The rules give \(rules); your value is kept. Click the orange dot to use the rules value."
+            return "\(name). The rules give \(rules); your value is kept. Click the orange dot, "
+                + "or choose Edit → Use Rules Value, to use the rules value."
         case let .missing(rules):
-            return "\(name). The rules give \(rules) (shown in grey until you fill it in)."
+            return "\(name). The rules give \(rules), shown in grey. Press Return in the box to fill it in."
         case .matches, .noRule:
             return name
         }
@@ -237,12 +255,63 @@ struct RuledStatBox: View {
     var help: String?
     var caption: String?
     var captionHelp: String?
+    var highlighted = false
 
     var body: some View {
         StatBox(label: label, value: $file.int(path), suffix: suffix, width: width, help: help,
                 status: analysis.status(of: path, in: file),
                 useRulesValue: analysis.suggestions[path].map { value in { file.setRulesValue(value, at: path) } },
-                caption: caption, captionHelp: captionHelp)
+                caption: caption, captionHelp: captionHelp, highlighted: highlighted)
+    }
+}
+
+/// A box showing a value worked out from another field. It can't be edited
+/// itself, so it's drawn as an outline rather than a filled box; `help` says
+/// where to change it.
+struct ValueBox: View {
+    let label: String
+    let value: Int?
+    var suffix: String?
+    var width: CGFloat = 64
+    var help: String?
+    var caption: String?
+    var captionHelp: String?
+    var highlighted = false
+
+    var body: some View {
+        VStack(spacing: 4) {
+            Text(label)
+                .zoomFont(.caption)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+            HStack(spacing: 2) {
+                Text(value.map(String.init) ?? "–")
+                    .zoomFont(.title3, monospacedDigit: true)
+                    .foregroundStyle(value == nil ? .tertiary : .primary)
+                if let suffix, value != nil {
+                    Text(suffix)
+                        .zoomFont(.caption)
+                        .foregroundStyle(.secondary)
+                        .fixedSize()
+                }
+            }
+            .padding(.vertical, 6)
+            .padding(.horizontal, 6)
+            .zoomFrame(width: width)
+            // No fill, unlike the boxes you type in: an outline only.
+            .overlay {
+                RoundedRectangle(cornerRadius: 8)
+                    .strokeBorder(highlighted ? AnyShapeStyle(Color.accentColor) : AnyShapeStyle(.separator),
+                                  lineWidth: highlighted ? 1.5 : 1)
+            }
+            .help(help ?? label)
+            if let caption {
+                Text(caption)
+                    .zoomFont(.caption, monospacedDigit: true)
+                    .foregroundStyle(highlighted ? AnyShapeStyle(Color.accentColor) : AnyShapeStyle(.secondary))
+                    .help(captionHelp ?? "")
+            }
+        }
     }
 }
 
@@ -268,7 +337,7 @@ struct LineField: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 3) {
             Text(label)
-                .font(.caption)
+                .zoomFont(.caption)
                 .foregroundStyle(.secondary)
             HStack(spacing: 4) {
                 CommitTextField(label, text: $text, prompt: prompt)
@@ -304,7 +373,7 @@ struct LineNumberField: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 3) {
             Text(label)
-                .font(.caption)
+                .zoomFont(.caption)
                 .foregroundStyle(.secondary)
             NumberField(label: label, value: $value, prompt: prompt, grouping: true)
                 .textFieldStyle(.plain)
@@ -314,7 +383,7 @@ struct LineNumberField: View {
             Divider()
             if let caption {
                 Text(caption)
-                    .font(.caption.monospacedDigit())
+                    .zoomFont(.caption, monospacedDigit: true)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
                     .fixedSize()
@@ -333,6 +402,9 @@ struct NumberField: View {
     var prompt = ""
     /// Show thousands separators (XP, gold).
     var grouping = false
+    /// Written when Return is pressed in the empty field: the rules value
+    /// shown in grey. Leaving the field empty never writes it.
+    var fillOnReturn: Int?
 
     @State private var draft = ""
     @FocusState private var isFocused: Bool
@@ -345,7 +417,14 @@ struct NumberField: View {
             // while focused, unless there's an unsaved edit in the field.
             .onChange(of: shown) { old, new in if !isFocused || draft == old { draft = new } }
             .onChange(of: isFocused) { if !isFocused { commit() } }
-            .onSubmit(commit)
+            .onSubmit {
+                if let fillOnReturn, value == nil, draft.trimmingCharacters(in: .whitespaces).isEmpty {
+                    value = fillOnReturn
+                    draft = shown
+                } else {
+                    commit()
+                }
+            }
     }
 
     private var shown: String {
@@ -381,21 +460,28 @@ struct CommitTextField: View {
     let prompt: String
     let value: String
     let commit: (String) -> Void
+    /// Written when Return is pressed in the empty field: the rules value
+    /// shown in grey (a weapon's damage). Leaving the field never writes it.
+    var fillOnReturn: String?
 
     @State private var draft = ""
     @FocusState private var isFocused: Bool
 
-    init(_ label: String? = nil, prompt: String, value: String, commit: @escaping (String) -> Void) {
+    init(_ label: String? = nil, prompt: String, value: String, fillOnReturn: String? = nil,
+         commit: @escaping (String) -> Void) {
         self.label = label
         self.prompt = prompt
         self.value = value
+        self.fillOnReturn = fillOnReturn
         self.commit = commit
     }
 
     /// Edits a string in the file. Each edit is one undo step, not one per
     /// keystroke: the document is written only on Return or leaving the field.
-    init(_ label: String, text: Binding<String>, prompt: String = "") {
-        self.init(label, prompt: prompt, value: text.wrappedValue) { text.wrappedValue = $0 }
+    init(_ label: String, text: Binding<String>, prompt: String = "", fillOnReturn: String? = nil) {
+        self.init(label, prompt: prompt, value: text.wrappedValue, fillOnReturn: fillOnReturn) {
+            text.wrappedValue = $0
+        }
     }
 
     var body: some View {
@@ -404,7 +490,13 @@ struct CommitTextField: View {
             .onAppear { draft = value }
             .onChange(of: value) { old, new in if !isFocused || draft == old { draft = new } }
             .onChange(of: isFocused) { if !isFocused { finish() } }
-            .onSubmit(finish)
+            .onSubmit {
+                if let fillOnReturn, !fillOnReturn.isEmpty, value.isEmpty,
+                   draft.trimmingCharacters(in: .whitespaces).isEmpty {
+                    draft = fillOnReturn
+                }
+                finish()
+            }
     }
 
     /// Commits a change, then shows the stored value: the change once it
@@ -426,5 +518,26 @@ struct ListButton: View {
             .labelStyle(.iconOnly)
             .buttonStyle(.borderless)
             .help(title)
+    }
+}
+
+/// Edit → Use Rules Value: what the focused stat box would write.
+struct RulesValueAction {
+    let value: String
+    let perform: () -> Void
+}
+
+extension FocusedValues {
+    @Entry var rulesValueAction: RulesValueAction?
+}
+
+/// Edit → Use Rules Value, for the stat box being typed in.
+struct RulesValueCommand: View {
+    @FocusedValue(\.rulesValueAction) private var action
+
+    var body: some View {
+        Button(action.map { "Use Rules Value (\($0.value))" } ?? "Use Rules Value") { action?.perform() }
+            .keyboardShortcut("r", modifiers: [.command, .option])
+            .disabled(action == nil)
     }
 }

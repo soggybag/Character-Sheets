@@ -59,6 +59,8 @@ struct PrintedSheet {
     // MARK: Values
 
     /// The stored number, or the rules value when nothing is stored.
+    private var movement: Movement { Movement(file: file, analysis: analysis) }
+
     private func number(_ path: NodePath) -> String {
         if let value = file.int(path) { return String(value) }
         if case let .int(value)? = analysis.suggestions[path] { return String(value) }
@@ -114,8 +116,8 @@ struct PrintedSheet {
                     } else {
                         PrintBox(label: "THAC0", value: number(["combat", "thac0"]), width: 40)
                     }
-                    PrintBox(label: "Move", value: number(["movement"]).isEmpty ? "" : number(["movement"]) + "'",
-                             width: 48, note: Int(number(["movement"])).map { "\($0 / 3)' / rd" })
+                    PrintBox(label: "Move", value: movement.rate.map { "\(MovementInfo.encounter($0))'" } ?? "",
+                             width: 44, note: "per round")
                 }
             }
         }
@@ -172,14 +174,19 @@ struct PrintedSheet {
     private var skillsAndLanguages: some View {
         HStack(alignment: .top, spacing: 18) {
             VStack(alignment: .leading, spacing: 4) {
-                PrintHeading("Exploration (in 6)")
+                PrintHeading("Exploration")
                 HStack(spacing: 6) {
+                    PrintBox(label: "Move", value: movement.rate.map { "\($0)'" } ?? "", width: 40,
+                             note: movement.isEncumbered ? "encumbered" : "per turn")
+                    PrintBox(label: "Travel", value: movement.rate.map { "\(MovementInfo.travel($0)) mi" } ?? "",
+                             width: 40, note: "per day")
                     ForEach([("Listen", "listen"), ("Secret", "secretDoors"), ("Doors", "openDoors"),
                              ("Traps", "findTraps")], id: \.1) { label, key in
-                        PrintBox(label: label, value: number(["exploration", .key(key)]), width: 40)
+                        PrintBox(label: label, value: number(["exploration", .key(key)]), width: 40, note: "in 6")
                     }
                     if !number(["exploration", "constructionTricks"]).isEmpty {
-                        PrintBox(label: "Constr.", value: number(["exploration", "constructionTricks"]), width: 40)
+                        PrintBox(label: "Constr.", value: number(["exploration", "constructionTricks"]), width: 40,
+                                 note: "in 6")
                     }
                 }
             }

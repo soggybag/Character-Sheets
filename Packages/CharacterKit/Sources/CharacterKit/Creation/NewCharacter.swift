@@ -5,6 +5,8 @@ public struct NewCharacter: Sendable {
     public static let abilityOrder = ["str", "int", "wis", "dex", "con", "cha"]
 
     public let rules: OSERuleset
+    /// How scores are rolled.
+    public var method: RollMethod = .rules
     /// Scores as rolled (before adjustments).
     public var rolledScores: [String: Int] = [:]
     /// The dice behind each rolled score, when the app rolled them.
@@ -39,13 +41,28 @@ public struct NewCharacter: Sendable {
         public var price: Int { paid ? item.price * count : 0 }
     }
 
+    /// The rules' roll, or a common house rule.
+    public enum RollMethod: String, CaseIterable, Sendable {
+        /// 3d6 for each score.
+        case rules
+        /// 4d6 for each score, dropping the lowest die.
+        case fourDropLowest
+    }
+
     public init(rules: OSERuleset = .classic) {
         self.rules = rules
     }
 
     // MARK: Rolling
 
-    public var abilityDice: Dice { Dice(rules.creation.abilityRoll) ?? Dice(count: 3, sides: 6) }
+    public var abilityDice: Dice {
+        let dice = Dice(rules.creation.abilityRoll) ?? Dice(count: 3, sides: 6)
+        switch method {
+        case .rules: return dice
+        case .fourDropLowest:
+            return Dice(count: dice.count + 1, sides: dice.sides, modifier: dice.modifier, keepHighest: dice.count)
+        }
+    }
     public var goldDice: Dice { Dice(rules.creation.startingGold) ?? Dice(count: 3, sides: 6, multiplier: 10) }
 
     /// Rolls every score in order and clears adjustments made for the old scores.
@@ -63,6 +80,22 @@ public struct NewCharacter: Sendable {
         rollScores(using: &generator)
     }
 
+    /// House rule: swaps two scores (and their dice). Adjustments made for
+    /// the old order are cleared.
+    public mutating func swapScores(_ first: String, _ second: String) {
+        guard first != second else { return }
+        rolledScores.swapAt(first, second)
+        scoreRolls.swapAt(first, second)
+        adjustments = [:]
+    }
+
+    /// Scores poor enough that the referee may allow a new character
+    /// (optional rule): every score below 9, or two or more below 7.
+    public var isSubPar: Bool {
+        guard hasAllScores else { return false }
+        let scores = Self.abilityOrder.compactMap { rolledScores[$0] }
+        return scores.allSatisfy { $0 < 9 } || scores.filter { $0 < 7 }.count >= 2
+    }
     /// Sets a score typed in from real dice.
     public mutating func setRolledScore(_ score: Int?, for ability: String) {
         rolledScores[ability] = score
@@ -70,7 +103,12 @@ public struct NewCharacter: Sendable {
     }
 
     public mutating func rollGold() {
-        let roll = goldDice.roll()
+        var generator = SystemRandomNumberGenerator()
+        rollGold(using: &generator)
+    }
+
+    public mutating func rollGold<G: RandomNumberGenerator>(using generator: inout G) {
+        let roll = goldDice.roll(using: &generator)
         goldRoll = roll
         gold = roll.total
     }
@@ -81,7 +119,12 @@ public struct NewCharacter: Sendable {
     }
 
     public mutating func rollHitPoints() {
-        hitPointRoll = hitDie.map { Int.random(in: 1...$0.sides) }
+        var generator = SystemRandomNumberGenerator()
+        rollHitPoints(using: &generator)
+    }
+
+    public mutating func rollHitPoints<G: RandomNumberGenerator>(using generator: inout G) {
+        hitPointRoll = hitDie.map { Int.random(in: 1...$0.sides, using: &generator) }
     }
 
     // MARK: Derived values
@@ -125,6 +168,7 @@ public struct NewCharacter: Sendable {
     public var adjustmentNotes: [String] {
         let rule = rules.creation.abilityAdjustment
         let primes = Set(classRules?.primeRequisites ?? [])
+        let classCannotLower = Set(classRules?.creation?.cannotLower ?? [])
         var notes: [String] = []
         var lowered = 0
         var raised = 0
@@ -135,6 +179,8 @@ public struct NewCharacter: Sendable {
                 lowered -= change
                 if !rule.canLower.contains(ability) {
                     notes.append("\(name) can't normally be lowered (only \(rule.canLower.map { $0.uppercased() }.joined(separator: ", "))).")
+                } else if let classRules, classCannotLower.contains(ability) {
+                    notes.append("\(classRules.plural) can't normally lower \(name).")
                 }
                 if let score = scores[ability], score < rule.minimum {
                     notes.append("\(name) is lowered below \(rule.minimum).")

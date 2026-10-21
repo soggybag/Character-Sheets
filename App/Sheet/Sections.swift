@@ -1,5 +1,6 @@
 import CharacterKit
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct IdentitySection: View {
     @Binding var file: CharacterFile
@@ -12,7 +13,7 @@ struct IdentitySection: View {
         VStack(alignment: .leading, spacing: 14) {
             CommitTextField("Name", text: $file.string(["name"]), prompt: placeholderName)
                 .textFieldStyle(.plain)
-                .font(.system(size: 30, weight: .semibold, design: .serif))
+                .zoomFont(size: 30, weight: .semibold, design: .serif)
             // One line when there's room; in a narrow window, level and XP
             // move under class and alignment.
             ViewThatFits(in: .horizontal) {
@@ -37,16 +38,16 @@ struct IdentitySection: View {
 
     @ViewBuilder private var classAndAlignment: some View {
         LineField(label: "Class", text: $file.string(["class"]), suggestions: OSE.classes)
-            .frame(minWidth: 110)
+            .zoomFrame(minWidth: 110)
         LineField(label: "Alignment", text: $file.string(["alignment"]), suggestions: OSE.alignments)
-            .frame(minWidth: 110)
+            .zoomFrame(minWidth: 110)
     }
 
     @ViewBuilder private var levelAndXP: some View {
         LineNumberField(label: "Level", value: $file.int(["level"]))
-            .frame(width: 60)
+            .zoomFrame(width: 60)
         LineNumberField(label: "XP", value: $file.int(["xp"]), caption: xpCaption)
-            .frame(width: 110)
+            .zoomFrame(width: 110)
             .help(xpHelp)
         levelUpButton
             .alignmentGuide(.fieldLine) { $0[VerticalAlignment.center] }
@@ -124,13 +125,7 @@ struct CombatSection: View {
                 StatBox(label: "HP", value: $file.int(["hp", "current"]), help: "Current hit points",
                         warning: warning(at: ["hp", "current"]))
                 HitPointAdjuster(file: $file)
-                StatBox(label: "Max HP", value: $file.int(["hp", "max"]),
-                        help: "Maximum hit points. They're rolled, so the rules can't fill them in"
-                            + (analysis.hitPointRoll.map { ": \($0) per level (at least 1)" } ?? ""),
-                        caption: analysis.hitDice.map { "HD \($0)" },
-                        captionHelp: analysis.hitPointRoll.map { "Roll \($0) per level (at least 1)" },
-                        emptyPrompt: "roll",
-                        warning: warning(at: ["hp", "max"]))
+                MaxHitPointsBox(file: $file, analysis: analysis, warning: warning(at: ["hp", "max"]))
                 RuledStatBox(label: "AC", path: ["combat", "ac"], file: $file, analysis: analysis,
                              help: file.usesAscendingAC ? "Armour class (ascending)" : "Armour class")
                 if file.usesAscendingAC {
@@ -140,12 +135,111 @@ struct CombatSection: View {
                     RuledStatBox(label: "THAC0", path: ["combat", "thac0"], file: $file, analysis: analysis,
                                  help: "To hit AC 0")
                 }
-                RuledStatBox(label: "Move", path: ["movement"], file: $file, analysis: analysis, suffix: "'",
-                             width: 72, help: "Base movement rate (feet per turn)",
-                             caption: file.int(["movement"]).map { "\($0 / 3)' / round" },
-                             captionHelp: "Encounter movement: a third of the base rate")
+                let movement = Movement(file: file, analysis: analysis)
+                ValueBox(label: "Move", value: movement.rate.map(MovementInfo.encounter), suffix: "'",
+                         help: "Encounter movement: a third of the rate per turn. Change the rate under Exploration.",
+                         caption: movement.isEncumbered ? "encumbered" : "per round",
+                         captionHelp: movement.isEncumbered ? movement.encumberedHelp : "Feet per round",
+                         highlighted: movement.isEncumbered)
             }
         }
+    }
+}
+
+/// Max HP, with a way to roll it when it's empty: every hit die at the
+/// current level, each shown, or a total typed in from real dice.
+struct MaxHitPointsBox: View {
+    @Binding var file: CharacterFile
+    let analysis: RulesAnalysis
+    let warning: String?
+    @State private var isRolling = false
+
+    var body: some View {
+        let isEmpty = file.int(["hp", "max"]) == nil
+        let dice = analysis.hitDiceToRoll
+        VStack(spacing: 4) {
+            StatBox(label: "Max HP", value: $file.int(["hp", "max"]),
+                    help: "Maximum hit points. They're rolled, so the rules can't fill them in"
+                        + (analysis.hitPointRoll.map { ": \($0) per level (at least 1)" } ?? ""),
+                    caption: isEmpty && dice != nil ? nil : analysis.hitDice.map { "HD \($0)" },
+                    captionHelp: analysis.hitPointRoll.map { "Roll \($0) per level (at least 1)" },
+                    emptyPrompt: "roll",
+                    warning: warning)
+            if isEmpty, let dice {
+                Button("Roll \(dice.description)…") { isRolling = true }
+                    .buttonStyle(.link)
+                    .zoomFont(.caption)
+                    .help("Roll hit points for this level, or type in your own roll")
+                    .popover(isPresented: $isRolling, arrowEdge: .bottom) {
+                        RollHitPointsView(file: $file, analysis: analysis, dice: dice) { isRolling = false }
+                    }
+            }
+        }
+    }
+}
+
+/// Rolls every hit die at the current level. Each die shows, and a total
+/// rolled with real dice can be typed instead.
+struct RollHitPointsView: View {
+    @Binding var file: CharacterFile
+    let analysis: RulesAnalysis
+    let dice: Dice
+    let done: () -> Void
+    @State private var roll: DiceRoll?
+    @State private var total: Int?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Roll Hit Points").font(.headline)
+            Text(explanation)
+                .zoomFont(.callout)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            HStack {
+                Button(roll == nil ? "Roll \(dice.description)" : "Roll Again") {
+                    let roll = dice.roll()
+                    self.roll = roll
+                    total = analysis.hitPoints(fromDice: roll.results)
+                }
+                if let roll {
+                    Text(roll.results.map(String.init).joined(separator: "  "))
+                        .monospacedDigit()
+                        .foregroundStyle(.secondary)
+                        .help("Each die")
+                }
+            }
+            HStack {
+                Text("Max HP")
+                TextField("Max HP", value: Binding(get: { total }, set: { total = $0; roll = nil }),
+                          format: .number, prompt: Text("total"))
+                    .labelsHidden()
+                    .zoomFrame(width: 60)
+                    .help("Or type the total you rolled")
+            }
+            HStack {
+                Spacer()
+                Button("Cancel", role: .cancel, action: done)
+                    .keyboardShortcut(.cancelAction)
+                Button("Use \(total.map(String.init) ?? "")") {
+                    guard let total, total > 0 else { return }
+                    file.setInt(total, at: ["hp", "max"])
+                    if file.int(["hp", "current"]) == nil { file.setInt(total, at: ["hp", "current"]) }
+                    done()
+                }
+                .keyboardShortcut(.defaultAction)
+                .disabled((total ?? 0) < 1)
+            }
+        }
+        .padding()
+        .zoomFrame(width: 320)
+    }
+
+    private var explanation: String {
+        let con = analysis.abilities["con"].flatMap { Int($0.headline) } ?? 0
+        var text = "Hit dice at level \(analysis.level ?? 1): \(dice.description)."
+        text += con == 0 ? " Each die gives at least 1." : " Each die adds CON (\(con > 0 ? "+" : "−")\(abs(con))) and gives at least 1."
+        if dice.modifier != 0 { text += " The +\(dice.modifier) is added once." }
+        return text + " Current HP is set too, if it's empty."
     }
 }
 
@@ -159,7 +253,7 @@ struct HitPointAdjuster: View {
     var body: some View {
         VStack(spacing: 4) {
             Text("Damage / Heal")
-                .font(.caption)
+                .zoomFont(.caption)
                 .foregroundStyle(.secondary)
                 .lineLimit(1)
             HStack(spacing: 4) {
@@ -168,8 +262,8 @@ struct HitPointAdjuster: View {
                     .labelsHidden()
                     .textFieldStyle(.plain)
                     .multilineTextAlignment(.center)
-                    .font(.title3.monospacedDigit())
-                    .frame(width: 34)
+                    .zoomFont(.title3, monospacedDigit: true)
+                    .zoomFrame(width: 34)
                     .onSubmit { apply(-1) }
                     .help("Amount. Press Return to take damage.")
                 ListButton(title: "Heal", systemImage: "plus.circle") { apply(1) }
@@ -178,7 +272,7 @@ struct HitPointAdjuster: View {
             .padding(.horizontal, 6)
             .background(.quaternary.opacity(0.6), in: .rect(cornerRadius: 8))
             Text(last ?? " ")
-                .font(.caption.monospacedDigit())
+                .zoomFont(.caption, monospacedDigit: true)
                 .foregroundStyle(.secondary)
         }
         .disabled(file.currentHitPoints == nil)
@@ -211,8 +305,68 @@ struct SavesSection: View {
             }
             if let wis = analysis.abilities["wis"]?.headline, wis != "+0" {
                 Text("\(wis) to saves against magic (WIS)")
-                    .font(.caption)
+                    .zoomFont(.caption)
                     .foregroundStyle(.secondary)
+            }
+        }
+    }
+}
+
+/// The character's movement rate, stored or from the rules, and whether
+/// it's slowed by what they carry.
+struct Movement {
+    let rate: Int?
+    let info: MovementInfo?
+
+    init(file: CharacterFile, analysis: RulesAnalysis) {
+        rate = file.int(["movement"]) ?? analysis.movement?.rate
+        info = analysis.movement
+    }
+
+    var isEncumbered: Bool {
+        guard let rate, let info, info.load != .untracked else { return false }
+        return rate < info.unencumbered
+    }
+
+    /// Why the rate is what it is.
+    var encumberedHelp: String {
+        guard let info else { return "" }
+        let unburdened = "Unencumbered: \(info.unencumbered)' per turn, \(MovementInfo.encounter(info.unencumbered))' per round."
+        switch info.load {
+        case .untracked: return ""
+        case let .basic(treasure):
+            return (treasure ? "Carrying treasure. " : "") + unburdened
+        case let .detailed(coins):
+            return "Carrying \(coins.formatted()) coins of weight. " + unburdened
+        }
+    }
+}
+
+/// Movement while exploring: the rate per turn, overland travel, and (for
+/// basic encumbrance) whether the character carries a lot of treasure.
+struct MovementRow: View {
+    @Binding var file: CharacterFile
+    let analysis: RulesAnalysis
+
+    var body: some View {
+        let movement = Movement(file: file, analysis: analysis)
+        FlowLayout(alignment: .top) {
+            RuledStatBox(label: "Move", path: ["movement"], file: $file, analysis: analysis, suffix: "'",
+                         width: 72, help: "Movement rate: feet per turn while exploring",
+                         caption: movement.isEncumbered ? "encumbered" : "per turn",
+                         captionHelp: movement.isEncumbered ? movement.encumberedHelp : "Feet per turn (10 minutes)",
+                         highlighted: movement.isEncumbered)
+            ValueBox(label: "Travel", value: movement.rate.map(MovementInfo.travel), suffix: "mi", width: 72,
+                     help: "Overland travel: a fifth of the rate per turn, in miles a day. "
+                         + "Terrain and forced marches change it.",
+                     caption: "per day", highlighted: movement.isEncumbered)
+            if case let .basic(treasure) = analysis.movement?.load {
+                Toggle("Carrying treasure", isOn: Binding(
+                    get: { treasure },
+                    set: { file.setCarryingTreasure($0) }))
+                    .toggleStyle(.checkbox)
+                    .help("Basic encumbrance: a lot of treasure slows the character to the next rate down")
+                    .padding(.top, 24)
             }
         }
     }
@@ -226,6 +380,7 @@ struct ExplorationSection: View {
 
     var body: some View {
         SheetSection(title: "Exploration") {
+            MovementRow(file: $file, analysis: analysis)
             FlowLayout {
                 inSix("Listen", "listen", help: "Listen at doors")
                 inSix("Secret doors", "secretDoors", help: "Find secret doors")
@@ -332,7 +487,7 @@ struct SpellsSection: View {
                 }
                 .gridCellColumns(2)
             }
-            .font(.caption)
+            .zoomFont(.caption)
             .foregroundStyle(.secondary)
             ForEach(rows.indices, id: \.self) { index in
                 let row = rows[index]
@@ -341,18 +496,18 @@ struct SpellsSection: View {
                         .textFieldStyle(.plain)
                         .strikethrough(!row.memorized.isEmpty && row.memorized.allSatisfy { file.isCast(memorized: $0) })
                         .help(row.bookIndex == nil ? "Memorized, but not in the spell book" : "")
-                        .frame(minWidth: 160)
+                        .zoomFrame(minWidth: 160)
                     NumberField(label: "Level", value: Binding { row.level } set: { file.setSpellLevel(row, to: $0) },
                                 prompt: "–")
                         .textFieldStyle(.plain)
                         .labelsHidden()
-                        .frame(width: 32)
+                        .zoomFrame(width: 32)
                     HStack(spacing: 2) {
                         ListButton(title: "Forget one", systemImage: "minus.circle") { file.forgetOne(row) }
                             .disabled(row.memorized.isEmpty)
                         Text("\(row.memorized.count)")
                             .monospacedDigit()
-                            .frame(minWidth: 16)
+                            .zoomFrame(minWidth: 16)
                             .foregroundStyle(row.memorized.isEmpty ? .secondary : .primary)
                         ListButton(title: "Memorize one more", systemImage: "plus.circle") { file.memorize(row) }
                             .disabled(row.name.trimmingCharacters(in: .whitespaces).isEmpty)
@@ -365,7 +520,7 @@ struct SpellsSection: View {
                                 .help("Cast today")
                         }
                     }
-                    .frame(minWidth: 80, alignment: .leading)
+                    .zoomFrame(minWidth: 80, alignment: .leading)
                     ListButton(title: "Remove spell", systemImage: "trash") { file.removeSpell(row) }
                         .help(row.memorized.isEmpty ? "Remove spell" : "Remove spell and its memorized copies")
                 }
@@ -390,7 +545,7 @@ struct SpellsSection: View {
         case let .overridden(rules), let .missing(rules):
             Button("Rules: \(rules.description)") { file.setRulesValue(rules, at: path) }
                 .buttonStyle(.link)
-                .font(.caption)
+                .zoomFont(.caption)
                 .help("Use the spells per day from the rules")
         case .matches, .noRule:
             EmptyView()
@@ -414,11 +569,18 @@ struct SpellsSection: View {
 struct EquipmentSection: View {
     @Binding var file: CharacterFile
     @State private var isShopping = false
+    /// Marks drags from this sheet, so a row dropped from another sheet's
+    /// list isn't taken for one of these.
+    @State private var dragToken = UUID().uuidString
+    /// How many cells of each row a drag is over. A row's cells report
+    /// separately, so a count keeps the line steady moving across them.
+    @State private var dragOver: [Int: Int] = [:]
 
     var body: some View {
         SheetSection(title: "Equipment") {
             Grid(alignment: .leading, horizontalSpacing: 10, verticalSpacing: 6) {
                 GridRow {
+                    Text("")
                     Image(systemName: "hand.raised").help("Equipped")
                     Text("Item")
                     Text("Qty")
@@ -426,36 +588,54 @@ struct EquipmentSection: View {
                     Text("Notes")
                     Color.clear.gridCellUnsizedAxes([.horizontal, .vertical])
                 }
-                .font(.caption)
+                .zoomFont(.caption)
                 .foregroundStyle(.secondary)
 
                 ForEach(0..<file.count(["equipment"]), id: \.self) { index in
                     let path: NodePath = ["equipment", .index(index)]
                     GridRow {
+                        dragHandle(index)
                         Toggle("Equipped", isOn: $file.flag(path + ["equipped"]))
                             .labelsHidden()
                             .help("Equipped")
                         CommitTextField("Item", text: $file.string(path + ["name"]), prompt: "Item")
-                            .frame(minWidth: 120)
+                            .zoomFrame(minWidth: 120)
                         HStack(spacing: 2) {
                             NumberField(label: "Qty", value: $file.int(path + ["qty"]), prompt: "1")
-                                .frame(width: 40)
+                                .zoomFrame(width: 40)
                             if let quantity = file.int(path + ["qty"]), quantity > 0 {
                                 ListButton(title: "Use one", systemImage: "minus.square") {
                                     file.useOne(ofItemAt: index)
                                 }
                             }
                         }
-                        .frame(width: 64, alignment: .leading)
-                        CommitTextField("Damage", text: $file.string(path + ["damage"]), prompt: rulesDamage(at: index))
-                            .frame(width: 60)
+                        .zoomFrame(width: 64, alignment: .leading)
+                        let damage = rulesDamage(at: index)
+                        CommitTextField("Damage", text: $file.string(path + ["damage"]), prompt: damage,
+                                        fillOnReturn: damage)
+                            .help(damage.isEmpty ? "Damage" : "Damage. The rules give \(damage); press Return to fill it in.")
+                            .zoomFrame(width: 60)
                         CommitTextField("Notes", text: $file.string(path + ["notes"]))
-                            .frame(minWidth: 100)
+                            .zoomFrame(minWidth: 100)
                         ListButton(title: "Remove item", systemImage: "minus.circle") {
                             file.removeItem(at: path)
                         }
                     }
                     .textFieldStyle(.plain)
+                    .overlay(alignment: .top) {
+                        if dragOver[index, default: 0] > 0 {
+                            Rectangle().fill(Color.accentColor).frame(height: 2).offset(y: -4)
+                        }
+                    }
+                    .dropDestination(for: EquipmentRowDrag.self) { items, _ in
+                        dragOver = [:]
+                        guard let drag = items.first, drag.token == dragToken,
+                              drag.index < file.count(["equipment"]) else { return false }
+                        file.moveItem(in: ["equipment"], from: drag.index, to: index)
+                        return true
+                    } isTargeted: { over in
+                        dragOver[index, default: 0] += over ? 1 : -1
+                    }
                 }
             }
             HStack(spacing: 12) {
@@ -472,6 +652,32 @@ struct EquipmentSection: View {
                 file.buy(item, count: count, pay: pay)
             }
         }
+    }
+
+    /// Drag to reorder; right-click to move up, down, to the top or bottom.
+    private func dragHandle(_ index: Int) -> some View {
+        let count = file.count(["equipment"])
+        let name = file.string(["equipment", .index(index), "name"]) ?? "Item"
+        return Image(systemName: "line.3.horizontal")
+            .foregroundStyle(.tertiary)
+            .frame(width: 14, height: 18)
+            .contentShape(.rect)
+            .help("Drag to move \(name). Right-click for more.")
+            .draggable(EquipmentRowDrag(token: dragToken, index: index)) {
+                Text(name).padding(4)
+            }
+            .contextMenu {
+                Button("Move Up") { move(index, to: index - 1) }.disabled(index == 0)
+                Button("Move Down") { move(index, to: index + 1) }.disabled(index == count - 1)
+                Divider()
+                Button("Move to Top") { move(index, to: 0) }.disabled(index == 0)
+                Button("Move to Bottom") { move(index, to: count - 1) }.disabled(index == count - 1)
+            }
+            .accessibilityLabel("Move \(name)")
+    }
+
+    private func move(_ from: Int, to: Int) {
+        file.moveItem(in: ["equipment"], from: from, to: to)
     }
 
     /// The rules damage for a weapon, shown in grey when none is typed.
@@ -506,11 +712,12 @@ struct MoneySection: View {
 
 struct NotesSection: View {
     @Binding var text: String
+    @Environment(\.sheetZoom) private var zoom
 
     var body: some View {
         SheetSection(title: "Notes") {
-            PlainTextEditor(text: $text)
-                .frame(minHeight: 280)
+            PlainTextEditor(text: $text, font: .systemFont(ofSize: SheetZoom.pointSize(.body) * zoom))
+                .frame(minHeight: 280 * zoom)
                 .background(.quaternary.opacity(0.3), in: .rect(cornerRadius: 8))
         }
     }
@@ -529,7 +736,7 @@ struct WeaponsSection: View {
                     Text("Missile")
                     Text("Range")
                 }
-                .font(.caption)
+                .zoomFont(.caption)
                 .foregroundStyle(.secondary)
                 ForEach(analysis.weapons, id: \.itemIndex) { weapon in
                     GridRow {
@@ -543,7 +750,7 @@ struct WeaponsSection: View {
                 }
             }
             Text(footnote)
-                .font(.caption)
+                .zoomFont(.caption)
                 .foregroundStyle(.secondary)
         }
     }
@@ -582,9 +789,24 @@ struct RulesNotesSection: View {
                         case .info: Image(systemName: "info.circle").foregroundStyle(.secondary)
                         }
                     }
-                    .font(.callout)
+                    .zoomFont(.callout)
                 }
             }
         }
     }
+}
+
+/// An equipment row being dragged. Its own type, so text fields don't take
+/// it as text, and a token so another sheet's rows aren't moved here.
+struct EquipmentRowDrag: Codable, Transferable {
+    let token: String
+    let index: Int
+
+    static var transferRepresentation: some TransferRepresentation {
+        CodableRepresentation(contentType: .equipmentRow)
+    }
+}
+
+extension UTType {
+    static let equipmentRow = UTType(exportedAs: "com.mitchellhudson.CharacterSheets.equipment-row")
 }

@@ -16,7 +16,7 @@ enum Layout {
 
     private static let keyOrders: [String: [String]] = [
         "": ["formatVersion", "rules", "name", "player", "title", "portrait", "class", "race", "level",
-             "alignment", "xp", "abilityScores", "hp", "combat", "saves", "movement", "exploration",
+             "alignment", "xp", "abilityScores", "hp", "combat", "saves", "movement", "carryingTreasure", "exploration",
              "thiefSkills", "languages", "spells", "equipment", "money"],
         "rules": ["system", "variant", "options"],
         "rules.options": ["ascendingAC", "encumbrance", "variableWeaponDamage"],
