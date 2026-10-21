@@ -13,7 +13,7 @@ struct SheetView: View {
     @AppStorage(SheetZoom.key) private var zoom = 1.0
 
     var body: some View {
-        let analysis = RulesAnalysis(file)
+        let analysis = RulesAnalysis.ofSheet(file)
         ScrollView {
             VStack(alignment: .leading, spacing: 32) {
                 if file.headerHadComments {
@@ -21,8 +21,8 @@ struct SheetView: View {
                            text: "This file's header has # comments. They'll be removed when you save. Move them to Notes to keep them.")
                 }
                 IdentitySection(file: $file, analysis: analysis, placeholderName: placeholderName,
-                                levelUp: { levelUpPlan = RulesAnalysis(file).levelUpPlan(for: file) ?? beep() },
-                                levelDown: { levelDownPlan = RulesAnalysis(file).levelDownPlan(for: file) ?? beep() })
+                                levelUp: { levelUpPlan = RulesAnalysis.ofSheet(file).levelUpPlan(for: file) ?? beep() },
+                                levelDown: { levelDownPlan = RulesAnalysis.ofSheet(file).levelDownPlan(for: file) ?? beep() })
                 if !analysis.notes.isEmpty {
                     RulesNotesSection(notes: analysis.notes)
                 }
@@ -37,7 +37,7 @@ struct SheetView: View {
                 if showsSpells(analysis) {
                     SpellsSection(file: $file, analysis: analysis)
                 }
-                EquipmentSection(file: $file)
+                EquipmentSection(file: $file, analysis: analysis)
                 MoneySection(file: $file)
                 NotesSection(text: $file.body)
                 if !file.unknownTopLevelKeys.isEmpty {

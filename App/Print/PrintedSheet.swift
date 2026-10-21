@@ -12,7 +12,7 @@ struct PrintedSheet {
 
     init(file: CharacterFile, fallbackName: String) {
         self.file = file
-        self.analysis = RulesAnalysis(file)
+        self.analysis = RulesAnalysis.ofSheet(file)
         self.fallbackName = fallbackName
     }
 
@@ -59,12 +59,10 @@ struct PrintedSheet {
     // MARK: Values
 
     /// The stored number, or the rules value when nothing is stored.
-    private var movement: Movement { Movement(file: file, analysis: analysis) }
+    private var movement: MovementSummary { MovementSummary(file: file, analysis: analysis) }
 
     private func number(_ path: NodePath) -> String {
-        if let value = file.int(path) { return String(value) }
-        if case let .int(value)? = analysis.suggestions[path] { return String(value) }
-        return ""
+        analysis.value(at: path, in: file).map(String.init) ?? ""
     }
 
     private func text(_ path: NodePath) -> String { file.string(path) ?? "" }
@@ -116,7 +114,7 @@ struct PrintedSheet {
                     } else {
                         PrintBox(label: "THAC0", value: number(["combat", "thac0"]), width: 40)
                     }
-                    PrintBox(label: "Move", value: movement.rate.map { "\(MovementInfo.encounter($0))'" } ?? "",
+                    PrintBox(label: "Move", value: movement.encounterRate.map { "\($0)'" } ?? "",
                              width: 44, note: "per round")
                 }
             }
@@ -124,8 +122,7 @@ struct PrintedSheet {
     }
 
     private func signedNumber(_ path: NodePath) -> String {
-        guard let value = Int(number(path)) else { return "" }
-        return value >= 0 ? "+\(value)" : "−\(-value)"
+        analysis.value(at: path, in: file)?.signedText ?? ""
     }
 
     private var saves: some View {
@@ -178,7 +175,7 @@ struct PrintedSheet {
                 HStack(spacing: 6) {
                     PrintBox(label: "Move", value: movement.rate.map { "\($0)'" } ?? "", width: 40,
                              note: movement.isEncumbered ? "encumbered" : "per turn")
-                    PrintBox(label: "Travel", value: movement.rate.map { "\(MovementInfo.travel($0)) mi" } ?? "",
+                    PrintBox(label: "Travel", value: movement.travelRate.map { "\($0) mi" } ?? "",
                              width: 40, note: "per day")
                     ForEach([("Listen", "listen"), ("Secret", "secretDoors"), ("Doors", "openDoors"),
                              ("Traps", "findTraps")], id: \.1) { label, key in

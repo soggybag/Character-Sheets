@@ -94,13 +94,22 @@ public struct RulesAnalysis: Sendable {
     /// The rules used: the ones the file names, or Classic Fantasy when the
     /// app doesn't have those (a note says so).
     public let rules: OSERuleset
+    /// The custom equipment list whose house items count as rules items.
+    public let equipmentList: EquipmentList?
+    /// The CON modifier to hit points per die (0 without a CON score).
+    public let conModifier: Int
+    /// The damage the rules give each weapon in `equipment`, by index: the
+    /// weapon's die with variable weapon damage, otherwise 1d6.
+    public let itemDamage: [Int: String]
 
     /// Analyses a file with the rules it names. `rules` overrides that (for
-    /// a character still being created).
-    public init(_ file: CharacterFile, rules: OSERuleset? = nil) {
+    /// a character still being created). House weapons and armour in
+    /// `equipmentList` are used like the rules' own.
+    public init(_ file: CharacterFile, rules: OSERuleset? = nil, equipmentList: EquipmentList? = nil) {
         let rules = rules ?? file.ruleset
         self.rules = rules
-        var builder = Builder(file: file, rules: rules)
+        self.equipmentList = equipmentList
+        var builder = Builder(file: file, rules: rules, equipmentList: equipmentList)
         builder.run()
         classRules = builder.classRules
         level = builder.level
@@ -112,6 +121,16 @@ public struct RulesAnalysis: Sendable {
         hitDice = builder.row?.hd
         hitPointRoll = builder.hitPointRoll
         movement = builder.movement
+        itemDamage = builder.itemDamage
+        conModifier = builder.mod("con") { $0.con.hitPoints }
+    }
+
+    /// The stored number at `path`, or the rules value when nothing is
+    /// stored: what the sheet shows.
+    public func value(at path: NodePath, in file: CharacterFile) -> Int? {
+        if let stored = file.int(path) { return stored }
+        if case let .int(value)? = suggestions[path] { return value }
+        return nil
     }
 
     /// How the stored value at `path` compares with the rules.
@@ -128,6 +147,11 @@ public struct RulesAnalysis: Sendable {
 
 func signed(_ value: Int) -> String {
     value >= 0 ? "+\(value)" : "\(value)"
+}
+
+extension Int {
+    /// "+1", "0" → "+0", "-2": a modifier as the sheet shows it.
+    public var signedText: String { signed(self) }
 }
 
 // MARK: - Working it out
@@ -170,10 +194,37 @@ private struct Builder {
     var notes: [RuleNote] = []
     var hitPointRoll: String?
     var movement: MovementInfo?
+    var itemDamage: [Int: String] = [:]
+    let equipmentList: EquipmentList?
 
-    init(file: CharacterFile, rules: OSERuleset) {
+    init(file: CharacterFile, rules: OSERuleset, equipmentList: EquipmentList?) {
         self.file = file
         self.rules = rules
+        self.equipmentList = equipmentList
+    }
+
+    /// A weapon on the sheet: a house weapon first (it may share a rules
+    /// name), then the rules'.
+    private func weapon(named name: String) -> WeaponData? {
+        equipmentList?.houseWeapon(named: name) ?? rules.weapon(named: name)
+    }
+
+    /// Armour or a shield on the sheet: a house item first, then the rules'.
+    private func armour(named name: String) -> ArmourData? {
+        equipmentList?.houseArmour(named: name) ?? rules.armour(named: name)
+    }
+
+    /// Why the class wouldn't normally use a weapon or armour on the sheet,
+    /// in the shop's words. House items use their `usableBy`.
+    private func restriction(weaponOrArmourID id: String, name: String, isArmour: Bool, isShield: Bool) -> String? {
+        guard let classRules else { return nil }
+        if id.hasPrefix("house:") {
+            let usableBy = equipmentList?.houseItem(named: name)?.usableBy ?? []
+            return OSERuleset.houseRestriction(usableBy: usableBy, name: name, for: classRules, in: rules)
+        }
+        return isArmour
+            ? OSERuleset.armourRestriction(id: id, name: name, isShield: isShield, for: classRules)
+            : OSERuleset.weaponRestriction(id: id, name: name, for: classRules)
     }
 
     private var className: String { file.string(["class"])?.trimmingCharacters(in: .whitespaces) ?? "" }
@@ -186,7 +237,7 @@ private struct Builder {
     }
 
     /// A modifier from an ability table, 0 if the score is missing.
-    private func mod(_ key: String, _ table: (AbilityTables) -> [Int]) -> Int {
+    func mod(_ key: String, _ table: (AbilityTables) -> [Int]) -> Int {
         band(key).map { table(rules.abilities)[$0] } ?? 0
     }
 
@@ -275,19 +326,19 @@ private struct Builder {
     /// The armour and shield worn. If any item is marked `equipped`, only
     /// marked items count; otherwise every item listed does, and the best
     /// armour is used. `suits` is every suit of armour that counted.
-    private func wornArmour() -> (armour: ArmourData?, shield: Bool, suits: [ArmourData]) {
+    private func wornArmour() -> (armour: ArmourData?, shield: ArmourData?, suits: [ArmourData]) {
         let count = file.count(["equipment"])
         let anyMarked = (0..<count).contains { file.bool(["equipment", .index($0), "equipped"]) != nil }
         var best: ArmourData?
-        var shield = false
+        var shield: ArmourData?
         var suits: [ArmourData] = []
         for index in 0..<count {
             let path: NodePath = ["equipment", .index(index)]
             guard !anyMarked || file.bool(path + ["equipped"]) == true,
                   let name = file.string(path + ["name"]),
-                  let armour = rules.armour(named: name) else { continue }
-            if armour.acBonus != nil {
-                shield = true
+                  let armour = armour(named: name) else { continue }
+            if let bonus = armour.acBonus {
+                if bonus > (shield?.acBonus ?? .min) { shield = armour }
             } else if let ac = armour.ac {
                 suits.append(armour)
                 if ac < (best?.ac ?? .max) { best = armour }
@@ -303,7 +354,7 @@ private struct Builder {
             note(.info, "More than one suit of armour (\(names.joined(separator: ", "))), so AC and movement "
                  + "use the best: \(armour.name.lowercased()). Tick Equipped on the one worn.", ["equipment"])
         }
-        let descending = (armour?.ac ?? rules.info.combat.unarmouredAC) - (shield ? 1 : 0)
+        let descending = (armour?.ac ?? rules.info.combat.unarmouredAC) - (shield?.acBonus ?? 0)
             - mod("dex") { $0.dex.ac }
         if score("dex") != nil {
             suggestions[["combat", "ac"]] = .int(ascending ? 19 - descending : descending)
@@ -322,14 +373,13 @@ private struct Builder {
             suggestions[["movement"]] = .int(movement.rate)
         }
 
-        guard let classRules else { return }
-        if let armour, !classRules.armour.allowed.contains(armour.id) {
-            note(.warning, classRules.armour.allowed.isEmpty
-                 ? "\(classRules.plural) can't normally wear armour."
-                 : "\(classRules.plural) can't normally wear \(armour.name.lowercased()).", ["equipment"])
+        if let armour, let message = restriction(weaponOrArmourID: armour.id, name: armour.name,
+                                                 isArmour: true, isShield: false) {
+            note(.warning, message, ["equipment"])
         }
-        if shield, !classRules.armour.shields {
-            note(.warning, "\(classRules.plural) can't normally use a shield.", ["equipment"])
+        if let shield, let message = restriction(weaponOrArmourID: shield.id, name: shield.name,
+                                                 isArmour: true, isShield: true) {
+            note(.warning, message, ["equipment"])
         }
     }
 
@@ -346,9 +396,9 @@ private struct Builder {
                 let quantity = file.int(path + ["qty"]) ?? 1
                 if let stated = file.int(path + ["weight"]) {
                     weight += stated * quantity
-                } else if let armour = rules.armour(named: name) {
+                } else if let armour = self.armour(named: name) {
                     weight += armour.weight
-                } else if let weapon = rules.weapon(named: name) {
+                } else if let weapon = weapon(named: name) {
                     weight += (weapon.weight ?? 0) * quantity
                 } else {
                     hasGear = true
@@ -435,7 +485,8 @@ private struct Builder {
         for index in 0..<file.count(["equipment"]) {
             let path: NodePath = ["equipment", .index(index)]
             let name = file.string(path + ["name"]) ?? ""
-            let data = rules.weapon(named: name)
+            let data = weapon(named: name)
+            if let data { itemDamage[index] = variableDamage ? data.damage : "1d6" }
             let customDamage = file.string(path + ["damage"])
             guard data != nil || customDamage != nil, let thac0 else { continue }
 
@@ -449,13 +500,9 @@ private struct Builder {
                 missile: isMissile ? Attack(thac0: thac0 - missile, damage: die) : nil,
                 range: data?.range))
 
-            if let data, let classRules {
-                if let allowed = classRules.weapons.allowed, !allowed.contains(data.id) {
-                    note(.warning, "\(classRules.plural) normally use: \(classRules.weapons.text.lowercased()). \(data.name) isn't one.", path)
-                }
-                if classRules.weapons.forbidden?.contains(data.id) == true {
-                    note(.warning, "\(classRules.plural) can't normally use a \(data.name.lowercased()).", path)
-                }
+            if let data, let message = restriction(weaponOrArmourID: data.id, name: data.name,
+                                                   isArmour: false, isShield: false) {
+                note(.warning, message, path)
             }
         }
     }

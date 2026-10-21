@@ -155,30 +155,56 @@ extension OSERuleset {
     public func restriction(of item: ShopItem, for classRules: ClassRules?) -> String? {
         guard let classRules else { return nil }
         if item.origin == .house {
-            guard !item.usableBy.isEmpty,
-                  !item.usableBy.contains(where: { self.classRules(named: $0)?.id == classRules.id }) else { return nil }
-            return "\(classRules.plural) don't normally use this."
+            return Self.houseRestriction(usableBy: item.usableBy, name: item.name, for: classRules, in: self)
         }
         switch item.category {
         case .weapons:
-            if let allowed = classRules.weapons.allowed, !allowed.contains(item.id) {
-                return "\(classRules.plural) normally use: \(classRules.weapons.text.lowercased())."
-            }
-            if classRules.weapons.forbidden?.contains(item.id) == true {
-                return "\(classRules.plural) can't normally use this."
-            }
+            return Self.weaponRestriction(id: item.id, name: item.name, for: classRules)
         case .armour:
-            if item.id == "shield" {
-                if !classRules.armour.shields { return "\(classRules.plural) can't normally use a shield." }
-            } else if !classRules.armour.allowed.contains(item.id) {
-                return classRules.armour.allowed.isEmpty
-                    ? "\(classRules.plural) can't wear armour."
-                    : "\(classRules.plural) can't normally wear this."
-            }
+            return Self.armourRestriction(id: item.id, name: item.name, isShield: item.id == "shield", for: classRules)
         case .ammunition, .gear:
-            break
+            return nil
+        }
+    }
+
+    // MARK: Class restrictions
+    // One wording for the shop and the sheet's rules notes.
+
+    /// Why a class wouldn't normally use a rules weapon, or nil.
+    static func weaponRestriction(id: String, name: String, for classRules: ClassRules) -> String? {
+        if let allowed = classRules.weapons.allowed, !allowed.contains(id) {
+            return "\(classRules.plural) normally use \(classRules.weapons.text.lowercased()), not \(withArticle(name))."
+        }
+        if classRules.weapons.forbidden?.contains(id) == true {
+            return "\(classRules.plural) can't normally use \(withArticle(name))."
         }
         return nil
+    }
+
+    /// Why a class wouldn't normally wear rules armour or use a shield, or nil.
+    static func armourRestriction(id: String, name: String, isShield: Bool, for classRules: ClassRules) -> String? {
+        if isShield {
+            return classRules.armour.shields ? nil : "\(classRules.plural) can't normally use a shield."
+        }
+        guard !classRules.armour.allowed.contains(id) else { return nil }
+        return classRules.armour.allowed.isEmpty
+            ? "\(classRules.plural) can't wear armour."
+            : "\(classRules.plural) can't normally wear \(name.lowercased())."
+    }
+
+    /// Why a class wouldn't normally use a house item: it isn't in the
+    /// item's `usableBy`. No `usableBy` means no restriction.
+    static func houseRestriction(usableBy: [String], name: String, for classRules: ClassRules,
+                                 in rules: OSERuleset) -> String? {
+        guard !usableBy.isEmpty,
+              !usableBy.contains(where: { rules.classRules(named: $0)?.id == classRules.id }) else { return nil }
+        return "\(classRules.plural) don't normally use \(withArticle(name))."
+    }
+
+    /// "a sword", "an axe".
+    private static func withArticle(_ name: String) -> String {
+        let lower = name.lowercased()
+        return (lower.first.map { "aeiou".contains($0) } == true ? "an " : "a ") + lower
     }
 }
 

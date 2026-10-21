@@ -75,7 +75,7 @@ final class PartyModel {
 
     func reload() {
         guard let folder else { return }
-        members = PartyMember.load(folder: folder)
+        members = PartyMember.load(folder: folder, equipmentList: EquipmentListStore.shared.list)
     }
 }
 
@@ -152,7 +152,7 @@ struct PartyView: View {
             TableColumn("AC") { member in number(member.ac) }
                 .width(32)
             TableColumn(attackHeader) { member in
-                Text(member.attack.map { member.ascendingAC ? signed($0) : String($0) } ?? "")
+                Text(member.attack.map { member.ascendingAC ? $0.signedText : String($0) } ?? "")
                     .monospacedDigit()
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
@@ -243,10 +243,6 @@ struct PartyView: View {
             .foregroundStyle(colour)
             .help(help)
             .frame(maxWidth: .infinity, alignment: .trailing)
-    }
-
-    private func signed(_ value: Int) -> String {
-        value >= 0 ? "+\(value)" : "−\(-value)"
     }
 
     private func open(_ urls: Set<URL>) {

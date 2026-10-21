@@ -124,7 +124,7 @@ extension LevelUpSheet {
     /// Asks for max HP at the current level when the sheet is missing it,
     /// so the new level's roll has something to add to.
     @ViewBuilder fileprivate var startingMaxRow: some View {
-        let analysis = RulesAnalysis(file)
+        let analysis = RulesAnalysis.ofSheet(file)
         HStack {
             Text("Max HP now, at level \(plan.fromLevel)")
             TextField("Max HP", value: $startingMax, format: .number, prompt: Text("HP"))
@@ -236,11 +236,11 @@ struct LevelDownSheet: View {
     /// levels, where hit points are a fixed gain.
     private var lostDie: Dice? {
         guard rollable else { return nil }
-        return RulesAnalysis(file).hitPointRoll.flatMap { Dice($0) }
+        return RulesAnalysis.ofSheet(file).hitPointRoll.flatMap { Dice($0) }
     }
 
     private var rollable: Bool {
-        RulesAnalysis(file).classRules?.row(level: plan.fromLevel)?.conModifier != false
+        RulesAnalysis.ofSheet(file).classRules?.row(level: plan.fromLevel)?.conModifier != false
     }
 
     private var lossHint: String {

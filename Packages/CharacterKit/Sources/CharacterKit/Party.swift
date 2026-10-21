@@ -24,16 +24,11 @@ public struct PartyMember: Identifiable, Sendable {
 
     public static let saveKeys = ["death", "wands", "paralysis", "breath", "spells"]
 
-    public init(file: CharacterFile, url: URL) {
-        let analysis = RulesAnalysis(file)
-        func number(_ path: NodePath) -> Int? {
-            if let value = file.int(path) { return value }
-            if case let .int(value)? = analysis.suggestions[path] { return value }
-            return nil
-        }
+    public init(file: CharacterFile, url: URL, equipmentList: EquipmentList? = nil) {
+        let analysis = RulesAnalysis(file, equipmentList: equipmentList)
+        func number(_ path: NodePath) -> Int? { analysis.value(at: path, in: file) }
         self.url = url
-        let stored = file.string(["name"]) ?? ""
-        name = stored.isEmpty ? url.deletingPathExtension().lastPathComponent : stored
+        name = file.name ?? url.deletingPathExtension().lastPathComponent
         className = file.string(["class"]).flatMap { $0.isEmpty ? nil : $0 }
         level = file.int(["level"])
         currentHP = file.int(["hp", "current"])
@@ -53,7 +48,7 @@ public struct PartyMember: Identifiable, Sendable {
 
     /// The characters in a folder (not its subfolders), by name. Markdown
     /// files that aren't characters, and files that can't be read, are left out.
-    public static func load(folder: URL) -> [PartyMember] {
+    public static func load(folder: URL, equipmentList: EquipmentList? = nil) -> [PartyMember] {
         let urls = (try? FileManager.default.contentsOfDirectory(
             at: folder, includingPropertiesForKeys: nil, options: [.skipsHiddenFiles])) ?? []
         return urls
@@ -61,7 +56,7 @@ public struct PartyMember: Identifiable, Sendable {
             .compactMap { url -> PartyMember? in
                 guard let text = try? String(contentsOf: url, encoding: .utf8),
                       let file = try? CharacterFile(text: text), file.isCharacter else { return nil }
-                return PartyMember(file: file, url: url)
+                return PartyMember(file: file, url: url, equipmentList: equipmentList)
             }
             .sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }
     }

@@ -131,7 +131,7 @@ private struct RulesMenu: View {
                 set: { file.setBool($0, at: ["rules", "options", "variableWeaponDamage"]) }))
             Divider()
             Button("Fill In Missing Values") {
-                let analysis = RulesAnalysis(file)
+                let analysis = RulesAnalysis.ofSheet(file)
                 file.fillMissingValues(from: analysis)
                 // The one empty box people expect this to fill.
                 if file.int(["hp", "max"]) == nil, let roll = analysis.hitPointRoll {

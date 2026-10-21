@@ -129,6 +129,26 @@ extension EquipmentList {
         return additions.first { OSERuleset.matchKey($0.name) == key }
     }
 
+    /// A house weapon by name, in the rules' form. A weapon with neither
+    /// `melee` nor `missile` is taken as melee.
+    func houseWeapon(named name: String) -> WeaponData? {
+        guard let item = houseItem(named: name), item.category == .weapons else { return nil }
+        var qualities = item.qualities
+        if !qualities.contains("melee"), !qualities.contains("missile") { qualities.insert("melee", at: 0) }
+        return WeaponData(id: "house:" + OSERuleset.matchKey(item.name), name: item.name, cost: item.price / 100,
+                          weight: item.weight, damage: item.damage ?? "1d6", qualities: qualities,
+                          range: item.range, soldAs: nil)
+    }
+
+    /// A house armour or shield by name, in the rules' form.
+    func houseArmour(named name: String) -> ArmourData? {
+        guard let item = houseItem(named: name), item.category == .armour, item.ac != nil || item.acBonus != nil
+        else { return nil }
+        return ArmourData(id: "house:" + OSERuleset.matchKey(item.name), name: item.name, ac: item.ac,
+                          acBonus: item.acBonus, cost: item.price / 100, weight: item.weight ?? 0,
+                          encumbrance: item.encumbrance)
+    }
+
     /// Whether the text is an equipment list, without reading the entries.
     public static func isEquipmentList(_ text: String) -> Bool {
         guard let file = try? CharacterFile(text: text) else { return false }
