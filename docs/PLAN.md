@@ -95,8 +95,11 @@ App (SwiftUI, macOS)
 ├── NewCharacter/, Shop/, Party/, Settings/, Help/, Print/
 ```
 
-Rules are data plus `RulesAnalysis`; there's no ruleset protocol yet (see
-`docs/CODE-REVIEW.md`, S1, before Advanced Fantasy).
+Rules are data plus `RulesAnalysis`. A file's `rules.system` and
+`rules.variant` pick its ruleset (`CharacterFile.ruleset`, from
+`OSERuleset.all`); rules the app doesn't have fall back to Classic Fantasy
+with a note. Advanced Fantasy is added by loading its data as a second
+`OSERuleset` and listing it in `OSERuleset.all`.
 
 Decisions:
 

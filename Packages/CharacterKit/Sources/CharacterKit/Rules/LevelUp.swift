@@ -39,9 +39,9 @@ public struct LevelUpPlan: Sendable {
 extension RulesAnalysis {
     /// The plan for going up one level, or nil if the class or level is
     /// unknown. Going past the class maximum is allowed (rules notes say so).
-    public func levelUpPlan(for file: CharacterFile, rules: OSERuleset = .classic) -> LevelUpPlan? {
+    public func levelUpPlan(for file: CharacterFile) -> LevelUpPlan? {
         guard let classRules, let level else { return nil }
-        let (changes, kept) = ruleChanges(for: file, toLevel: level + 1, rules: rules)
+        let (changes, kept) = ruleChanges(for: file, toLevel: level + 1)
 
         let hitPoints: LevelUpPlan.HitPoints?
         if let oldRow = classRules.row(level: level), let newRow = classRules.row(level: level + 1) {
@@ -79,9 +79,9 @@ public struct LevelDownPlan: Sendable {
 extension RulesAnalysis {
     /// The plan for losing a level, or nil at 1st level or when the class or
     /// level is unknown.
-    public func levelDownPlan(for file: CharacterFile, rules: OSERuleset = .classic) -> LevelDownPlan? {
+    public func levelDownPlan(for file: CharacterFile) -> LevelDownPlan? {
         guard let classRules, let level, level > 1 else { return nil }
-        let (changes, kept) = ruleChanges(for: file, toLevel: level - 1, rules: rules)
+        let (changes, kept) = ruleChanges(for: file, toLevel: level - 1)
         let fromRow = classRules.row(level: level)
         let toRow = classRules.row(level: level - 1)
 
@@ -102,8 +102,7 @@ extension RulesAnalysis {
 
     /// Rules values that change when the level changes. Automatic values
     /// (matching or missing) change; overrides are listed and kept.
-    fileprivate func ruleChanges(for file: CharacterFile, toLevel: Int,
-                                 rules: OSERuleset) -> ([LevelUpPlan.Change], [NodePath]) {
+    fileprivate func ruleChanges(for file: CharacterFile, toLevel: Int) -> ([LevelUpPlan.Change], [NodePath]) {
         var next = file
         next.setInt(toLevel, at: ["level"])
         let after = RulesAnalysis(next, rules: rules)
@@ -200,7 +199,7 @@ extension CharacterFile {
     /// Basic encumbrance: whether the character carries a lot of treasure.
     /// A movement rate that followed the rules follows them to the new rate;
     /// one set by hand is kept.
-    public mutating func setCarryingTreasure(_ carrying: Bool, rules: OSERuleset = .classic) {
+    public mutating func setCarryingTreasure(_ carrying: Bool, rules: OSERuleset? = nil) {
         let followed = RulesAnalysis(self, rules: rules).status(of: ["movement"], in: self) == .matches
         setBool(carrying ? true : nil, at: ["carryingTreasure"])
         if followed, let rate = RulesAnalysis(self, rules: rules).suggestions[["movement"]] {

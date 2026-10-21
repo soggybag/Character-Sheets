@@ -37,9 +37,9 @@ struct IdentitySection: View {
     }
 
     @ViewBuilder private var classAndAlignment: some View {
-        LineField(label: "Class", text: $file.string(["class"]), suggestions: OSE.classes)
+        LineField(label: "Class", text: $file.string(["class"]), suggestions: analysis.rules.classes.map(\.name))
             .zoomFrame(minWidth: 110)
-        LineField(label: "Alignment", text: $file.string(["alignment"]), suggestions: OSE.alignments)
+        LineField(label: "Alignment", text: $file.string(["alignment"]), suggestions: analysis.rules.alignments)
             .zoomFrame(minWidth: 110)
     }
 
@@ -376,8 +376,6 @@ struct ExplorationSection: View {
     @Binding var file: CharacterFile
     let analysis: RulesAnalysis
 
-    private var className: String { file.string(["class"]) ?? "" }
-
     var body: some View {
         SheetSection(title: "Exploration") {
             MovementRow(file: $file, analysis: analysis)
@@ -386,11 +384,12 @@ struct ExplorationSection: View {
                 inSix("Secret doors", "secretDoors", help: "Find secret doors")
                 inSix("Open doors", "openDoors", help: "Force open stuck doors")
                 inSix("Room traps", "findTraps", help: "Find room traps")
-                if className == "Dwarf" || file.int(["exploration", "constructionTricks"]) != nil {
+                if analysis.classRules?.exploration?["constructionTricks"] != nil
+                    || file.int(["exploration", "constructionTricks"]) != nil {
                     inSix("Construction", "constructionTricks", help: "Detect construction tricks")
                 }
             }
-            if className == "Thief" || file.count(["thiefSkills"]) > 0 {
+            if analysis.classRules?.hasFeature("thief-skills") == true || file.count(["thiefSkills"]) > 0 {
                 FlowLayout {
                     percent("Climb", "climb", help: "Climb sheer surfaces")
                     percent("Traps", "traps", help: "Find or remove treasure traps")
@@ -647,7 +646,7 @@ struct EquipmentSection: View {
             }
         }
         .sheet(isPresented: $isShopping) {
-            ShopView(classRules: OSERuleset.classic.classRules(named: file.string(["class"]) ?? ""),
+            ShopView(rules: file.ruleset, classRules: file.ruleset.classRules(named: file.string(["class"]) ?? ""),
                      purse: Purse(file)) { item, count, pay in
                 file.buy(item, count: count, pay: pay)
             }
@@ -688,7 +687,7 @@ struct EquipmentSection: View {
         if let house = EquipmentListStore.shared.list?.houseItem(named: name), house.category == .weapons {
             return variable ? house.damage ?? "" : "1d6"
         }
-        guard let weapon = OSERuleset.classic.weapon(named: name) else { return "" }
+        guard let weapon = file.ruleset.weapon(named: name) else { return "" }
         return variable ? weapon.damage : "1d6"
     }
 }

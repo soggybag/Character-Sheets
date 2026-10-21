@@ -184,6 +184,18 @@ extension CharacterFile {
     /// Ruleset id, e.g. `ose`.
     public var system: String? { header["rules"]?["system"]?.string }
 
+    /// Ruleset variant, e.g. `classic`.
+    public var variant: String? { header["rules"]?["variant"]?.string }
+
+    /// The built-in rules this file names, or nil when the app doesn't
+    /// have them (another system, or a variant not built in yet).
+    public var namedRuleset: OSERuleset? { OSERuleset.named(system: system, variant: variant) }
+
+    /// The rules to use for this file: the ones it names, or Classic
+    /// Fantasy when the app doesn't have those (they're the closest, and
+    /// the analysis says so).
+    public var ruleset: OSERuleset { namedRuleset ?? .classic }
+
     /// True when the header has the keys that mark a character file.
     /// Other Markdown files with front matter are left alone.
     public var isCharacter: Bool { formatVersion != nil && system != nil }

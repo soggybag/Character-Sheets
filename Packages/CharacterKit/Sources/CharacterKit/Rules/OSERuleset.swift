@@ -51,6 +51,28 @@ public struct OSERuleset: Sendable {
     public var alignments: [String] { info.alignments }
     public var creation: CreationRules { info.creation }
 
+    /// `rules.system` in the files these rules are for, e.g. `ose`.
+    public var system: String { info.id }
+    /// `rules.variant`, e.g. `classic`.
+    public var variant: String { info.variant }
+    /// e.g. "Old-School Essentials Classic Fantasy".
+    public var displayName: String { "Old-School Essentials " + info.displayName }
+
+    // MARK: Finding the rules for a file
+
+    /// Every ruleset built into the app. Advanced Fantasy goes here.
+    public static let all: [OSERuleset] = [.classic]
+
+    /// The built-in rules for a system and variant, ignoring case. A
+    /// missing variant means the system's first one (Classic Fantasy for
+    /// `ose`).
+    public static func named(system: String?, variant: String?) -> OSERuleset? {
+        guard let system = system?.lowercased(), !system.isEmpty else { return nil }
+        let matching = all.filter { $0.system == system }
+        guard let variant = variant?.lowercased(), !variant.isEmpty else { return matching.first }
+        return matching.first { $0.variant == variant }
+    }
+
     /// Finds a class by name or id, ignoring case and punctuation
     /// ("Magic-User", "magic user", "magicuser").
     public func classRules(named name: String) -> ClassRules? {

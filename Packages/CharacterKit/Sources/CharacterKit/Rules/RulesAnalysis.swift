@@ -91,7 +91,15 @@ public struct RulesAnalysis: Sendable {
     /// The rules' movement rate and what slows the character down.
     public let movement: MovementInfo?
 
-    public init(_ file: CharacterFile, rules: OSERuleset = .classic) {
+    /// The rules used: the ones the file names, or Classic Fantasy when the
+    /// app doesn't have those (a note says so).
+    public let rules: OSERuleset
+
+    /// Analyses a file with the rules it names. `rules` overrides that (for
+    /// a character still being created).
+    public init(_ file: CharacterFile, rules: OSERuleset? = nil) {
+        let rules = rules ?? file.ruleset
+        self.rules = rules
         var builder = Builder(file: file, rules: rules)
         builder.run()
         classRules = builder.classRules
@@ -191,6 +199,7 @@ private struct Builder {
         level = file.int(["level"])
         if let classRules, let level { row = classRules.row(level: min(level, classRules.maxLevel)) }
 
+        rulesNote()
         abilityEffects()
         classNotes()
         combat()
@@ -229,6 +238,14 @@ private struct Builder {
             [("NPC reactions", signed(t.cha.reactions[$0])), ("Max retainers", String(t.cha.maxRetainers[$0])),
              ("Retainer loyalty", String(t.cha.retainerLoyalty[$0]))]
         }
+    }
+
+    /// When the file names rules the app doesn't have.
+    private mutating func rulesNote() {
+        let named = [file.system, file.variant].compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: " ")
+        guard file.namedRuleset == nil, !named.isEmpty else { return }
+        note(.info, "The app doesn't have the rules for “\(named)”, so \(rules.displayName) is used where they match.",
+             ["rules"])
     }
 
     // MARK: Class
