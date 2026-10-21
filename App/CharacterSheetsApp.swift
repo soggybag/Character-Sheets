@@ -31,14 +31,21 @@ struct CharacterSheetsApp: App {
         exit(0)
     }
 
-    /// Debug builds only: `-renderWindow about|legal <out.png> [-dark]` draws
-    /// that window's content to a PNG and quits, for checking its layout.
+    /// Debug builds only: `-renderWindow about|legal|abilities <out.png> [-dark]`
+    /// draws that content to a PNG and quits, for checking its layout.
+    /// `abilities` is the sample character's Class Abilities section.
     @MainActor
     private static func renderWindowIfAsked() {
         let arguments = CommandLine.arguments
         guard let index = arguments.firstIndex(of: "-renderWindow"), arguments.count > index + 2 else { return }
         let content: AnyView = switch arguments[index + 1] {
         case "legal": AnyView(LegalContent().padding(24).frame(width: 640))
+        case "abilities":
+            if case let .sheet(file)? = HelpView.sampleDocument()?.content {
+                AnyView(ClassAbilitiesSection(analysis: RulesAnalysis(file)).padding(24).frame(width: 640))
+            } else {
+                AnyView(Text("No sample character"))
+            }
         default: AnyView(AboutView())
         }
         let dark = arguments.contains("-dark")

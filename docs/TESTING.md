@@ -29,6 +29,11 @@ adding the build to the external group. Work on copies of your characters.
 - [ ] Tab through every box without typing anything, then close. The app
       doesn't ask to save (nothing changed).
 - [ ] Rules menu: switch ascending AC on and off; the combat boxes follow.
+- [ ] Class Abilities, after Exploration: a level 1 thief shows Back-stab
+      and Thief skills, with "Later: Read languages (level 4), …"; at
+      level 4 Read languages moves up. Every class shows something at
+      level 1; an unknown class shows no section. Print: the names are
+      under Languages and the sheet still fits on one page.
 - [ ] Type the class in lower case ("thief", "dwarf", "cleric"): thief
       skills, construction tricks and spells still appear, as for "Thief".
 - [ ] Edit as Text, change `variant: classic` to `variant: advanced`, Done:

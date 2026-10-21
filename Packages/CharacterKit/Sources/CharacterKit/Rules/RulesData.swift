@@ -87,7 +87,7 @@ public struct ClassRules: Decodable, Sendable {
         public let cannotLower: [String]?
     }
 
-    public struct Feature: Decodable, Sendable {
+    public struct Feature: Decodable, Sendable, Equatable {
         public let id: String
         public let name: String
         public let summary: String

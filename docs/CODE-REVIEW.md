@@ -249,5 +249,10 @@ that they agree), S5 (`Int.signedText`, `RulesAnalysis.value(at:in:)` and
 display text), T2 (`MovementSummary` and `TextFileStatus` moved into
 CharacterKit with tests; house damage comes from the analysis).
 
-**Left for next time:** S6, S7, I1, U1, H2, D2 (once there are steps to
-reproduce it), and S8 (a plan decision).
+**Done since:** S8, as a Class Abilities section on the sheet (abilities
+at the character's level, later ones listed by level; names on the
+printout). The Travel box on the printout shows the number, with "mi a day"
+under it (it was cramped).
+
+**Left for next time:** S6, S7, I1, U1, H2, and D2 (once there are steps to
+reproduce it).
