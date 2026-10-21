@@ -242,6 +242,10 @@ Decisions:
 - [ ] **Roll Max HP** from the sheet when it's empty: every hit die at the
       current level, dice shown, or a typed total. Return fills a weapon's
       grey damage.
+- [ ] **Class Abilities** on the sheet (code review 1, S8): what the class
+      can do at this level, from the rules data in our own words, with
+      later abilities listed by level. Read-only; extras go in Notes. The
+      printout lists the names under Languages to stay on one page.
 - [ ] **Movement where it's used:** Combat shows the encounter rate (feet
       per round); Exploration shows the rate per turn and overland travel
       (miles a day). Both are worked out from the one stored rate. When the
@@ -342,5 +346,7 @@ Anything here needs a strong case before it moves up:
   prime requisites, XP modifiers, armour and weapons allowed, languages,
   infravision, level limits, and races' ability limits). Without them,
   the Advanced Fantasy classes get tables only, and the player types
-  restrictions themselves. Reply drafted 21 Oct 2026, not sent yet.
+  restrictions themselves. Reply sent 21 Oct 2026, asking for the
+  permission to cover those facts too, with an invitation to the TestFlight
+  beta. Waiting on their permission note.
 - Free, paid, or pay-what-you-want

@@ -175,8 +175,8 @@ struct PrintedSheet {
                 HStack(spacing: 6) {
                     PrintBox(label: "Move", value: movement.rate.map { "\($0)'" } ?? "", width: 40,
                              note: movement.isEncumbered ? "encumbered" : "per turn")
-                    PrintBox(label: "Travel", value: movement.travelRate.map { "\($0) mi" } ?? "",
-                             width: 40, note: "per day")
+                    PrintBox(label: "Travel", value: movement.travelRate.map(String.init) ?? "",
+                             width: 40, note: "mi a day")
                     ForEach([("Listen", "listen"), ("Secret", "secretDoors"), ("Doors", "openDoors"),
                              ("Traps", "findTraps")], id: \.1) { label, key in
                         PrintBox(label: label, value: number(["exploration", .key(key)]), width: 40, note: "in 6")
@@ -192,6 +192,14 @@ struct PrintedSheet {
                 Text(file.strings(["languages"]).joined(separator: ", "))
                     .font(.system(size: 9.5))
                     .frame(maxWidth: .infinity, alignment: .leading)
+                // Names only, to keep the sheet to one page; the app has the details.
+                if !analysis.classAbilities.isEmpty {
+                    PrintHeading("Class Abilities")
+                        .padding(.top, 4)
+                    Text(analysis.classAbilities.map(\.name).joined(separator: ", "))
+                        .font(.system(size: 9.5))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
             }
         }
     }

@@ -44,6 +44,9 @@ details.
   bigger or smaller; **Actual Size** (⌘0) goes back.
 - An empty **Max HP** box offers **Roll…**: roll the hit dice for the
   character's level (each die shown) or type in your own total.
+- **Class Abilities** lists what the class can do at the character's
+  level, with the abilities still to come underneath. It comes from the
+  rules; put anything else (a magic item's power, a house rule) in Notes.
 - An item's empty **Notes** show what it is in grey (its AC, qualities or
   the rules' notes), including house items from a custom equipment list.
   Press Return in Notes to keep that in the file.

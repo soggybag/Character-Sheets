@@ -33,6 +33,9 @@ struct SheetView: View {
                 }
                 SavesSection(file: $file, analysis: analysis)
                 ExplorationSection(file: $file, analysis: analysis)
+                if !analysis.classAbilities.isEmpty {
+                    ClassAbilitiesSection(analysis: analysis)
+                }
                 LanguagesSection(file: $file)
                 if showsSpells(analysis) {
                     SpellsSection(file: $file, analysis: analysis)

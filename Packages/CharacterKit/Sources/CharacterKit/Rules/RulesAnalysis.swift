@@ -100,6 +100,11 @@ public struct RulesAnalysis: Sendable {
     /// describes it ("AC 8 [11], light", "Carries 2,000 coins."). A weapon's
     /// damage is left out: the Damage column has it.
     public let itemDetails: [Int: String]
+    /// The class's abilities the character has at their level, in the
+    /// rules' order. Without a level, those every member of the class has.
+    public let classAbilities: [ClassRules.Feature]
+    /// Abilities the class gains later, soonest first.
+    public let laterAbilities: [ClassRules.Feature]
     /// The CON modifier to hit points per die (0 without a CON score).
     public let conModifier: Int
     /// The damage the rules give each weapon in `equipment`, by index: the
@@ -127,6 +132,12 @@ public struct RulesAnalysis: Sendable {
         movement = builder.movement
         itemDamage = builder.itemDamage
         itemDetails = builder.itemDetails
+        let features = builder.classRules?.features ?? []
+        let reached = builder.level ?? 1
+        classAbilities = features.filter { ($0.minLevel ?? 1) <= reached }
+        laterAbilities = features.filter { ($0.minLevel ?? 1) > reached }
+            .enumerated().sorted { ($0.element.minLevel ?? 0, $0.offset) < ($1.element.minLevel ?? 0, $1.offset) }
+            .map(\.element)
         conModifier = builder.mod("con") { $0.con.hitPoints }
     }
 

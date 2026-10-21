@@ -386,6 +386,33 @@ struct ExplorationSection: View {
     }
 }
 
+/// What the class can do at this level, from the rules, and what comes
+/// later. Read-only: anything else (a magic item's power, a house rule)
+/// goes in Notes.
+struct ClassAbilitiesSection: View {
+    let analysis: RulesAnalysis
+
+    var body: some View {
+        SheetSection(title: "Class Abilities") {
+            VStack(alignment: .leading, spacing: 6) {
+                ForEach(analysis.classAbilities, id: \.id) { ability in
+                    (Text(ability.name).bold() + Text("  ") + Text(ability.summary).foregroundStyle(.secondary))
+                        .fixedSize(horizontal: false, vertical: true)
+                        .textSelection(.enabled)
+                }
+            }
+            if !analysis.laterAbilities.isEmpty {
+                Text("Later: " + analysis.laterAbilities
+                    .map { "\($0.name) (level \($0.minLevel ?? 1))" }.joined(separator: ", "))
+                    .zoomFont(.caption)
+                    .foregroundStyle(.secondary)
+                    .help(analysis.laterAbilities.map { "\($0.name), level \($0.minLevel ?? 1): \($0.summary)" }
+                        .joined(separator: "\n"))
+            }
+        }
+    }
+}
+
 struct LanguagesSection: View {
     @Binding var file: CharacterFile
 
