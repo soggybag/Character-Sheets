@@ -10,6 +10,7 @@ struct SheetView: View {
     @State private var levelDownPlan: LevelDownPlan?
     /// Narrow windows get narrower margins.
     @State private var isNarrow = false
+    @AppStorage(SheetZoom.key) private var zoom = 1.0
 
     var body: some View {
         let analysis = RulesAnalysis(file)
@@ -46,8 +47,11 @@ struct SheetView: View {
             }
             .padding(.horizontal, isNarrow ? 20 : 40)
             .padding(.vertical, 32)
-            .frame(maxWidth: 820)
+            .frame(maxWidth: 820 * zoom)
             .frame(maxWidth: .infinity)
+            .zoomFont(.body)
+            .controlSize(zoom >= 1.3 ? .large : .regular)
+            .environment(\.sheetZoom, zoom)
         }
         .background(.background)
         .onGeometryChange(for: Bool.self) { $0.size.width < 640 } action: { isNarrow = $0 }
@@ -79,7 +83,7 @@ private struct Notice: View {
 
     var body: some View {
         Label(text, systemImage: systemImage)
-            .font(.callout)
+            .zoomFont(.callout)
             .foregroundStyle(.secondary)
             .padding(10)
             .frame(maxWidth: .infinity, alignment: .leading)

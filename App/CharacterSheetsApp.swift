@@ -47,6 +47,14 @@ struct CharacterSheetsApp: App {
                 ImportSheetButton()
                 OpenPartyButton()
             }
+            CommandGroup(after: .pasteboard) {
+                Divider()
+                RulesValueCommand()
+            }
+            CommandGroup(after: .toolbar) {
+                Divider()
+                ZoomCommands()
+            }
             CommandGroup(replacing: .printItem) {
                 PrintCommands()
             }

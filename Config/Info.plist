@@ -17,6 +17,19 @@
 			</array>
 		</dict>
 	</array>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Equipment Row</string>
+			<key>UTTypeIdentifier</key>
+			<string>com.mitchellhudson.CharacterSheets.equipment-row</string>
+		</dict>
+	</array>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>UTImportedTypeDeclarations</key>
