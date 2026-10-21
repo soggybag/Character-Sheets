@@ -20,6 +20,8 @@ public struct ClassRules: Decodable, Sendable {
     public let infravision: Int?
     public let features: [Feature]
     public let levels: [LevelRow]
+    /// Extra limits on adjusting scores at creation.
+    public let creation: Creation?
 
     public func row(level: Int) -> LevelRow? {
         levels.first { $0.level == level }
@@ -78,6 +80,11 @@ public struct ClassRules: Decodable, Sendable {
         /// `arcane` or `divine`.
         public let type: String
         public let fromLevel: Int
+    }
+
+    public struct Creation: Decodable, Sendable {
+        /// Scores this class can't lower, beyond the general rule.
+        public let cannotLower: [String]?
     }
 
     public struct Feature: Decodable, Sendable {

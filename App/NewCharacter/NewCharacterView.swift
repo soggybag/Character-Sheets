@@ -23,19 +23,24 @@ struct NewBlankSheetButton: View {
 
 /// Rolls up a 1st-level character: scores in order, class, optional score
 /// adjustments, hit points and gold. Every roll shows its dice, and every
-/// value can be typed in from real dice instead.
+/// value can be typed in from real dice instead. Or one click rolls the lot.
 struct NewCharacterView: View {
     static let windowID = "new-character"
 
     @Environment(\.newDocument) private var newDocument
     @Environment(\.dismissWindow) private var dismissWindow
     @State private var character = NewCharacter()
+    /// House rules, remembered because a group plays the same way each time.
+    @AppStorage("abilityRollMethod") private var method = NewCharacter.RollMethod.rules
+    @AppStorage("allowSwappingScores") private var allowSwapping = false
 
     var body: some View {
         let analysis = character.analysis
         VStack(spacing: 0) {
             Form {
-                ScoresSection(character: $character, analysis: analysis)
+                RandomSection(character: $character)
+                ScoresSection(character: $character, analysis: analysis,
+                              method: $method, allowSwapping: $allowSwapping)
                 ClassSection(character: $character)
                 AdjustSection(character: $character)
                 DetailsSection(character: $character)
@@ -64,17 +69,56 @@ struct NewCharacterView: View {
             .padding()
         }
         .frame(width: 600, height: 760)
+        // The window's state outlives closing it; each opening is a new character.
+        .onAppear { startOver() }
+        .onDisappear { startOver() }
+        .onChange(of: method) { character.method = method }
+    }
+
+    private func startOver() {
+        character = NewCharacter()
+        character.method = method
     }
 }
 
 // MARK: - Sections
 
-private struct ScoresSection: View {
+private struct RandomSection: View {
     @Binding var character: NewCharacter
-    let analysis: RulesAnalysis
 
     var body: some View {
         Section {
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Roll a whole character, then change anything you like.")
+                    Text("Picks the class the scores suit best, adjusts scores for XP, and buys a starting kit.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                Button("Random Character", systemImage: "dice") {
+                    let store = EquipmentListStore.shared
+                    store.reload()
+                    character.rollRandom(items: character.rules.shopItems(with: store.list))
+                }
+            }
+        }
+    }
+}
+
+private struct ScoresSection: View {
+    @Binding var character: NewCharacter
+    let analysis: RulesAnalysis
+    @Binding var method: NewCharacter.RollMethod
+    @Binding var allowSwapping: Bool
+
+    var body: some View {
+        Section {
+            Picker("Roll", selection: $method) {
+                Text("3d6 in order (the rules)").tag(NewCharacter.RollMethod.rules)
+                Text("4d6, drop the lowest, in order (house rule)").tag(NewCharacter.RollMethod.fourDropLowest)
+            }
+            Toggle("Allow swapping scores (house rule)", isOn: $allowSwapping)
             Grid(alignment: .leading, horizontalSpacing: 16, verticalSpacing: 8) {
                 GridRow {
                     Text("")
@@ -82,6 +126,7 @@ private struct ScoresSection: View {
                     Text("Dice")
                     Text("Score").gridColumnAlignment(.trailing)
                     Text("Mod").gridColumnAlignment(.trailing)
+                    if allowSwapping { Text("") }
                 }
                 .font(.caption)
                 .foregroundStyle(.secondary)
@@ -95,7 +140,7 @@ private struct ScoresSection: View {
                             .labelsHidden()
                             .multilineTextAlignment(.trailing)
                             .frame(width: 44)
-                        Text(character.scoreRolls[ability]?.results.map(String.init).joined(separator: " ") ?? "")
+                        dice(character.scoreRolls[ability])
                             .monospacedDigit()
                             .foregroundStyle(.secondary)
                             .frame(minWidth: 60, alignment: .leading)
@@ -106,6 +151,7 @@ private struct ScoresSection: View {
                             .monospacedDigit()
                             .help(analysis.abilities[ability]?.effects.map { "\($0.label): \($0.value)" }
                                 .joined(separator: "\n") ?? "")
+                        if allowSwapping { swapMenu(ability) }
                     }
                 }
             }
@@ -118,10 +164,45 @@ private struct ScoresSection: View {
                 }
             }
         } footer: {
-            Text("Roll here, or roll real dice and type the totals.")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            VStack(alignment: .leading, spacing: 4) {
+                if character.isSubPar {
+                    Label("Optional rule: with every score below 9, or two or more below 7, "
+                          + "the referee may let you roll a new character.",
+                          systemImage: "info.circle")
+                        .foregroundStyle(.orange)
+                }
+                Text("Roll here, or roll real dice and type the totals.")
+                    .foregroundStyle(.secondary)
+            }
+            .font(.caption)
         }
+    }
+
+    /// Each die, with dropped ones struck through.
+    private func dice(_ roll: DiceRoll?) -> Text {
+        guard let roll else { return Text("") }
+        let dropped = roll.dropped
+        return roll.results.indices.reduce(Text("")) { text, index in
+            let die = Text((index == 0 ? "" : " ") + String(roll.results[index]))
+            return Text("\(text)\(dropped.contains(index) ? die.strikethrough().foregroundStyle(.tertiary) : die)")
+        }
+    }
+
+    private func swapMenu(_ ability: String) -> some View {
+        Menu {
+            ForEach(NewCharacter.abilityOrder.filter { $0 != ability }, id: \.self) { other in
+                Button("With \(other.uppercased())" + (character.rolledScores[other].map { " (\($0))" } ?? "")) {
+                    character.swapScores(ability, other)
+                }
+            }
+        } label: {
+            Image(systemName: "arrow.up.arrow.down")
+        }
+        .menuStyle(.borderlessButton)
+        .menuIndicator(.hidden)
+        .fixedSize()
+        .help("Swap \(ability.uppercased()) with another score")
+        .disabled(character.rolledScores[ability] == nil)
     }
 }
 
