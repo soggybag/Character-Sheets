@@ -4,6 +4,8 @@ A small native Mac app for Old-School Essentials characters. The sheet fills
 in what the rules decide (saves, attacks, AC, movement, level-ups) and keeps
 every character in a plain Markdown file with a YAML header.
 
+Website: [soggybag.github.io/Character-Sheets](https://soggybag.github.io/Character-Sheets/)
+
 ## Try the beta
 
 The app is in open beta on TestFlight:
