@@ -270,6 +270,18 @@ Decisions:
       promo code for Necrotic Gnome (summon@necroticgnome.com).
 
 ### Later
+- **Notes formatting** (from beta testing, 21 Oct 2026). Notes stay
+  Markdown in the file, never converted, so they keep round-tripping byte
+  for byte and plain-text notes are unaffected. Hiding the Markdown behind
+  a rich-text editor was ruled out: it would rewrite what people typed.
+  In order:
+  1. **Format menu** (also on the Notes right-click menu): Bold ⌘B and
+     Italic ⌘I wrap the selection in markers; Heading, Bulleted List and
+     Checklist add the marker at the start of the line. Small.
+  2. **Live styling** in the Notes editor: headings larger and bold,
+     `**bold**` and `*italic*` styled, list items indented, the markers
+     dimmed but kept. Medium.
+  3. Maybe: click a `- [ ]` checklist box to tick it.
 - Quick Look preview. Deferred: character files are plain `.md`, so a
   preview extension would take over every Markdown file's preview.
 - Dice roller on the sheet: optional at most. Players prefer to see real
