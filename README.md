@@ -1,4 +1,4 @@
-# Character Sheets
+# 3d6
 
 A small native Mac app for Old-School Essentials characters. The sheet fills
 in what the rules decide (saves, attacks, AC, movement, level-ups) and keeps
@@ -24,7 +24,7 @@ The app is in open beta on TestFlight:
   <img src="site/images/designed-for-ose-light.png" alt="Designed for use with Old-School Essentials" width="180">
 </picture>
 
-Character Sheets is an independent app. It isn't an official Old-School
+3d6 is an independent app. It isn't an official Old-School
 Essentials product, and isn't affiliated with or approved by Necrotic Gnome.
 Old-School Essentials is a trademark of Necrotic Gnome. The trademark and
 Old-School Essentials logo are used with permission of Necrotic Gnome, under
@@ -59,8 +59,9 @@ open "Character Sheets.xcodeproj"        # then Run (⌘R)
 cd Packages/CharacterKit && swift test
 ```
 
-The bundle id is `com.mitchellhudson.CharacterSheets`, signed automatically
-with team `753UQ7TNXJ`. To send a build to TestFlight, run
+The Xcode project and scheme are still named Character Sheets; the app builds
+as `3d6.app`. The bundle id is `com.mitchellhudson.CharacterSheets`, signed
+automatically with team `753UQ7TNXJ`. To send a build to TestFlight, run
 `scripts/testflight.sh` (see `docs/RELEASING.md`).
 
 Third-party notices (Yams, MIT; OSE SRD rules data, OGL 1.0a; the
