@@ -1,14 +1,17 @@
+Welcome to the beta. 3d6 is a Mac app for Old-School Essentials characters, and it requires the books. Start with Help (shown on first launch) or Help → Open Sample Character. It's a beta, so keep copies of characters you care about; each one is a plain text file.
+
 New in this build:
 
-- Your equipment list on the sheet: with a custom list chosen in Settings → Equipment, house weapons now appear in the Weapons section (to-hit, damage, ranges), and house armour and shields count for AC and movement. Class warnings use each house item's usableBy.
-- Item notes: an empty Notes box in Equipment shows what the item is in grey, such as "AC 8 [11], light" or "melee, slow, two-handed". Press Return in Notes to keep it in the file.
-- Class warnings read the same in the shop and on the sheet, and name the item: "Clerics normally use blunt weapons only, not a sword."
-- A class typed in lower case ("thief", "dwarf") gets its thief skills, construction tricks and spells, like "Thief".
-- A file set to rules the app doesn't have yet (variant: advanced) says so in the rules notes, and uses Classic Fantasy where the rules match.
+- A new name and icon: the app is now called 3d6. Your characters, settings and beta membership carry over.
+
+- Class Abilities: the sheet lists what the class can do at the character's level (a thief's back-stab, a dwarf's infravision and so on), with the abilities still to come listed by level. The printed sheet lists their names.
+- Max HP: lowering it brings current HP down with it. If current HP is above max (a temporary bonus, say), a rules note points it out and nothing is changed.
+- VoiceOver: fields say their names ("Current hit points, 7"), status icons are labelled, and warnings and rules values are read as hints.
 
 Things to try:
-- Make a list with Settings → Equipment → New List… (the starting file has an example of each section, ready to uncomment), add a house weapon and some house armour, buy them, and check the sheet. Is anything unclear about what a house item does?
-- Look through a character's Equipment. Do the grey notes help, or get in the way?
+- Look at Class Abilities for a few classes and levels. Is anything missing, wrong, or worded unclearly?
+- Lower and raise Max HP on a wounded and an unwounded character.
+- Roll a character with File → New Character… (or Random Character) and play a session with it. What's missing at the table?
 - Use Edit → Undo and Redo freely, especially in boxes you've just typed in. Tell us if a value flips back and forth.
 
 Send feedback from Help → Send Feedback…, or with TestFlight's screenshot feedback.
