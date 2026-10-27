@@ -111,13 +111,13 @@ struct CharacterSheetsApp: App {
         .windowResizability(.contentSize)
         .defaultPosition(.center)
 
-        Window("Character Sheets Help", id: HelpView.windowID) {
+        Window("3d6 Help", id: HelpView.windowID) {
             HelpView()
         }
         .defaultSize(width: 640, height: 720)
         .defaultLaunchBehavior(UserDefaults.standard.bool(forKey: HelpView.seenKey) ? .suppressed : .presented)
 
-        Window("About Character Sheets", id: AboutView.windowID) {
+        Window("About 3d6", id: AboutView.windowID) {
             AboutView()
         }
         .windowResizability(.contentSize)

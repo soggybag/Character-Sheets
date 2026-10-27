@@ -11,7 +11,7 @@ enum Legal {
     /// The license's compatibility statement.
     static let requires = "Requires Old-School Essentials."
     /// The license forbids implying the app is official or approved.
-    static let independent = "Character Sheets is an independent app. It isn't an official Old-School "
+    static let independent = "3d6 is an independent app. It isn't an official Old-School "
         + "Essentials product, and isn't affiliated with or approved by Necrotic Gnome."
     static let rulesData = "Game rules data is Open Game Content, used under the Open Game License 1.0a. "
         + "Rules text isn't included: the app has the numbers, and the books have the rules."
@@ -54,12 +54,12 @@ struct DesignedForOSELogo: View {
     }
 }
 
-/// Character Sheets → About Character Sheets.
+/// 3d6 → About 3d6.
 struct AboutCommand: View {
     @Environment(\.openWindow) private var openWindow
 
     var body: some View {
-        Button("About Character Sheets") { openWindow(id: AboutView.windowID) }
+        Button("About 3d6") { openWindow(id: AboutView.windowID) }
     }
 }
 
@@ -77,7 +77,7 @@ struct AboutView: View {
                 .frame(width: 96, height: 96)
             VStack(spacing: 4) {
                 // The app's name is the largest thing here; the logo is smaller.
-                Text("Character Sheets")
+                Text("3d6")
                     .font(.system(size: 26, weight: .bold))
                 Text(version)
                     .font(.callout)
