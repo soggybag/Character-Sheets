@@ -11,8 +11,8 @@ adding the build to the external group. Work on copies of your characters.
 ## Smoke test
 
 **Launch**
-- [ ] The app opens. Help → Character Sheets Help opens and reads correctly.
-- [ ] App menu → About Character Sheets shows the right version and build,
+- [ ] The app opens. Help → 3d6 Help opens and reads correctly.
+- [ ] App menu → About 3d6 shows the right version and build,
       the "Designed for use with Old-School Essentials" logo (white in light
       mode, black in dark mode, not stretched, narrower than the app name),
       "Requires Old-School Essentials." and the trademark line. Licenses and
