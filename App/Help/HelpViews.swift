@@ -8,7 +8,7 @@ struct HelpCommands: View {
     @Environment(\.newDocument) private var newDocument
 
     var body: some View {
-        Button("Character Sheets Help") { openWindow(id: HelpView.windowID) }
+        Button("3d6 Help") { openWindow(id: HelpView.windowID) }
             .keyboardShortcut("?", modifiers: .command)
         Button("Open Sample Character") { openSample() }
         Divider()
@@ -123,8 +123,8 @@ enum Feedback {
         components.scheme = "mailto"
         components.path = address
         components.queryItems = [
-            URLQueryItem(name: "subject", value: "Character Sheets feedback"),
-            URLQueryItem(name: "body", value: "\n\n—\nCharacter Sheets \(version) (\(build)), macOS \(system)"),
+            URLQueryItem(name: "subject", value: "3d6 feedback"),
+            URLQueryItem(name: "body", value: "\n\n—\n3d6 \(version) (\(build)), macOS \(system)"),
         ]
         if let url = components.url { NSWorkspace.shared.open(url) }
     }

@@ -1,6 +1,6 @@
-# Welcome to Character Sheets
+# Welcome to 3d6
 
-Character Sheets keeps Old-School Essentials characters in plain text files
+3d6 keeps Old-School Essentials characters in plain text files
 and fills in the rules for you, without getting in your way. It's designed
 for use with Old-School Essentials Classic Fantasy. **Requires Old-School
 Essentials:** the app knows the numbers (saves, attacks, experience, spells

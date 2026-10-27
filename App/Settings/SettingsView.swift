@@ -2,7 +2,7 @@ import AppKit
 import CharacterKit
 import SwiftUI
 
-/// Character Sheets → Settings…
+/// 3d6 → Settings…
 struct SettingsView: View {
     var body: some View {
         TabView {
