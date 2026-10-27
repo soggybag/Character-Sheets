@@ -3,7 +3,6 @@ Welcome to the beta. 3d6 is a Mac app for Old-School Essentials characters, and 
 New in this build:
 
 - A new name and icon: the app is now called 3d6. Your characters, settings and beta membership carry over.
-
 - Class Abilities: the sheet lists what the class can do at the character's level (a thief's back-stab, a dwarf's infravision and so on), with the abilities still to come listed by level. The printed sheet lists their names.
 - Max HP: lowering it brings current HP down with it. If current HP is above max (a temporary bonus, say), a rules note points it out and nothing is changed.
 - VoiceOver: fields say their names ("Current hit points, 7"), status icons are labelled, and warnings and rules values are read as hints.
