@@ -1,5 +1,6 @@
 // Builds the app icon from flat, square, full-bleed artwork (1024×1024, no rounded corners).
-// Run: swift scripts/make-app-icon.swift docs/icons/3d6.png
+// Export it as 8-bit sRGB: an HDR profile turns white into gray.
+// Run: swift scripts/make-app-icon.swift docs/3d6.png
 
 import AppKit
 
@@ -16,12 +17,12 @@ func render(_ px: Int) -> Data {
 
     let tile = CGRect(x: 100, y: 100, width: 824, height: 824)
     let tilePath = CGPath(roundedRect: tile, cornerWidth: 185, cornerHeight: 185, transform: nil)
-    ctx.saveGState()
+    // The clipped art casts the shadow itself, so no fill color shows at the edges.
     ctx.setShadow(offset: CGSize(width: 0, height: -12), blur: 28, color: NSColor.black.withAlphaComponent(0.35).cgColor)
-    ctx.addPath(tilePath); ctx.setFillColor(NSColor.gray.cgColor); ctx.fillPath()
-    ctx.restoreGState()
+    ctx.beginTransparencyLayer(auxiliaryInfo: nil)
     ctx.addPath(tilePath); ctx.clip()
     ctx.draw(art, in: tile)
+    ctx.endTransparencyLayer()
 
     return NSBitmapImageRep(cgImage: ctx.makeImage()!).representation(using: .png, properties: [:])!
 }
