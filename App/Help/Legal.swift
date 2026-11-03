@@ -13,6 +13,9 @@ enum Legal {
     /// The license forbids implying the app is official or approved.
     static let independent = "3d6 is an independent app. It isn't an official Old-School "
         + "Essentials product, and isn't affiliated with or approved by Necrotic Gnome."
+    /// Necrotic Gnome's permission (email, Nov 2026) for the non-SRD races
+    /// and classes, worded as they asked.
+    static let nonSRD = "Permission to include details of non-SRD races and classes granted by Necrotic Gnome."
     static let rulesData = "Game rules data is Open Game Content, used under the Open Game License 1.0a. "
         + "Rules text isn't included: the app has the numbers, and the books have the rules."
 
@@ -91,6 +94,7 @@ struct AboutView: View {
                 Text(Legal.independent)
                 Text(Legal.trademark)
                 Text(Legal.rulesData)
+                Text(Legal.nonSRD)
             }
             .font(.caption)
             .foregroundStyle(.secondary)

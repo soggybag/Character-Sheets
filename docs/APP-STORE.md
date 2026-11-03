@@ -90,7 +90,8 @@ Alternatives: "OSE characters in plain text" (28), "Fills in the rules for OSE" 
 > Old-School Essentials is a trademark of Necrotic Gnome. The trademark and
 > Old-School Essentials logo are used with permission of Necrotic Gnome,
 > under license. Game rules data is Open Game Content used under the Open
-> Game License 1.0a.
+> Game License 1.0a. Permission to include details of non-SRD races and
+> classes granted by Necrotic Gnome.
 
 ## Keywords (100 max, commas, no spaces)
 

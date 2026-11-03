@@ -28,7 +28,8 @@ The app is in open beta on TestFlight:
 Essentials product, and isn't affiliated with or approved by Necrotic Gnome.
 Old-School Essentials is a trademark of Necrotic Gnome. The trademark and
 Old-School Essentials logo are used with permission of Necrotic Gnome, under
-license.
+license. Permission to include details of non-SRD races and classes
+granted by Necrotic Gnome.
 
 ## Docs
 
