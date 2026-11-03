@@ -31,30 +31,15 @@ race-as-class option (`Human` for the human classes).
 
 ## Races
 
-```json
-{
-  "id": "dwarf",
-  "name": "Dwarf",
-  "plural": "Dwarves",
-  "requirements": { "con": 9 },
-  "maximums": { "cha": 17 },
-  "abilityModifiers": { "con": 1, "cha": -1 },
-  "languages": ["Alignment", "Common", "Dwarvish"],
-  "infravision": 60,
-  "exploration": { "listen": 2 },
-  "features": [
-    { "id": "detect-construction-tricks", "name": "Detect construction tricks", "summary": "…" }
-  ],
-  "classes": { "cleric": 10, "fighter": 10, "thief": 9 }
-}
-```
-
-(The numbers above show the shape only.)
+The Dwarf in `races.json` shows every field. The fields:
 
 - **`requirements`** and **`maximums`** are the lowest and highest scores
-  the race allows, after `abilityModifiers`.
+  the race allows, after `abilityModifiers`. `{}` means none.
 - **`abilityModifiers`** are added to the rolled scores.
-- **`exploration`** replaces the class's value when it's better.
+- **`exploration`** replaces the class's value when it's better. Keys as
+  for classes.
+- **`weapons`** (optional) limits weapons on top of the class's rule.
 - **`classes`** maps each class id the race may take to its highest level.
-  A class that isn't listed isn't allowed.
+  A class that isn't listed isn't allowed. Referee's-option notes ("may
+  only be NPCs") go in a feature.
 - **`plural`** is optional, as for classes.

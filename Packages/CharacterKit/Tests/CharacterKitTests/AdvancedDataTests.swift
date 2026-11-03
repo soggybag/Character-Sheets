@@ -34,14 +34,32 @@ struct AdvancedDataTests {
         }
     }
 
+    /// Classes a race names that aren't in `classes.json` yet. Remove
+    /// each one as its class is added.
+    static let classesToAdd: Set = ["assassin"]
+
     @Test func racesNameRealClassesAndLevels() {
+        for id in Self.classesToAdd {
+            #expect(!rules.classes.contains { $0.id == id }, "\(id) is added: take it off classesToAdd")
+        }
         for race in rules.races {
-            for (classID, maxLevel) in race.classes {
+            for (classID, maxLevel) in race.classes where !Self.classesToAdd.contains(classID) {
                 let classRules = rules.classes.first { $0.id == classID }
                 #expect(classRules != nil, "\(race.name): no class \(classID)")
                 if let classRules { #expect((1...classRules.maxLevel).contains(maxLevel), "\(race.name) \(classID)") }
             }
         }
+    }
+
+    /// Spot checks against the book's Dwarf race.
+    @Test func dwarf() throws {
+        let dwarf = try #require(rules.raceRules(named: "DWARF"))
+        #expect(dwarf.plural == "Dwarves" && dwarf.requirements == ["con": 9])
+        #expect(dwarf.abilityModifiers == ["con": 1, "cha": -1] && dwarf.maximums.isEmpty)
+        #expect(dwarf.classes == ["assassin": 9, "cleric": 8, "fighter": 10, "thief": 9])
+        #expect(dwarf.maxLevel(classID: "magic-user") == nil)
+        #expect(dwarf.weapons?.forbidden == ["long-bow", "two-handed-sword"])
+        #expect(dwarf.infravision == 60 && dwarf.exploration?["listen"] == 2)
     }
 
     @Test func raceFormat() throws {

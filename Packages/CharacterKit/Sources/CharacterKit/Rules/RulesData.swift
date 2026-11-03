@@ -140,12 +140,15 @@ public struct RaceRules: Decodable, Sendable {
     public let infravision: Int?
     /// Replaces the class's value when better (dwarves' listening).
     public let exploration: [String: Int]?
+    /// Limits on top of the class's (dwarves can't use long bows).
+    public let weapons: ClassRules.WeaponRule?
     public let features: [ClassRules.Feature]
     /// Class ids this race may take, with the highest level for each.
     public let classes: [String: Int]
 
     enum CodingKeys: String, CodingKey {
-        case id, name, requirements, maximums, abilityModifiers, languages, infravision, exploration, features, classes
+        case id, name, requirements, maximums, abilityModifiers, languages, infravision, exploration, weapons, features
+        case classes
         case pluralName = "plural"
     }
 

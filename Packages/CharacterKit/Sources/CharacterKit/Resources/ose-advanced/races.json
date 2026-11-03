@@ -1,4 +1,45 @@
 {
   "variant": "advanced",
-  "races": []
+  "races": [
+    {
+      "id": "dwarf",
+      "name": "Dwarf",
+      "plural": "Dwarves",
+      "requirements": { "con": 9 },
+      "maximums": {},
+      "abilityModifiers": { "con": 1, "cha": -1 },
+      "languages": ["Alignment", "Common", "Dwarvish", "Gnomish", "Goblin", "Kobold"],
+      "infravision": 60,
+      "exploration": { "listen": 2, "findTraps": 2, "constructionTricks": 2 },
+      "weapons": {
+        "text": "Small or normal sized",
+        "forbidden": ["long-bow", "two-handed-sword"]
+      },
+      "features": [
+        {
+          "id": "construction-tricks",
+          "name": "Detect construction tricks",
+          "summary": "2-in-6 to notice new construction, sliding walls or sloping passages when searching."
+        },
+        {
+          "id": "room-traps",
+          "name": "Detect room traps",
+          "summary": "2-in-6 to find non-magical room traps when searching."
+        },
+        { "id": "infravision", "name": "Infravision", "summary": "Sees heat in the dark to 60'." },
+        { "id": "listening", "name": "Listening at doors", "summary": "2-in-6 to hear noises." },
+        {
+          "id": "resilience",
+          "name": "Resilience",
+          "summary": "Bonus to saves against poison, spells, and wands, rods and staves, by CON: 7–10 +2, 11–14 +3, 15–17 +4, 18 +5."
+        },
+        {
+          "id": "npc-clerics",
+          "name": "Dwarven clerics",
+          "summary": "At the referee's option, dwarven clerics may only be NPCs."
+        }
+      ],
+      "classes": { "assassin": 9, "cleric": 8, "fighter": 10, "thief": 9 }
+    }
+  ]
 }
