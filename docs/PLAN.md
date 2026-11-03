@@ -254,11 +254,13 @@ Decisions:
       encumbrance gets a Carrying treasure checkbox (`carryingTreasure` in
       the file); a rate that followed the rules follows the checkbox. The
       printed sheet matches.
-- [ ] OSE Advanced Fantasy: Necrotic Gnome offered special permission
-      (21 Oct 2026) for the class names and advancement tables. The
-      Creative Commons SRD (early 2027) will only be the B/X material, so it
-      won't add these classes. Next: confirm the scope with them (see Open
-      decisions), get their permission note, then add the classes.
+- [ ] OSE Advanced Fantasy: Necrotic Gnome gave special permission
+      (3 Nov 2026) for the class names, advancement tables and the short
+      facts per race and class (see Open decisions). The Creative Commons
+      SRD (early 2027) will only be the B/X material, so it won't add these
+      classes. Their permission note is in the legal text
+      (`Legal.nonSRD`: About, Licenses and Legal, website, README, App
+      Store description). Next: add the classes.
 - [ ] **Use the third-party license** (decided 21 Oct 2026, see Open
       decisions). Done, to check by hand: a new About window (logo,
       "Requires Old-School Essentials", trademark line, "independent app"
@@ -353,12 +355,14 @@ Anything here needs a strong case before it moves up:
      tables**, and will send a suggested permission note once we confirm
      that's what we want.
 
-  Still to settle with them: whether that permission also covers the
-  short facts the app uses for Classic Fantasy classes (requirements,
-  prime requisites, XP modifiers, armour and weapons allowed, languages,
-  infravision, level limits, and races' ability limits). Without them,
-  the Advanced Fantasy classes get tables only, and the player types
-  restrictions themselves. Reply sent 21 Oct 2026, asking for the
-  permission to cover those facts too, with an invitation to the TestFlight
-  beta. Waiting on their permission note.
+  Asked on 21 Oct 2026 whether that permission also covers the short
+  facts the app uses for Classic Fantasy classes (requirements, prime
+  requisites, XP modifiers, armour and weapons allowed, languages,
+  infravision, level limits, and races' ability limits). **Answered 3 Nov
+  2026: yes**, "including those little facts per race / class is fine",
+  on condition the legal info says: "Permission to include details of
+  non-SRD races and classes granted by Necrotic Gnome." Done in
+  `App/Help/Legal.swift` (`Legal.nonSRD`). Not asked yet, if wanted:
+  the one-line class ability summaries in our words, and the separate
+  race-and-class option's class limits per race.
 - Free, paid, or pay-what-you-want
