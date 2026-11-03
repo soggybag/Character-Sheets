@@ -15,11 +15,13 @@ extension NewCharacter {
         fresh.method = method
         fresh.name = name
         fresh.ascendingAC = ascendingAC
+        fresh.race = race
 
-        // Optional rule: a sub-par character may be rolled again.
+        // Optional rule: a sub-par character may be rolled again. Scores
+        // that don't suit the chosen race are rolled again too.
         for _ in 0..<20 {
             fresh.rollScores(using: &generator)
-            if !fresh.isSubPar { break }
+            if !fresh.isSubPar, fresh.unmetRaceRequirements.isEmpty { break }
         }
         fresh.className = fresh.bestClass(using: &generator)?.name
         fresh.adjustForXP()
@@ -41,9 +43,11 @@ extension NewCharacter {
     /// A class the scores qualify for with the best XP bonus; ties are
     /// broken at random.
     func bestClass<G: RandomNumberGenerator>(using generator: inout G) -> ClassRules? {
-        let qualified = rules.classes.filter { unmetRequirements(for: $0).isEmpty }
+        let qualified = classChoices.filter { raceAllows($0) && unmetRequirements(for: $0).isEmpty }
         let bonuses = qualified.map { xpBonus(for: $0) }
-        guard let best = bonuses.max() else { return rules.classes.randomElement(using: &generator) }
+        guard let best = bonuses.max() else {
+            return classChoices.filter(raceAllows).randomElement(using: &generator)
+        }
         return zip(qualified, bonuses).filter { $0.1 == best }.map(\.0).randomElement(using: &generator)
     }
 
@@ -57,7 +61,7 @@ extension NewCharacter {
         let classCannotLower = Set(classRules?.creation?.cannotLower ?? [])
         return Self.abilityOrder.filter { ability in
             guard rule.canLower.contains(ability), !primes.contains(ability), !classCannotLower.contains(ability),
-                  let score = rolledScores[ability] else { return false }
+                  let score = baseScores[ability] else { return false }
             return (rule.minimum + rule.cost...12).contains(score)
         }
     }
@@ -72,7 +76,7 @@ extension NewCharacter {
         let current = xpBonus(for: classRules)
         var best: (bonus: Int, prime: String, points: Int)?
         for prime in classRules.primeRequisites {
-            guard let score = rolledScores[prime] else { continue }
+            guard let score = baseScores[prime] else { continue }
             for points in 1...spare.count where score + points <= 18 {
                 var trial = self
                 trial.adjustments[prime] = points
@@ -101,7 +105,7 @@ extension NewCharacter {
         guard let classRules, gold != nil else { return }
         let byID = Dictionary(items.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
         func usable(_ id: String) -> ShopItem? {
-            byID[id].flatMap { rules.restriction(of: $0, for: classRules) == nil ? $0 : nil }
+            byID[id].flatMap { rules.restriction(of: $0, for: classRules, race: raceRules) == nil ? $0 : nil }
         }
         var left: Int { moneyLeft?.totalCP ?? 0 }
         @discardableResult func tryBuy(_ item: ShopItem?) -> Bool {
@@ -110,7 +114,7 @@ extension NewCharacter {
             return true
         }
 
-        if classRules.spellcasting?.type == "divine" { tryBuy(byID["holy-symbol"]) }
+        if classRules.spellcasting?.needsHolySymbol == true { tryBuy(byID["holy-symbol"]) }
         if classRules.hasFeature("thief-skills") { tryBuy(byID["thieves-tools"]) }
         for id in Self.kitWeapons where tryBuy(usable(id)) { break }
 

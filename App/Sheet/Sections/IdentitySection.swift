@@ -36,6 +36,11 @@ struct IdentitySection: View {
     }
 
     @ViewBuilder private var classAndAlignment: some View {
+        // Race apart from class: Advanced Fantasy, or a file that has one.
+        if !analysis.rules.races.isEmpty || file.string(["race"]) != nil {
+            LineField(label: "Race", text: $file.string(["race"]), suggestions: analysis.rules.races.map(\.name))
+                .zoomFrame(minWidth: 90)
+        }
         LineField(label: "Class", text: $file.string(["class"]), suggestions: analysis.rules.classes.map(\.name))
             .zoomFrame(minWidth: 110)
         LineField(label: "Alignment", text: $file.string(["alignment"]), suggestions: analysis.rules.alignments)

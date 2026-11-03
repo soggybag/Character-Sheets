@@ -151,8 +151,13 @@ extension OSERuleset {
         }
     }
 
-    /// Why a class wouldn't normally use an item, or nil if it can.
-    public func restriction(of item: ShopItem, for classRules: ClassRules?) -> String? {
+    /// Why a class (or the character's race) wouldn't normally use an
+    /// item, or nil if it can.
+    public func restriction(of item: ShopItem, for classRules: ClassRules?, race: RaceRules? = nil) -> String? {
+        if item.origin != .house, item.category == .weapons, let race,
+           race.weapons?.forbidden?.contains(item.id) == true {
+            return "\(race.plural) can't normally use \(Self.withArticle(item.name))."
+        }
         guard let classRules else { return nil }
         if item.origin == .house {
             return Self.houseRestriction(usableBy: item.usableBy, name: item.name, for: classRules, in: self)

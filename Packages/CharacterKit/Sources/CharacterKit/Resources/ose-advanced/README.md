@@ -45,9 +45,11 @@ race-as-class option (`Human` for the human classes).
 
 The Dwarf in `races.json` shows every field. The fields:
 
-- **`requirements`** and **`maximums`** are the lowest and highest scores
-  the race allows, after `abilityModifiers`. `{}` means none.
-- **`abilityModifiers`** are added to the rolled scores.
+- **`requirements`** are the lowest rolled scores the race allows, checked
+  before `abilityModifiers` (the race is chosen with the rolled scores).
+  **`maximums`** are the highest, after them. `{}` means none.
+- **`abilityModifiers`** are added to the rolled scores. A modifier that
+  would take a score past 18 or under 3 is ignored.
 - **`exploration`** replaces the class's value when it's better. Keys as
   for classes.
 - **`weapons`** (optional) limits weapons on top of the class's rule.

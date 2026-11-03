@@ -14,6 +14,12 @@ public struct NewCharacter: Sendable {
     /// Change to each score: negative when lowered, positive when raised.
     public var adjustments: [String: Int] = [:]
     public var className: String?
+    /// Advanced Fantasy's separate race and class: the race chosen, or nil
+    /// when the class decides the race. Choosing one clears a race-class
+    /// (Elf, Dwarf, …), which isn't offered alongside it.
+    public var race: String? {
+        didSet { if race != nil, let classRules, classRules.race != "Human" { className = nil } }
+    }
     public var alignment: String?
     public var name = ""
     public var ascendingAC = false
@@ -131,9 +137,31 @@ public struct NewCharacter: Sendable {
 
     public var classRules: ClassRules? { className.flatMap(rules.classRules(named:)) }
 
-    /// Scores after adjustments.
-    public var scores: [String: Int] {
+    public var raceRules: RaceRules? { race.flatMap(rules.raceRules(named:)) }
+
+    /// The classes to choose from. With a race chosen, the race-classes
+    /// (Elf, Dwarf, …) are left out: the race is already chosen.
+    public var classChoices: [ClassRules] {
+        raceRules == nil ? rules.classes : rules.classes.filter { $0.race == "Human" }
+    }
+
+    /// Whether the chosen race may normally take a class (always, with no race).
+    public func raceAllows(_ classRules: ClassRules) -> Bool {
+        raceRules.map { $0.maxLevel(classID: classRules.id) != nil } ?? true
+    }
+
+    /// Scores after the race's modifiers, before adjustments. A modifier
+    /// that would take a score past 18 or under 3 is ignored.
+    public var baseScores: [String: Int] {
         rolledScores.reduce(into: [:]) { result, entry in
+            let modified = entry.value + (raceRules?.abilityModifiers[entry.key] ?? 0)
+            result[entry.key] = (3...18).contains(modified) ? modified : entry.value
+        }
+    }
+
+    /// Scores after the race's modifiers and adjustments.
+    public var scores: [String: Int] {
+        baseScores.reduce(into: [:]) { result, entry in
             result[entry.key] = entry.value + (adjustments[entry.key] ?? 0)
         }
     }
@@ -154,6 +182,14 @@ public struct NewCharacter: Sendable {
     public func unmetRequirements(for classRules: ClassRules) -> [String] {
         classRules.requirements.sorted { $0.key < $1.key }.compactMap { ability, minimum in
             (scores[ability] ?? 0) < minimum ? "\(ability.uppercased()) \(minimum)" : nil
+        }
+    }
+
+    /// The race's requirements the rolled scores don't meet, e.g. `CON 9`.
+    /// They're checked before the race's modifiers, as the race is chosen.
+    public var unmetRaceRequirements: [String] {
+        (raceRules?.requirements ?? [:]).sorted { $0.key < $1.key }.compactMap { ability, minimum in
+            (rolledScores[ability] ?? 0) < minimum ? "\(ability.uppercased()) \(minimum)" : nil
         }
     }
 
@@ -259,15 +295,17 @@ public struct NewCharacter: Sendable {
         file.setAscendingAC(ascendingAC)
         file.setString(name.trimmingCharacters(in: .whitespaces), at: ["name"])
         file.setString(classRules?.name ?? className, at: ["class"])
+        file.setString(raceRules?.name ?? race, at: ["race"])
         file.setString(alignment, at: ["alignment"])
         for ability in Self.abilityOrder {
             file.setInt(scores[ability], at: ["abilityScores", .key(ability)])
         }
         file.setInt(hitPoints, at: ["hp", "max"])
         file.setInt(hitPoints, at: ["hp", "current"])
-        // "Alignment" in the class list means the alignment language.
+        // "Alignment" in the class list means the alignment language. A
+        // chosen race brings its languages; the class adds its own (Druidic).
         var languages: [String] = []
-        for language in classRules?.languages ?? ["Alignment", "Common"] {
+        for language in (raceRules?.languages ?? []) + (classRules?.languages ?? ["Alignment", "Common"]) {
             let actual = language == "Alignment" ? alignment : language
             if let actual, !languages.contains(actual) { languages.append(actual) }
         }
