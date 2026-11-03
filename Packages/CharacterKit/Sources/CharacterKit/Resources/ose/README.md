@@ -5,6 +5,9 @@ OSE SRD (OGL 1.0a, see `LICENSE-OGL.md`) and checked row by row against it.
 
 Numbers and short summaries only. Full rules and spell text are not included.
 
+Advanced Fantasy is in `../ose-advanced`. It isn't Open Game Content, so it
+has its own folder; it shares `abilities.json` and `equipment.json`.
+
 | File | Contents |
 |---|---|
 | `ruleset.json` | Alignments, languages, save names, character creation rules, combat and exploration defaults |
@@ -28,6 +31,8 @@ Numbers and short summaries only. Full rules and spell text are not included.
   `abilities.json`. Classes with two prime requisites list rules instead; the
   first matching rule wins. `all` needs every score at or above its minimum;
   `any` needs at least one.
+- **Files**: `ruleset.json`'s `files` names the tables a ruleset uses, as
+  paths in the bundle's resources (`ose/equipment.json`).
 - **Exploration**: class values replace the defaults in `ruleset.json`.
   Open doors comes from STR.
 - **Equipment ids** are lowercase slugs (`war-hammer`). Class weapon

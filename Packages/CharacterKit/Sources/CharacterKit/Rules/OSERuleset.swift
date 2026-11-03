@@ -1,8 +1,13 @@
 import Foundation
 
-/// The Classic Fantasy rules tables, loaded from the bundled JSON.
+/// One set of OSE rules tables (Classic or Advanced Fantasy), loaded from
+/// the bundled JSON. A ruleset file names the other files it uses, so
+/// variants can share the abilities and equipment tables.
 public struct OSERuleset: Sendable {
     public let classes: [ClassRules]
+    /// Races for the separate race and class option. Empty in Classic
+    /// Fantasy, where race is part of the class.
+    public let races: [RaceRules]
     public let weapons: [WeaponData]
     public let armour: [ArmourData]
     public let ammunition: [AmmunitionData]
@@ -15,28 +20,46 @@ public struct OSERuleset: Sendable {
     /// can't fail in a shipped build.
     public static let classic: OSERuleset = {
         do {
-            return try OSERuleset(bundle: .module)
+            return try OSERuleset(bundle: .module, ruleset: "ose/ruleset.json")
         } catch {
             fatalError("Bundled OSE rules data is invalid: \(error)")
         }
     }()
 
-    init(bundle: Bundle) throws {
-        func load<T: Decodable>(_ name: String, as type: T.Type) throws -> T {
-            guard let url = bundle.url(forResource: name, withExtension: "json", subdirectory: "ose") else {
-                throw CocoaError(.fileNoSuchFile, userInfo: [NSFilePathErrorKey: "ose/\(name).json"])
+    /// The Advanced Fantasy tables. Not in `all` until its classes are
+    /// filled in. Its data isn't Open Game Content: see
+    /// `Resources/ose-advanced/README.md`.
+    public static let advanced: OSERuleset = {
+        do {
+            return try OSERuleset(bundle: .module, ruleset: "ose-advanced/ruleset.json")
+        } catch {
+            fatalError("Bundled OSE Advanced Fantasy rules data is invalid: \(error)")
+        }
+    }()
+
+    /// `ruleset` and the files it names are paths in the bundle's resources,
+    /// e.g. `ose/ruleset.json`.
+    init(bundle: Bundle, ruleset: String) throws {
+        func load<T: Decodable>(_ path: String, as type: T.Type) throws -> T {
+            let parts = path.split(separator: "/").map(String.init)
+            let name = (parts.last ?? path).replacingOccurrences(of: ".json", with: "")
+            let folder = parts.dropLast().joined(separator: "/")
+            guard let url = bundle.url(forResource: name, withExtension: "json",
+                                       subdirectory: folder.isEmpty ? nil : folder) else {
+                throw CocoaError(.fileNoSuchFile, userInfo: [NSFilePathErrorKey: path])
             }
             return try JSONDecoder().decode(T.self, from: Data(contentsOf: url))
         }
-        classes = try load("classes-classic", as: ClassesFile.self).classes
-        let equipment = try load("equipment", as: EquipmentTables.self)
+        info = try load(ruleset, as: RulesetInfo.self)
+        classes = try load(info.files.classes, as: ClassesFile.self).classes
+        races = try info.files.races.map { try load($0, as: RacesFile.self).races } ?? []
+        let equipment = try load(info.files.equipment, as: EquipmentTables.self)
         weapons = equipment.weapons
         armour = equipment.armour
         ammunition = equipment.ammunition
         gear = equipment.gear
         encumbrance = equipment.encumbrance
-        abilities = try load("abilities", as: AbilityTables.self)
-        info = try load("ruleset", as: RulesetInfo.self)
+        abilities = try load(info.files.abilities, as: AbilityTables.self)
     }
 
     /// The Open Game License and copyright notices for the bundled rules data.
@@ -79,6 +102,14 @@ public struct OSERuleset: Sendable {
         let key = Self.matchKey(name)
         guard !key.isEmpty else { return nil }
         return classes.first { Self.matchKey($0.name) == key || Self.matchKey($0.id) == key }
+    }
+
+    /// Finds a race by name or id, ignoring case and punctuation
+    /// ("Half-Elf", "half elf").
+    public func raceRules(named name: String) -> RaceRules? {
+        let key = Self.matchKey(name)
+        guard !key.isEmpty else { return nil }
+        return races.first { Self.matchKey($0.name) == key || Self.matchKey($0.id) == key }
     }
 
     /// The weapon an equipment item refers to, if any.
