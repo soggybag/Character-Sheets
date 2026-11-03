@@ -514,7 +514,8 @@ private struct StartingEquipmentSection: View {
             }
         }
         .sheet(isPresented: $isShopping) {
-            ShopView(rules: character.rules, classRules: character.classRules, purse: character.moneyLeft ?? Purse()) { item, count, pay in
+            ShopView(rules: character.rules, classRules: character.classRules, raceRules: character.raceRules,
+                     purse: character.moneyLeft ?? Purse()) { item, count, pay in
                 if pay, item.price * count > character.moneyLeft?.totalCP ?? 0 { return false }
                 character.buy(item, count: count, paid: pay)
                 return true

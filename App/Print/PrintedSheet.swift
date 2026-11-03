@@ -196,10 +196,10 @@ struct PrintedSheet {
                     .font(.system(size: 9.5))
                     .frame(maxWidth: .infinity, alignment: .leading)
                 // Names only, to keep the sheet to one page; the app has the details.
-                if !analysis.classAbilities.isEmpty {
-                    PrintHeading("Class Abilities")
+                if !analysis.classAbilities.isEmpty || !analysis.raceAbilities.isEmpty {
+                    PrintHeading(analysis.raceAbilities.isEmpty ? "Class Abilities" : "Abilities")
                         .padding(.top, 4)
-                    Text(analysis.classAbilities.map(\.name).joined(separator: ", "))
+                    Text((analysis.classAbilities + analysis.raceAbilities).map(\.name).joined(separator: ", "))
                         .font(.system(size: 9.5))
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }

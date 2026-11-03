@@ -91,7 +91,7 @@ struct EquipmentSection: View {
             }
         }
         .sheet(isPresented: $isShopping) {
-            ShopView(rules: analysis.rules, classRules: analysis.classRules,
+            ShopView(rules: analysis.rules, classRules: analysis.classRules, raceRules: analysis.raceRules,
                      purse: Purse(file)) { item, count, pay in
                 file.buy(item, count: count, pay: pay)
             }

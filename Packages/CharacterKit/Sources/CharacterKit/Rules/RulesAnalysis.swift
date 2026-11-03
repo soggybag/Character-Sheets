@@ -78,6 +78,8 @@ public struct XPInfo: Equatable, Sendable {
 /// modifiers and other values to show, and notes. Never changes the file.
 public struct RulesAnalysis: Sendable {
     public let classRules: ClassRules?
+    /// The file's `race`, for separate race and class (Advanced Fantasy).
+    public let raceRules: RaceRules?
     public let level: Int?
     public let abilities: [String: AbilityEffects]
     public let suggestions: [NodePath: RulesValue]
@@ -103,7 +105,11 @@ public struct RulesAnalysis: Sendable {
     /// The class's abilities the character has at their level, in the
     /// rules' order. Without a level, those every member of the class has.
     public let classAbilities: [ClassRules.Feature]
-    /// Abilities the class gains later, soonest first.
+    /// The race's abilities the character has at their level, leaving out
+    /// any the class already gives (a dwarf fighter's infravision is the
+    /// race's; a Dwarf's is the class's).
+    public let raceAbilities: [ClassRules.Feature]
+    /// Abilities the class (or race) gains later, soonest first.
     public let laterAbilities: [ClassRules.Feature]
     /// The CON modifier to hit points per die (0 without a CON score).
     public let conModifier: Int
@@ -121,6 +127,7 @@ public struct RulesAnalysis: Sendable {
         var builder = Builder(file: file, rules: rules, equipmentList: equipmentList)
         builder.run()
         classRules = builder.classRules
+        raceRules = builder.raceRules
         level = builder.level
         abilities = builder.abilities
         suggestions = builder.suggestions
@@ -133,9 +140,12 @@ public struct RulesAnalysis: Sendable {
         itemDamage = builder.itemDamage
         itemDetails = builder.itemDetails
         let features = builder.classRules?.features ?? []
+        let classIDs = Set(features.map(\.id))
+        let raceFeatures = (builder.raceRules?.features ?? []).filter { !classIDs.contains($0.id) }
         let reached = builder.level ?? 1
         classAbilities = features.filter { ($0.minLevel ?? 1) <= reached }
-        laterAbilities = features.filter { ($0.minLevel ?? 1) > reached }
+        raceAbilities = raceFeatures.filter { ($0.minLevel ?? 1) <= reached }
+        laterAbilities = (features + raceFeatures).filter { ($0.minLevel ?? 1) > reached }
             .enumerated().sorted { ($0.element.minLevel ?? 0, $0.offset) < ($1.element.minLevel ?? 0, $1.offset) }
             .map(\.element)
         conModifier = builder.mod("con") { $0.con.hitPoints }
@@ -201,6 +211,7 @@ private struct Builder {
     let rules: OSERuleset
 
     var classRules: ClassRules?
+    var raceRules: RaceRules?
     var level: Int?
     var row: ClassRules.LevelRow?
     var abilities: [String: AbilityEffects] = [:]
@@ -231,9 +242,12 @@ private struct Builder {
         equipmentList?.houseArmour(named: name) ?? rules.armour(named: name)
     }
 
-    /// Why the class wouldn't normally use a weapon or armour on the sheet,
-    /// in the shop's words. House items use their `usableBy`.
+    /// Why the class (or race) wouldn't normally use a weapon or armour on
+    /// the sheet, in the shop's words. House items use their `usableBy`.
     private func restriction(weaponOrArmourID id: String, name: String, isArmour: Bool, isShield: Bool) -> String? {
+        if !isArmour, let raceRules, let reason = OSERuleset.raceWeaponRestriction(id: id, name: name, for: raceRules) {
+            return reason
+        }
         guard let classRules else { return nil }
         if id.hasPrefix("house:") {
             let usableBy = equipmentList?.houseItem(named: name)?.usableBy ?? []
@@ -264,6 +278,7 @@ private struct Builder {
 
     mutating func run() {
         classRules = rules.classRules(named: className)
+        raceRules = file.string(["race"]).flatMap(rules.raceRules(named:))
         level = file.int(["level"])
         if let classRules, let level { row = classRules.row(level: min(level, classRules.maxLevel)) }
 
@@ -342,6 +357,27 @@ private struct Builder {
         }
         if let level, level > classRules.maxLevel {
             note(.warning, "\(classRules.plural) can't normally go past level \(classRules.maxLevel).", ["level"])
+        }
+        raceNotes(classRules)
+    }
+
+    /// The race's class and level limits.
+    private mutating func raceNotes(_ classRules: ClassRules) {
+        let race = (file.string(["race"]) ?? "").trimmingCharacters(in: .whitespaces)
+        guard !race.isEmpty else { return }
+        guard let raceRules else {
+            if !rules.races.isEmpty {
+                note(.info, "No \(rules.displayName) rules for the race “\(race)”.", ["race"])
+            }
+            return
+        }
+        guard let limit = raceRules.maxLevel(classID: classRules.id) else {
+            note(.warning, "\(raceRules.plural) can't normally be \(classRules.plural.lowercased()).", ["class"])
+            return
+        }
+        if let level, level > limit, limit < classRules.maxLevel {
+            note(.warning, "\(raceRules.plural) can't normally go past level \(limit) as \(classRules.plural.lowercased()).",
+                 ["level"])
         }
     }
 
@@ -447,6 +483,8 @@ private struct Builder {
     private mutating func savesAndSkills() {
         var exploration = rules.info.exploration.defaults
         exploration.merge(classRules?.exploration ?? [:]) { $1 }
+        // The race's chances count when they're better.
+        exploration.merge(raceRules?.exploration ?? [:]) { max($0, $1) }
         if let band = band("str") { exploration["openDoors"] = rules.abilities.str.openDoors[band] }
         if classRules != nil {
             for (key, value) in exploration { suggestions[["exploration", .key(key)]] = .int(value) }
@@ -483,7 +521,9 @@ private struct Builder {
             }?.percent ?? 0
         }
         let current = classRules.row(level: level)?.xp
-        let next = classRules.row(level: level + 1)?.xp
+        // A race's level limit is the top, like the class's own.
+        let top = raceRules?.maxLevel(classID: classRules.id) ?? classRules.maxLevel
+        let next = level < top ? classRules.row(level: level + 1)?.xp : nil
         let ready = next.map { (file.int(["xp"]) ?? 0) >= $0 } ?? false
         xp = XPInfo(bonusPercent: percent, currentLevel: current, nextLevel: next, readyToLevelUp: ready)
         if ready {
@@ -504,7 +544,8 @@ private struct Builder {
             : file.int(["combat", "thac0"]) ?? row?.thac0
         let variableDamage = file.bool(["rules", "options", "variableWeaponDamage"]) ?? false
         let melee = mod("str") { $0.str.melee }
-        let missile = mod("dex") { $0.dex.missile } + (classRules?.hasFeature("missile-bonus") == true ? 1 : 0)
+        let missile = mod("dex") { $0.dex.missile } + (classRules?.hasFeature("missile-bonus") == true
+                                                       || raceRules?.features.contains { $0.id == "missile-bonus" } == true ? 1 : 0)
 
         for index in 0..<file.count(["equipment"]) {
             let path: NodePath = ["equipment", .index(index)]
@@ -585,7 +626,7 @@ private struct Builder {
         }
         if let band = band("int") {
             let allowed = rules.abilities.int.extraLanguages[band]
-            let native = Set((classRules.languages + rules.alignments).map { $0.lowercased() })
+            let native = Set((classRules.languages + (raceRules?.languages ?? []) + rules.alignments).map { $0.lowercased() })
             let extra = file.strings(["languages"]).filter { !native.contains($0.lowercased()) }.count
             if extra < allowed {
                 let more = allowed - extra

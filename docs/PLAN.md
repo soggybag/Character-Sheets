@@ -264,12 +264,11 @@ Decisions:
       races in `Resources/ose-advanced`, from the Players Tome, and New
       Character has a Rules choice. Choosing a race in New
       Character done (separate race and class: modifiers, class list and
-      level limits, languages; race shown on the sheet). Next: the sheet
-      using the race (ability
-      modifiers, class and level limits, weapons, languages, exploration,
-      features like the halfling's missile bonus), and showing any class's
-      skills (acrobat, assassin, barbarian, half-orc, ranger), not only the
-      thief's.
+      level limits, languages; race shown on the sheet). The sheet uses the race
+      too (abilities, exploration, class and level limits, weapon limits in
+      the shop and notes, missile bonus, languages). Still open:
+      multi-classing (optional rule) and the race's ability score maximums
+      (none in the Players Tome).
 - [ ] **Use the third-party license** (decided 21 Oct 2026, see Open
       decisions). Done, to check by hand: a new About window (logo,
       "Requires Old-School Essentials", trademark line, "independent app"

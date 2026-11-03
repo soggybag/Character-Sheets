@@ -8,6 +8,8 @@ struct ShopView: View {
     /// The rules the character is played with: their items and restrictions.
     let rules: OSERuleset
     let classRules: ClassRules?
+    /// The race, for separate race and class: its weapon limits are marked too.
+    var raceRules: RaceRules?
     /// The money available; the shop shows it and checks costs against it.
     let purse: Purse
     /// Adds `count` of the item, paying if asked. Returns false if the
@@ -100,7 +102,7 @@ struct ShopView: View {
                             .background(.quaternary, in: .capsule)
                             .help("Not in the rules: from \(customList?.name ?? "the custom list")")
                     }
-                    if let restriction = rules.restriction(of: item, for: classRules) {
+                    if let restriction = rules.restriction(of: item, for: classRules, race: raceRules) {
                         Image(systemName: "exclamationmark.triangle.fill")
                             .foregroundStyle(.orange)
                             .help(restriction)
@@ -153,7 +155,7 @@ struct ShopView: View {
             }
             .font(.callout)
             if let selected {
-                if let restriction = rules.restriction(of: selected, for: classRules) {
+                if let restriction = rules.restriction(of: selected, for: classRules, race: raceRules) {
                     Label(restriction + " You can still add it.", systemImage: "exclamationmark.triangle")
                         .font(.callout)
                         .foregroundStyle(.orange)
