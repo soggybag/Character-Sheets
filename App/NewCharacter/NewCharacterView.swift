@@ -46,6 +46,9 @@ struct NewCharacterView: View {
                 RandomSection(character: $character)
                 ScoresSection(character: $character, analysis: analysis,
                               method: $method, allowSwapping: $allowSwapping)
+                if !character.rules.races.isEmpty {
+                    RaceSection(character: $character)
+                }
                 ClassSection(character: $character)
                 AdjustSection(character: $character)
                 DetailsSection(character: $character)
@@ -172,7 +175,9 @@ private struct ScoresSection: View {
                             .frame(minWidth: 60, alignment: .leading)
                         Text(character.scores[ability].map(String.init) ?? "")
                             .monospacedDigit()
-                            .foregroundStyle(character.adjustments[ability, default: 0] == 0 ? .primary : Color.accentColor)
+                            // Changed by the race or an adjustment.
+                            .foregroundStyle(character.scores[ability] == character.rolledScores[ability]
+                                             ? .primary : Color.accentColor)
                         Text(character.scores[ability] == nil ? "" : analysis.abilities[ability]?.headline ?? "")
                             .monospacedDigit()
                             .help(analysis.abilities[ability]?.effects.map { "\($0.label): \($0.value)" }
@@ -233,13 +238,77 @@ private struct ScoresSection: View {
     }
 }
 
+/// Advanced Fantasy: a race chosen apart from the class, or the class
+/// deciding it (the basic method).
+private struct RaceSection: View {
+    @Binding var character: NewCharacter
+
+    var body: some View {
+        Section {
+            Picker("Race", selection: $character.race) {
+                Text("From the class (Elf, Dwarf, … or human)").tag(String?.none)
+                ForEach(character.rules.races, id: \.name) { race in
+                    RaceRow(race: race, character: character)
+                        .tag(Optional(race.name))
+                }
+            }
+            .pickerStyle(.radioGroup)
+            .labelsHidden()
+        } header: {
+            Text("Race")
+        } footer: {
+            Text("Choosing a race uses separate race and class. Its modifiers change the rolled scores; "
+                 + "one that would pass 18 or go under 3 is ignored.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+    }
+}
+
+private struct RaceRow: View {
+    let race: RaceRules
+    let character: NewCharacter
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline) {
+            Text(race.name)
+                .frame(width: 90, alignment: .leading)
+            Text(details)
+                .font(.callout)
+                .foregroundStyle(.secondary)
+            if !unmet.isEmpty {
+                Text("Needs " + unmet.joined(separator: ", "))
+                    .font(.callout)
+                    .foregroundStyle(.orange)
+            }
+        }
+    }
+
+    private var details: String {
+        let modifiers = NewCharacter.abilityOrder.compactMap { ability in
+            race.abilityModifiers[ability].map { "\(ability.uppercased()) \($0.signedText)" }
+        }
+        let classes = race.classes.count == character.rules.classes.filter { $0.race == "Human" }.count
+            ? "Any class" : "\(race.classes.count) classes"
+        return ([modifiers.isEmpty ? nil : modifiers.joined(separator: ", "), classes] as [String?])
+            .compactMap { $0 }.joined(separator: " · ")
+    }
+
+    private var unmet: [String] {
+        guard character.hasAllScores else { return [] }
+        return race.requirements.sorted { $0.key < $1.key }.compactMap { ability, minimum in
+            (character.rolledScores[ability] ?? 0) < minimum ? "\(ability.uppercased()) \(minimum)" : nil
+        }
+    }
+}
+
 private struct ClassSection: View {
     @Binding var character: NewCharacter
 
     var body: some View {
         Section("Class") {
             Picker("Class", selection: $character.className) {
-                ForEach(character.rules.classes, id: \.name) { classRules in
+                ForEach(character.classChoices, id: \.name) { classRules in
                     ClassRow(classRules: classRules, character: character)
                         .tag(Optional(classRules.name))
                 }
@@ -262,7 +331,11 @@ private struct ClassRow: View {
             Text(details)
                 .font(.callout)
                 .foregroundStyle(.secondary)
-            if !unmet.isEmpty {
+            if let race = character.raceRules, !character.raceAllows(classRules) {
+                Text("Not for \(race.plural.lowercased())")
+                    .font(.callout)
+                    .foregroundStyle(.orange)
+            } else if !unmet.isEmpty {
                 Text("Needs " + unmet.joined(separator: ", "))
                     .font(.callout)
                     .foregroundStyle(.orange)
@@ -273,6 +346,10 @@ private struct ClassRow: View {
     private var details: String {
         var parts = ["HD \(classRules.hitDie)",
                      "Prime " + classRules.primeRequisites.map { $0.uppercased() }.joined(separator: " & ")]
+        // The race's level limit, when it's lower than the class's own.
+        if let limit = character.raceRules?.maxLevel(classID: classRules.id), limit < classRules.maxLevel {
+            parts.append("Up to level \(limit)")
+        }
         if character.hasAllScores {
             let bonus = character.xpBonus(for: classRules)
             if bonus != 0 { parts.append("XP \(bonus.signedText)%") }

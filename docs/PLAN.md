@@ -262,8 +262,10 @@ Decisions:
       (`Legal.nonSRD`: About, Licenses and Legal, website, README, App
       Store description). Data done (3 Nov 2026): all 22 classes and 10
       races in `Resources/ose-advanced`, from the Players Tome, and New
-      Character has a Rules choice. Next, in the app: choosing a race
-      (separate race and class), the sheet using the race (ability
+      Character has a Rules choice. Choosing a race in New
+      Character done (separate race and class: modifiers, class list and
+      level limits, languages; race shown on the sheet). Next: the sheet
+      using the race (ability
       modifiers, class and level limits, weapons, languages, exploration,
       features like the halfling's missile bonus), and showing any class's
       skills (acrobat, assassin, barbarian, half-orc, ranger), not only the

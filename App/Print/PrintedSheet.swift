@@ -79,6 +79,9 @@ struct PrintedSheet {
             Text(title)
                 .font(.system(size: 24, weight: .semibold, design: .serif))
             HStack(alignment: .top, spacing: 14) {
+                if !text(["race"]).isEmpty {
+                    PrintField(label: "Race", value: text(["race"]), width: 80)
+                }
                 PrintField(label: "Class", value: text(["class"]), width: 110)
                 PrintField(label: "Level", value: number(["level"]), width: 40)
                 PrintField(label: "Alignment", value: text(["alignment"]), width: 80)
