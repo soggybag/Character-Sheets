@@ -1,16 +1,20 @@
 Welcome to the beta. 3d6 is a Mac app for Old-School Essentials characters, and it requires the books. Start with Help (shown on first launch) or Help → Open Sample Character. It's a beta, so keep copies of characters you care about; each one is a plain text file.
 
-New in this build:
+New in this build: Advanced Fantasy.
 
-- A new name and icon: the app is now called 3d6. Your characters, settings and beta membership carry over.
-- Class Abilities: the sheet lists what the class can do at the character's level (a thief's back-stab, a dwarf's infravision and so on), with the abilities still to come listed by level. The printed sheet lists their names.
-- Max HP: lowering it brings current HP down with it. If current HP is above max (a temporary bonus, say), a rules note points it out and nothing is changed.
-- VoiceOver: fields say their names ("Current hit points, 7"), status icons are labelled, and warnings and rules values are read as hints.
+- Every Advanced Fantasy class and race, with Necrotic Gnome's permission: acrobat, assassin, barbarian, bard, druid, illusionist, knight, paladin, ranger, and the drow, duergar, gnome, half-elf, half-orc and svirfneblin.
+- New Character has a Rules choice at the top: Classic Fantasy or Advanced Fantasy. It's remembered.
+- Separate race and class: choose a race in New Character (a dwarf thief, an elf ranger), or leave it on "From the class". The race's modifiers change the scores, and the class list shows which classes the race can take and how far it can rise.
+- The sheet uses the race: its abilities, exploration chances, languages and weapon limits, and a warning at its level limit.
+- Each class's own skills on the sheet and printout: an acrobat's tightrope walking, an assassin's assassination, a ranger's tracking and so on, not only the thief's.
+- Bards and rangers are no longer told to carry a holy symbol.
 
 Things to try:
-- Look at Class Abilities for a few classes and levels. Is anything missing, wrong, or worded unclearly?
-- Lower and raise Max HP on a wounded and an unwounded character.
-- Roll a character with File → New Character… (or Random Character) and play a session with it. What's missing at the table?
-- Use Edit → Undo and Redo freely, especially in boxes you've just typed in. Tell us if a value flips back and forth.
+- Roll a few Advanced Fantasy characters, with and without a race, and with Random Character. Do the class list's limits and the scores look right?
+- Look over a few classes' and races' abilities on the sheet. Is anything missing, wrong, or worded unclearly? The summaries are ours, so check them against your book.
+- Level a demihuman up to their race's limit. Does the sheet say what you'd expect?
+- Print a sheet for a class with skills (acrobat, assassin, thief). Does it still fit on one page?
+
+Multiple classes (an optional rule) aren't supported yet.
 
 Send feedback from Help → Send Feedback…, or with TestFlight's screenshot feedback.

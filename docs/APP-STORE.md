@@ -41,9 +41,9 @@ Alternatives: "OSE characters in plain text" (28), "Fills in the rules for OSE" 
 > own.
 >
 > REQUIRES OLD-SCHOOL ESSENTIALS
-> The app knows the Classic Fantasy classes' numbers: saving throws,
-> attacks, experience, hit dice, spells per day and thief skills. The rules
-> themselves are in the books.
+> The app knows the Classic Fantasy and Advanced Fantasy classes' and
+> races' numbers: saving throws, attacks, experience, hit dice, spells per
+> day and skills. The rules themselves are in the books.
 >
 > ROLL UP A CHARACTER
 > • Roll 3d6 in order, pick a class and see which ones your scores qualify

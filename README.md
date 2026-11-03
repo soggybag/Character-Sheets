@@ -12,8 +12,9 @@ The app is in open beta on TestFlight:
 **[Join the beta](https://testflight.apple.com/join/dzUYmAAh)**
 
 - You need macOS 15 or later and Apple's TestFlight app (the link offers it).
-- Requires Old-School Essentials. The app knows the Classic Fantasy
-  classes' numbers; the rules themselves are in the books.
+- Requires Old-School Essentials. The app knows the Classic Fantasy and
+  Advanced Fantasy classes' and races' numbers; the rules themselves are in
+  the books.
 - It's a beta: keep copies of characters you care about. Each one is a
   plain text file, so a backup is just a copy of the file.
 - Send feedback from Help → Send Feedback… in the app, with TestFlight's
@@ -44,7 +45,8 @@ granted by Necrotic Gnome.
 | `App/` | The macOS app (SwiftUI, document-based). Files added here are picked up by Xcode automatically. |
 | `Config/` | Info.plist (document types) and entitlements |
 | `Packages/CharacterKit/` | Reading and writing character files. No UI; shared with a future iPad app. |
-| `Packages/CharacterKit/Sources/CharacterKit/Resources/ose/` | OSE Classic rules data (JSON), bundled with the app |
+| `Packages/CharacterKit/Sources/CharacterKit/Resources/ose/` | OSE Classic rules data (JSON, Open Game Content), bundled with the app |
+| `Packages/CharacterKit/Sources/CharacterKit/Resources/ose-advanced/` | OSE Advanced Fantasy classes and races (JSON, used with Necrotic Gnome's permission) |
 | `schema/` | JSON Schema for the file header |
 | `examples/` | Example characters. Also test fixtures: every file must round-trip byte for byte. |
 

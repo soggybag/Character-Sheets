@@ -2,15 +2,16 @@
 
 3d6 keeps Old-School Essentials characters in plain text files
 and fills in the rules for you, without getting in your way. It's designed
-for use with Old-School Essentials Classic Fantasy. **Requires Old-School
-Essentials:** the app knows the numbers (saves, attacks, experience, spells
-per day), and the books have the rules. Help → Licenses and Legal has the
+for use with Old-School Essentials, Classic Fantasy and Advanced Fantasy.
+**Requires Old-School Essentials:** the app knows the numbers (saves,
+attacks, experience, spells per day, skills), and the books have the rules. Help → Licenses and Legal has the
 details.
 
 ## Getting started
 
 - **File → New Character…** (⌘N) rolls up a 1st-level character: 3d6 in
-  order, a class, hit points and gold. Roll in the app or type in your own
+  order, a class, hit points and gold. Choose **Classic Fantasy** or
+  **Advanced Fantasy** at the top; the app remembers your choice. Roll in the app or type in your own
   dice. **Random Character** rolls the whole thing at once, kit and all,
   for you to change. Two common house rules are there to turn on: 4d6 drop
   the lowest, and swapping scores. **File → New Blank Sheet** (⌥⌘N) starts an empty sheet instead.
@@ -19,6 +20,21 @@ details.
 - **File → Open…** (⌘O) opens a character file. Any Markdown file with a
   character header works.
 - **Help → Open Sample Character** shows a finished character to explore.
+
+## Advanced Fantasy
+
+- Advanced Fantasy adds its classes (acrobat, assassin, barbarian, bard,
+  druid, illusionist, knight, paladin, ranger) and its demihuman classes
+  (drow, duergar, gnome, half-elf, half-orc, svirfneblin) to the Classic
+  Fantasy ones.
+- **Race and class:** in New Character, leave **Race** on "From the class"
+  to play an elf, a dwarf or a human class, as in Classic Fantasy. Or choose
+  a race to pick it apart from the class (a dwarf thief, an elf ranger). The
+  race's modifiers change the rolled scores, and the class list shows which
+  classes the race can take and how far it can rise.
+- On the sheet, the race adds its abilities, its exploration chances, its
+  languages and its weapon limits, and warns at the race's level limit.
+- Multiple classes (an optional rule) aren't supported yet.
 
 ## How the sheet works
 
@@ -47,8 +63,12 @@ details.
 - An empty **Max HP** box offers **Roll…**: roll the hit dice for the
   character's level (each die shown) or type in your own total.
 - **Class Abilities** lists what the class can do at the character's
-  level, with the abilities still to come underneath. It comes from the
-  rules; put anything else (a magic item's power, a house rule) in Notes.
+  level, with the abilities still to come underneath (and the race's, with
+  separate race and class). It comes from the rules; put anything else (a
+  magic item's power, a house rule) in Notes.
+- **Skills** under Exploration are the class's own: a thief's, an
+  acrobat's, an assassin's, a barbarian's, a half-orc's, a ranger's
+  tracking.
 - An item's empty **Notes** show what it is in grey (its AC, qualities or
   the rules' notes), including house items from a custom equipment list.
   Press Return in Notes to keep that in the file.
@@ -110,6 +130,8 @@ Above the golem's path, seek the door that is not.
 ```
 
 - Click **Edit as Text** in the toolbar to edit the file directly.
+- `rules: { system: ose, variant: classic }` (or `advanced`) says which
+  rules the character uses.
 - Fields the app doesn't know about are kept as they are, so you can add your
   own.
 - Clearing a field removes it from the file. Put comments in the notes, not

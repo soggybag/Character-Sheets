@@ -36,9 +36,10 @@ adding the build to the external group. Work on copies of your characters.
       under Languages and the sheet still fits on one page.
 - [ ] Type the class in lower case ("thief", "dwarf", "cleric"): thief
       skills, construction tricks and spells still appear, as for "Thief".
-- [ ] Edit as Text, change `variant: classic` to `variant: advanced`, Done:
-      a rules note says Classic Fantasy is used where the rules match, and
-      saves and attacks still fill in. Change it back: the note goes.
+- [ ] Edit as Text, change `variant: classic` to `variant: basic` (rules
+      the app doesn't have), Done: a rules note says Classic Fantasy is used
+      where the rules match, and saves and attacks still fill in. Change it
+      back: the note goes.
 - [ ] Movement: Combat → Move is a third of Exploration → Move, and
       Travel is a fifth (120' → 40' per round, 24 mi per day). Change the
       rate under Exploration; both follow. The two worked-out boxes are
@@ -207,6 +208,25 @@ adding the build to the external group. Work on copies of your characters.
       there: the sheet updates (or asks, if it has unsaved changes).
 - [ ] Untitled sheets (New Character, Import): quit without saving and
       relaunch; they come back.
+
+**Advanced Fantasy**
+- [ ] New Character → Rules: Advanced Fantasy. The class list has the
+      Advanced classes in the book's order, and a Race section appears.
+      Close and reopen: Advanced Fantasy is still chosen. Classic Fantasy
+      has no Race section.
+- [ ] Roll scores, choose Race: Dwarf. CON goes up 1 and CHA down 1
+      (highlighted); Elf and Dwarf leave the class list; Magic-User says
+      "Not for dwarves"; Fighter says "Up to level 10".
+- [ ] Create a dwarf fighter: the sheet shows Race, the Abilities section
+      lists the dwarf's abilities under "Dwarf", and Listen, Room traps and
+      Construction are 2 in 6. Set level 11: a note says dwarves can't
+      normally go past level 10 as fighters.
+- [ ] Add from List… on a halfling: the long bow is marked ⚠︎.
+- [ ] An acrobat, assassin and ranger each show their own skills under
+      Exploration, with labels that fit. Print one: the sheet's heading says
+      "Acrobat Skills" and it fits on one page.
+- [ ] Random Character with a race chosen: the class is one the race can
+      take.
 
 **Whatever's new in this build**: go through `docs/WHAT-TO-TEST.txt`.
 
