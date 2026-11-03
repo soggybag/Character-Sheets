@@ -155,8 +155,8 @@ extension OSERuleset {
     /// item, or nil if it can.
     public func restriction(of item: ShopItem, for classRules: ClassRules?, race: RaceRules? = nil) -> String? {
         if item.origin != .house, item.category == .weapons, let race,
-           race.weapons?.forbidden?.contains(item.id) == true {
-            return "\(race.plural) can't normally use \(Self.withArticle(item.name))."
+           let reason = Self.raceWeaponRestriction(id: item.id, name: item.name, for: race) {
+            return reason
         }
         guard let classRules else { return nil }
         if item.origin == .house {
@@ -184,6 +184,12 @@ extension OSERuleset {
             return "\(classRules.plural) can't normally use \(withArticle(name))."
         }
         return nil
+    }
+
+    /// Why a race wouldn't normally use a rules weapon (a dwarf's long
+    /// bow), or nil.
+    static func raceWeaponRestriction(id: String, name: String, for race: RaceRules) -> String? {
+        race.weapons?.forbidden?.contains(id) == true ? "\(race.plural) can't normally use \(withArticle(name))." : nil
     }
 
     /// Why a class wouldn't normally wear rules armour or use a shield, or nil.

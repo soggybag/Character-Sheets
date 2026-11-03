@@ -33,7 +33,7 @@ struct SheetView: View {
                 }
                 SavesSection(file: $file, analysis: analysis)
                 ExplorationSection(file: $file, analysis: analysis)
-                if !analysis.classAbilities.isEmpty {
+                if !analysis.classAbilities.isEmpty || !analysis.raceAbilities.isEmpty {
                     ClassAbilitiesSection(analysis: analysis)
                 }
                 LanguagesSection(file: $file)

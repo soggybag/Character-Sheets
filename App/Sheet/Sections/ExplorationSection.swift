@@ -14,6 +14,7 @@ struct ExplorationSection: View {
                 inSix("Open doors", "openDoors", help: "Force open stuck doors")
                 inSix("Room traps", "findTraps", help: "Find room traps")
                 if analysis.classRules?.exploration?["constructionTricks"] != nil
+                    || analysis.raceRules?.exploration?["constructionTricks"] != nil
                     || file.int(["exploration", "constructionTricks"]) != nil {
                     inSix("Construction", "constructionTricks", help: "Detect construction tricks")
                 }
@@ -69,20 +70,29 @@ struct MovementRow: View {
     }
 }
 
-/// What the class can do at this level, from the rules, and what comes
-/// later. Read-only: anything else (a magic item's power, a house rule)
-/// goes in Notes.
+/// What the class (and race) can do at this level, from the rules, and
+/// what comes later. Read-only: anything else (a magic item's power, a
+/// house rule) goes in Notes.
 struct ClassAbilitiesSection: View {
     let analysis: RulesAnalysis
 
     var body: some View {
-        SheetSection(title: "Class Abilities") {
+        SheetSection(title: analysis.raceAbilities.isEmpty ? "Class Abilities" : "Abilities") {
             VStack(alignment: .leading, spacing: 6) {
                 ForEach(analysis.classAbilities, id: \.id) { ability in
-                    (Text(ability.name).bold() + Text("  ") + Text(ability.summary).foregroundStyle(.secondary))
-                        .fixedSize(horizontal: false, vertical: true)
-                        .textSelection(.enabled)
+                    row(ability)
                 }
+            }
+            if let race = analysis.raceRules, !analysis.raceAbilities.isEmpty {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(race.name)
+                        .zoomFont(.caption)
+                        .foregroundStyle(.secondary)
+                    ForEach(analysis.raceAbilities, id: \.id) { ability in
+                        row(ability)
+                    }
+                }
+                .padding(.top, analysis.classAbilities.isEmpty ? 0 : 6)
             }
             if !analysis.laterAbilities.isEmpty {
                 Text("Later: " + analysis.laterAbilities
@@ -93,6 +103,12 @@ struct ClassAbilitiesSection: View {
                         .joined(separator: "\n"))
             }
         }
+    }
+
+    private func row(_ ability: ClassRules.Feature) -> some View {
+        (Text(ability.name).bold() + Text("  ") + Text(ability.summary).foregroundStyle(.secondary))
+            .fixedSize(horizontal: false, vertical: true)
+            .textSelection(.enabled)
     }
 }
 
