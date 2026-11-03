@@ -97,6 +97,7 @@ struct LegalContent: View {
                     Text(Legal.independent)
                     Text(Legal.trademark)
                     Text(Legal.rulesData)
+                    Text(Legal.nonSRD)
                 }
                 Divider()
                 MarkdownBlocksView(text: OSERuleset.licenseText)
