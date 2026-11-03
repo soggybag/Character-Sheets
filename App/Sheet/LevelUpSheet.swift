@@ -265,6 +265,8 @@ enum FieldNames {
         "thiefSkills.climb": "Climb", "thiefSkills.traps": "Treasure traps", "thiefSkills.hearNoise": "Hear noise",
         "thiefSkills.hide": "Hide", "thiefSkills.moveSilently": "Move silently",
         "thiefSkills.openLocks": "Open locks", "thiefSkills.pickPockets": "Pick pockets",
+        "thiefSkills.falling": "Falling", "thiefSkills.tightrope": "Tightrope walking",
+        "thiefSkills.assassination": "Assassination", "thiefSkills.tracking": "Tracking",
     ]
 
     static func name(for path: NodePath) -> String {

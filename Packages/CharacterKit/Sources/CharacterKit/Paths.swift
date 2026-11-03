@@ -35,6 +35,12 @@ extension CharacterFile {
     public func bool(_ path: NodePath) -> Bool? { self[path]?.bool }
 
     /// Number of items in the list at `path` (0 if there's no list).
+    /// The keys of a map, in file order; empty if it isn't one.
+    public func keys(_ path: NodePath) -> [String] {
+        guard case let .mapping(mapping) = self[path] else { return [] }
+        return mapping.keys.compactMap(\.string)
+    }
+
     public func count(_ path: NodePath) -> Int {
         switch self[path] {
         case let .sequence(sequence): sequence.count

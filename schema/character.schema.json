@@ -211,6 +211,22 @@
         },
         "hearNoise": {
           "$ref": "#/$defs/inSix"
+        },
+        "falling": {
+          "$ref": "#/$defs/percent"
+        },
+        "tightrope": {
+          "$ref": "#/$defs/percent"
+        },
+        "assassination": {
+          "description": "Penalty to the victim's save (Advanced Fantasy assassin), e.g. -2.",
+          "type": "integer",
+          "maximum": 0
+        },
+        "tracking": {
+          "description": "Percentage (Advanced Fantasy ranger); can pass 100.",
+          "type": "integer",
+          "minimum": 0
         }
       }
     },

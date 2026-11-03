@@ -81,7 +81,7 @@ This means hand edits always win, and the file never needs extra metadata.
 | `movement` | integer | Movement rate in feet per turn, with what the character carries (encounter rate = ÷3 feet per round; overland travel = ÷5 miles a day). |
 | `carryingTreasure` | bool | Basic encumbrance: the character carries a lot of treasure, which slows them to the next rate down. Default `false`. |
 | `exploration` | map | X-in-6 chances: `listen`, `secretDoors`, `openDoors`, `findTraps`, `constructionTricks` (dwarves). |
-| `thiefSkills` | map | Percentages: `climb`, `hide`, `moveSilently`, `openLocks`, `pickPockets`, `traps` (find/remove treasure traps); `hearNoise` is X-in-6. |
+| `thiefSkills` | map | Every class's skills, not only the thief's. Percentages: `climb`, `hide`, `moveSilently`, `openLocks`, `pickPockets`, `traps` (find/remove treasure traps), `falling`, `tightrope`, `tracking` (can pass 100); `hearNoise` is X-in-6; `assassination` is the save penalty (`-2`). |
 | `languages` | list of strings | |
 | `spells.slots` | list of integers | Slots per spell level; index 0 = level 1. |
 | `spells.spellbook` | list of `{ name, level }` | Spells known (arcane) or available (divine). |

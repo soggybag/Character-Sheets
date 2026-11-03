@@ -106,6 +106,12 @@ public struct ClassRules: Decodable, Sendable {
         public let name: String
         public let kind: Kind
 
+        init(key: String, name: String, kind: Kind) {
+            self.key = key
+            self.name = name
+            self.kind = kind
+        }
+
         public enum Kind: String, Decodable, Sendable {
             /// Rolled on d%.
             case percent

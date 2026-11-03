@@ -18,16 +18,15 @@ struct ExplorationSection: View {
                     inSix("Construction", "constructionTricks", help: "Detect construction tricks")
                 }
             }
-            if analysis.classRules?.hasFeature("thief-skills") == true || file.count(["thiefSkills"]) > 0 {
+            // The class's skills (a thief's, an acrobat's, a ranger's tracking).
+            let skills = analysis.skillBoxes(for: file)
+            if !skills.isEmpty {
                 FlowLayout {
-                    percent("Climb", "climb", help: "Climb sheer surfaces")
-                    percent("Traps", "traps", help: "Find or remove treasure traps")
-                    RuledStatBox(label: "Hear", path: ["thiefSkills", "hearNoise"], file: $file, analysis: analysis,
-                                 suffix: "in 6", width: 84, help: "Hear noise")
-                    percent("Hide", "hide", help: "Hide in shadows")
-                    percent("Move", "moveSilently", help: "Move silently")
-                    percent("Locks", "openLocks", help: "Open locks")
-                    percent("Pockets", "pickPockets", help: "Pick pockets")
+                    ForEach(skills) { skill in
+                        RuledStatBox(label: skill.label, path: skill.path, file: $file, analysis: analysis,
+                                     suffix: skill.suffix, width: skill.kind == .inSix || skill.label.count > 8 ? 84 : 72,
+                                     help: skill.name)
+                    }
                 }
                 .padding(.top, 6)
             }
@@ -37,11 +36,6 @@ struct ExplorationSection: View {
     private func inSix(_ label: String, _ key: String, help: String) -> some View {
         RuledStatBox(label: label, path: ["exploration", .key(key)], file: $file, analysis: analysis,
                      suffix: "in 6", width: 84, help: help)
-    }
-
-    private func percent(_ label: String, _ key: String, help: String) -> some View {
-        RuledStatBox(label: label, path: ["thiefSkills", .key(key)], file: $file, analysis: analysis,
-                     suffix: "%", width: 72, help: help)
     }
 }
 
