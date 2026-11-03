@@ -13,8 +13,13 @@ struct AdvancedDataTests {
         #expect(rules.armour.map(\.id) == OSERuleset.classic.armour.map(\.id))
     }
 
-    @Test func notOfferedUntilItHasClasses() {
-        #expect(rules.classes.isEmpty == !OSERuleset.all.contains { $0.variant == "advanced" })
+    @Test func notOfferedUntilItHasClassesOfItsOwn() {
+        let ownClasses = rules.classes.count > OSERuleset.classic.classes.count
+        #expect(ownClasses == OSERuleset.all.contains { $0.variant == "advanced" })
+    }
+
+    @Test func includesTheClassicClasses() {
+        #expect(Array(rules.classes.map(\.id).prefix(7)) == OSERuleset.classic.classes.map(\.id))
     }
 
     @Test func classicHasNoRaces() {

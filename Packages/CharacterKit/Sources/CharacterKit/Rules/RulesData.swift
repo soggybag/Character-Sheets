@@ -17,6 +17,8 @@ public struct ClassRules: Decodable, Sendable {
     public let armour: ArmourRule
     public let weapons: WeaponRule
     public let languages: [String]
+    /// The only alignments the class allows; nil means any.
+    public let alignments: [String]?
     public let spellcasting: Spellcasting?
     public let exploration: [String: Int]?
     public let infravision: Int?
@@ -31,7 +33,7 @@ public struct ClassRules: Decodable, Sendable {
 
     enum CodingKeys: String, CodingKey {
         case id, name, race, requirements, primeRequisites, xpModifier, hitDie, maxLevel, armour, weapons
-        case languages, spellcasting, exploration, infravision, features, levels, creation
+        case languages, alignments, spellcasting, exploration, infravision, features, levels, creation
         case pluralName = "plural"
     }
 
