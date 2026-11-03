@@ -23,6 +23,8 @@ public struct ClassRules: Decodable, Sendable {
     public let exploration: [String: Int]?
     public let infravision: Int?
     public let features: [Feature]
+    /// What the numbers in each row's `thiefSkills` are, in table order.
+    public let skills: [Skill]?
     public let levels: [LevelRow]
     /// Extra limits on adjusting scores at creation.
     public let creation: Creation?
@@ -33,7 +35,7 @@ public struct ClassRules: Decodable, Sendable {
 
     enum CodingKeys: String, CodingKey {
         case id, name, race, requirements, primeRequisites, xpModifier, hitDie, maxLevel, armour, weapons
-        case languages, alignments, spellcasting, exploration, infravision, features, levels, creation
+        case languages, alignments, spellcasting, exploration, infravision, features, skills, levels, creation
         case pluralName = "plural"
     }
 
@@ -91,6 +93,27 @@ public struct ClassRules: Decodable, Sendable {
         /// `arcane` or `divine`.
         public let type: String
         public let fromLevel: Int
+        /// False for divine casters who don't need one (bards, rangers).
+        let holySymbol: Bool?
+
+        public var needsHolySymbol: Bool { type == "divine" && holySymbol != false }
+    }
+
+    /// One of the class's skills in `LevelRow.thiefSkills`.
+    public struct Skill: Decodable, Sendable, Equatable {
+        /// The key in `thiefSkills`, e.g. `climb`.
+        public let key: String
+        public let name: String
+        public let kind: Kind
+
+        public enum Kind: String, Decodable, Sendable {
+            /// Rolled on d%.
+            case percent
+            /// X-in-6: the value is X.
+            case inSix
+            /// A bonus or penalty, e.g. the assassination save penalty.
+            case modifier
+        }
     }
 
     public struct Creation: Decodable, Sendable {

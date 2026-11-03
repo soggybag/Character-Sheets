@@ -20,14 +20,26 @@ in `../ose`, named in `ruleset.json`'s `files`). The conventions in
 | `classes.json` | Every Advanced Fantasy class: the human classes and the race-classes (Drow, Gnome, …) for the race-as-class option. Same format as `classes-classic.json` |
 | `races.json` | Races for the separate race and class option |
 
-To check against the books before filling in: the alignments, languages,
-saves and creation rules in `ruleset.json` are copied from Classic Fantasy.
+Transcribed from the Players Tome (classes pp. 28–75, races pp. 78–87).
+The level, skill and turning tables were read from the PDF's text by a
+script and checked in `AdvancedDataTests`; the Classic Fantasy classes
+match their Classic tables. The alignments, languages, saves and creation
+rules in `ruleset.json` are the same as Classic Fantasy's (the book's
+language table is the same 20; Deepcommon is a native tongue, listed by
+the races that speak it).
 
 ## Classes
 
 As `../ose/classes-classic.json`. `plural` is optional, for names where
 adding "s" is wrong (`"plural": "Half-Elves"`). `race` is the race in the
 race-as-class option (`Human` for the human classes).
+
+- **`alignments`** lists the only alignments a class allows (paladins
+  `["Lawful"]`). Leave it out for any.
+- **`turnUndead.fromLevel`**: the paladin's table starts at 3rd level, so
+  `byLevel[0]` is level 3.
+- Secret languages ("the secret language of spiders") are short names in
+  `languages`: `Spider`, `Burrowing mammal`, `Earth elemental`, `Druidic`.
 
 ## Races
 
@@ -40,6 +52,7 @@ The Dwarf in `races.json` shows every field. The fields:
   for classes.
 - **`weapons`** (optional) limits weapons on top of the class's rule.
 - **`classes`** maps each class id the race may take to its highest level.
-  A class that isn't listed isn't allowed. Referee's-option notes ("may
-  only be NPCs") go in a feature.
+  A class that isn't listed isn't allowed. Humans list every human class
+  at its own maximum. Referee's-option notes ("may
+  only be NPCs") go in a feature, as do the Human's optional abilities.
 - **`plural`** is optional, as for classes.

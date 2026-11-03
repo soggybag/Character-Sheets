@@ -19,7 +19,51 @@ struct AdvancedDataTests {
     }
 
     @Test func includesTheClassicClasses() {
-        #expect(Array(rules.classes.map(\.id).prefix(7)) == OSERuleset.classic.classes.map(\.id))
+        for classic in OSERuleset.classic.classes {
+            let advanced = rules.classes.first { $0.id == classic.id }
+            #expect(advanced?.levels.map(\.xp) == classic.levels.map(\.xp), "\(classic.name)")
+            #expect(advanced?.levels.map(\.saves) == classic.levels.map(\.saves), "\(classic.name)")
+        }
+    }
+
+    @Test func inTheBooksOrder() {
+        #expect(rules.classes.map(\.name) == [
+            "Acrobat", "Assassin", "Barbarian", "Bard", "Cleric", "Drow", "Druid", "Duergar", "Dwarf", "Elf", "Fighter",
+            "Gnome", "Half-Elf", "Halfling", "Half-Orc", "Illusionist", "Knight", "Magic-User", "Paladin", "Ranger",
+            "Svirfneblin", "Thief"])
+        #expect(rules.races.map(\.name) == [
+            "Drow", "Duergar", "Dwarf", "Elf", "Gnome", "Half-Elf", "Halfling", "Half-Orc", "Human", "Svirfneblin"])
+    }
+
+    @Test(arguments: [OSERuleset.classic, OSERuleset.advanced])
+    func skillsMatchTheTable(rules: OSERuleset) {
+        for classRules in rules.classes {
+            let keys = classRules.skills.map { Set($0.map(\.key)) }
+            for row in classRules.levels {
+                #expect(row.thiefSkills.map { Set($0.keys) } == keys, "\(classRules.name) \(row.level)")
+            }
+        }
+    }
+
+    @Test func weaponAndArmourIDsExist() {
+        let weapons = Set(rules.weapons.map(\.id)), armour = Set(rules.armour.map(\.id))
+        for classRules in rules.classes {
+            for id in (classRules.weapons.allowed ?? []) + (classRules.weapons.forbidden ?? []) {
+                #expect(weapons.contains(id), "\(classRules.name): \(id)")
+            }
+            for id in classRules.armour.allowed { #expect(armour.contains(id), "\(classRules.name): \(id)") }
+        }
+        for race in rules.races {
+            for id in race.weapons?.forbidden ?? [] { #expect(weapons.contains(id), "\(race.name): \(id)") }
+        }
+    }
+
+    @Test func humansCanBeAnyHumanClass() throws {
+        let human = try #require(rules.raceRules(named: "human"))
+        for classRules in rules.classes {
+            #expect(human.maxLevel(classID: classRules.id) == (classRules.race == "Human" ? classRules.maxLevel : nil),
+                    "\(classRules.name)")
+        }
     }
 
     @Test func classicHasNoRaces() {
@@ -34,16 +78,9 @@ struct AdvancedDataTests {
         }
     }
 
-    /// Classes a race names that aren't in `classes.json` yet. Remove
-    /// each one as its class is added.
-    static let classesToAdd: Set = ["assassin"]
-
     @Test func racesNameRealClassesAndLevels() {
-        for id in Self.classesToAdd {
-            #expect(!rules.classes.contains { $0.id == id }, "\(id) is added: take it off classesToAdd")
-        }
         for race in rules.races {
-            for (classID, maxLevel) in race.classes where !Self.classesToAdd.contains(classID) {
+            for (classID, maxLevel) in race.classes {
                 let classRules = rules.classes.first { $0.id == classID }
                 #expect(classRules != nil, "\(race.name): no class \(classID)")
                 if let classRules { #expect((1...classRules.maxLevel).contains(maxLevel), "\(race.name) \(classID)") }
@@ -123,5 +160,37 @@ struct AdvancedClassTests {
         }
         #expect(try notes("Lawful").contains("Druids must be Neutral (this one is Lawful)."))
         #expect(try !notes("neutral").contains { $0.hasPrefix("Druids must be") })
+    }
+
+    /// Spot checks against the book's tables.
+    @Test func bookSpotChecks() throws {
+        func row(_ name: String, _ level: Int) throws -> ClassRules.LevelRow {
+            try #require(rules.classRules(named: name)?.row(level: level))
+        }
+        let barbarian = try row("Barbarian", 5)
+        #expect(barbarian.xp == 18500 && barbarian.thac0 == 17)
+        #expect(barbarian.saves == ["death": 8, "wands": 11, "paralysis": 10, "breath": 13, "spells": 13])
+        #expect(barbarian.thiefSkills == ["climb": 91, "hide": 30, "moveSilently": 37])
+        let knight = try row("Knight", 13)
+        #expect(knight.xp == 790_000 && knight.hd == "9d8+8" && knight.thac0 == 10)
+        #expect(knight.saves == ["death": 4, "wands": 5, "paralysis": 6, "breath": 5, "spells": 8])
+        #expect(try row("Bard", 1).spells == [] && row("Bard", 14).spells == [4, 4, 3, 3])
+        #expect(try row("Drow", 1).spells == [1] && row("Drow", 10).xp == 600_000)
+        #expect(try row("Assassin", 6).thiefSkills == ["assassination": -2, "climb": 92, "hearNoise": 3, "hide": 33, "moveSilently": 43])
+        #expect(try row("Ranger", 12).thiefSkills == ["tracking": 110] && row("Ranger", 8).spells == [1])
+        #expect(try row("Illusionist", 14).spells == [4, 4, 4, 4, 3, 3])
+        #expect(try row("Half-Orc", 6).thiefSkills == ["hide": 36, "moveSilently": 45, "pickPockets": 45])
+        #expect(try row("Svirfneblin", 8).xp == 160_000 && row("Gnome", 8).spells == [3, 3, 2, 2])
+
+        let halfElf = try #require(rules.raceRules(named: "Half-Elf"))
+        #expect(halfElf.classes.count == 11 && halfElf.maxLevel(classID: "cleric") == 5)
+        let halfOrc = try #require(rules.raceRules(named: "half orc"))
+        #expect(halfOrc.abilityModifiers == ["cha": -2, "con": 1, "str": 1])
+    }
+
+    @Test func onlySomeDivineCastersNeedAHolySymbol() throws {
+        func needs(_ name: String) throws -> Bool { try #require(rules.classRules(named: name)?.spellcasting).needsHolySymbol }
+        #expect(try needs("Cleric") && needs("Druid") && needs("Drow") && needs("Paladin"))
+        #expect(try !needs("Bard") && !needs("Ranger") && !needs("Magic-User"))
     }
 }

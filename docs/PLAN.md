@@ -260,7 +260,14 @@ Decisions:
       SRD (early 2027) will only be the B/X material, so it won't add these
       classes. Their permission note is in the legal text
       (`Legal.nonSRD`: About, Licenses and Legal, website, README, App
-      Store description). Next: add the classes.
+      Store description). Data done (3 Nov 2026): all 22 classes and 10
+      races in `Resources/ose-advanced`, from the Players Tome, and New
+      Character has a Rules choice. Next, in the app: choosing a race
+      (separate race and class), the sheet using the race (ability
+      modifiers, class and level limits, weapons, languages, exploration,
+      features like the halfling's missile bonus), and showing any class's
+      skills (acrobat, assassin, barbarian, half-orc, ranger), not only the
+      thief's.
 - [ ] **Use the third-party license** (decided 21 Oct 2026, see Open
       decisions). Done, to check by hand: a new About window (logo,
       "Requires Old-School Essentials", trademark line, "independent app"

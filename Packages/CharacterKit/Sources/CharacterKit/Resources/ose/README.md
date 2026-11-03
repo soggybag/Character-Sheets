@@ -45,6 +45,11 @@ has its own folder; it shares `abilities.json` and `equipment.json`.
   bought as that gear entry, so the shop lists it once.
 - **Weapon damage**: every PC attack does 1d6 unless the character's
   `variableWeaponDamage` option is on.
+- **Skills**: a class with skills lists them in `skills` (key, name, and
+  `kind`: `percent`, `inSix` for X-in-6, or `modifier`), in table order. Each
+  level row has the values in `thiefSkills`, under the same keys.
+- **Spellcasting**: `holySymbol: false` marks a divine caster who doesn't
+  need one.
 - **Features** are short summaries in our own words. `minLevel` means the
   feature is gained at that level.
 

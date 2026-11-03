@@ -577,7 +577,7 @@ private struct Builder {
         if (file.string(["alignment"]) ?? "").isEmpty {
             note(.info, "No alignment chosen.", ["alignment"])
         }
-        if classRules.spellcasting?.type == "divine" {
+        if classRules.spellcasting?.needsHolySymbol == true {
             let names = (0..<file.count(["equipment"])).compactMap { file.string(["equipment", .index($0), "name"]) }
             if !names.contains(where: { $0.lowercased().contains("holy symbol") }) {
                 note(.info, "\(classRules.plural) need a holy symbol to cast spells.", ["equipment"])
