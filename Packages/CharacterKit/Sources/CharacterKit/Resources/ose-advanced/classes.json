@@ -481,6 +481,11 @@
           "summary": "Speaks the druids' secret tongue. Learns one language of the Sylvan forests' creatures at each level after 2nd."
         },
         {
+          "id": "path-finding",
+          "name": "Path-finding",
+          "summary": "A party with a druid gets lost in woodland only on 1-in-6."
+        },
+        {
           "id": "pass-without-trace",
           "name": "Pass without trace",
           "summary": "Leaves no tracks in natural surroundings, and moves through overgrowth at normal speed.",
@@ -493,10 +498,28 @@
           "minLevel": 7
         },
         {
+          "id": "shape-change",
+          "name": "Shape change",
+          "summary": "Once a day each, becomes a reptile, a bird or a mammal, up to about twice their size. Regains 1d4 hit points per level on changing; gear merges into the animal form.",
+          "minLevel": 7
+        },
+        {
           "id": "magic-items",
           "name": "Create magic items",
           "summary": "Can make magic items through magical research.",
           "minLevel": 9
+        },
+        {
+          "id": "druid-hierarchy",
+          "name": "Druid hierarchy",
+          "summary": "Only nine druids may be 12th level, three 13th, and one 14th (the arch-druid). To rise, a druid must defeat one of that level in a challenge both agree to.",
+          "minLevel": 12
+        },
+        {
+          "id": "stronghold",
+          "name": "Stronghold",
+          "summary": "May build a stronghold set into a natural place.",
+          "minLevel": 12
         }
       ],
       "levels": [

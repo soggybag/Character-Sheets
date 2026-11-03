@@ -74,6 +74,9 @@ struct AdvancedClassTests {
         #expect(druid.alignments == ["Neutral"])
         #expect(druid.armour.allowed == ["leather"] && druid.armour.shields)
         #expect(druid.spellcasting?.type == "divine" && druid.spellcasting?.fromLevel == 1)
+        #expect(druid.features.map(\.id) == ["divine-magic", "no-metal", "energy-resistance", "identification", "druidic",
+                                              "path-finding", "pass-without-trace", "charm-immunity", "shape-change",
+                                              "magic-items", "druid-hierarchy", "stronghold"])
         let first = try #require(druid.row(level: 1))
         #expect(first.xp == 0 && first.thac0 == 19 && first.spells == [1])
         #expect(first.saves == ["death": 11, "wands": 12, "paralysis": 14, "breath": 16, "spells": 15])
