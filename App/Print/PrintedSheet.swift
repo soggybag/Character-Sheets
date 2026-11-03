@@ -27,7 +27,7 @@ struct PrintedSheet {
         ]
         if !analysis.weapons.isEmpty { blocks.append(PrintBlock(weapons)) }
         blocks.append(PrintBlock(skillsAndLanguages))
-        if showsThiefSkills { blocks.append(PrintBlock(thiefSkills)) }
+        if !skills.isEmpty { blocks.append(PrintBlock(skillsBlock)) }
         if hasSpells { blocks.append(PrintBlock(spells)) }
         if file.count(["equipment"]) > 0 { blocks.append(PrintBlock(equipment)) }
         blocks.append(PrintBlock(money))
@@ -204,19 +204,16 @@ struct PrintedSheet {
         }
     }
 
-    private var showsThiefSkills: Bool {
-        analysis.classRules?.hasFeature("thief-skills") == true || file.count(["thiefSkills"]) > 0
-    }
+    private var skills: [SkillBox] { analysis.skillBoxes(for: file) }
 
-    private var thiefSkills: some View {
+    private var skillsBlock: some View {
         VStack(alignment: .leading, spacing: 4) {
-            PrintHeading("Thief Skills")
+            PrintHeading(analysis.skillsTitle)
             HStack(spacing: 5) {
-                ForEach([("Climb", "climb", "%"), ("Traps", "traps", "%"), ("Hear", "hearNoise", ""),
-                         ("Hide", "hide", "%"), ("Move", "moveSilently", "%"), ("Locks", "openLocks", "%"),
-                         ("Pockets", "pickPockets", "%")], id: \.1) { label, key, unit in
-                    let value = number(["thiefSkills", .key(key)])
-                    PrintBox(label: label, value: value.isEmpty ? "" : value + unit, width: 46)
+                ForEach(skills) { skill in
+                    let value = analysis.value(at: skill.path, in: file)
+                    PrintBox(label: skill.label, value: value.map { skill.kind == .inSix ? "\($0)" : skill.text($0) } ?? "",
+                             width: skill.label.count > 8 ? 58 : 46)
                 }
             }
         }
