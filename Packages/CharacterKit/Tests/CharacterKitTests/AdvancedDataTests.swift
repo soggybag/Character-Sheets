@@ -62,3 +62,45 @@ struct AdvancedDataTests {
         #expect(gnome.plural == "Gnomes")
     }
 }
+
+@Suite("Advanced Fantasy classes")
+struct AdvancedClassTests {
+    let rules = OSERuleset.advanced
+
+    /// Spot checks against the book's Druid Level Progression table.
+    @Test func druid() throws {
+        let druid = try #require(rules.classRules(named: "druid"))
+        #expect(druid.maxLevel == 14 && druid.hitDie == "d6" && druid.primeRequisites == ["wis"])
+        #expect(druid.alignments == ["Neutral"])
+        #expect(druid.armour.allowed == ["leather"] && druid.armour.shields)
+        #expect(druid.spellcasting?.type == "divine" && druid.spellcasting?.fromLevel == 1)
+        let first = try #require(druid.row(level: 1))
+        #expect(first.xp == 0 && first.thac0 == 19 && first.spells == [1])
+        #expect(first.saves == ["death": 11, "wands": 12, "paralysis": 14, "breath": 16, "spells": 15])
+        let fifth = try #require(druid.row(level: 5))
+        #expect(fifth.xp == 12500 && fifth.thac0 == 17 && fifth.spells == [2, 2, 1, 1])
+        let tenth = try #require(druid.row(level: 10))
+        #expect(tenth.hd == "9d6+1" && tenth.conModifier == false && tenth.xp == 125000)
+        let last = try #require(druid.row(level: 14))
+        #expect(last.xp == 1_500_000 && last.thac0 == 12 && last.spells == [6, 6, 5, 5, 5])
+        #expect(last.saves == ["death": 3, "wands": 5, "paralysis": 7, "breath": 8, "spells": 7])
+    }
+
+    @Test func druidsMustBeNeutral() throws {
+        func notes(_ alignment: String) throws -> [String] {
+            let file = try CharacterFile(text: """
+                ---
+                formatVersion: 1
+                rules: { system: ose, variant: advanced }
+                class: Druid
+                level: 1
+                alignment: \(alignment)
+                ---
+
+                """)
+            return RulesAnalysis(file, rules: rules).notes.map(\.message)
+        }
+        #expect(try notes("Lawful").contains("Druids must be Neutral (this one is Lawful)."))
+        #expect(try !notes("neutral").contains { $0.hasPrefix("Druids must be") })
+    }
+}

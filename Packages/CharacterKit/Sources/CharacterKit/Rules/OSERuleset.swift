@@ -26,8 +26,7 @@ public struct OSERuleset: Sendable {
         }
     }()
 
-    /// The Advanced Fantasy tables. Not in `all` until its classes are
-    /// filled in. Its data isn't Open Game Content: see
+    /// The Advanced Fantasy tables. Its data isn't Open Game Content: see
     /// `Resources/ose-advanced/README.md`.
     public static let advanced: OSERuleset = {
         do {
@@ -83,8 +82,8 @@ public struct OSERuleset: Sendable {
 
     // MARK: Finding the rules for a file
 
-    /// Every ruleset built into the app. Advanced Fantasy goes here.
-    public static let all: [OSERuleset] = [.classic]
+    /// Every ruleset built into the app.
+    public static let all: [OSERuleset] = [.classic, .advanced]
 
     /// The built-in rules for a system and variant, ignoring case. A
     /// missing variant means the system's first one (Classic Fantasy for

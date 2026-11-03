@@ -433,6 +433,88 @@
         {"level": 13, "xp": 640000, "hd": "9d4+8", "conModifier": false, "thac0": 12, "saves": {"death": 8, "wands": 9, "paralysis": 7, "breath": 10, "spells": 8}, "thiefSkills": {"climb": 99, "traps": 97, "hearNoise": 5, "hide": 95, "moveSilently": 98, "openLocks": 97, "pickPockets": 115}},
         {"level": 14, "xp": 760000, "hd": "9d4+10", "conModifier": false, "thac0": 12, "saves": {"death": 8, "wands": 9, "paralysis": 7, "breath": 10, "spells": 8}, "thiefSkills": {"climb": 99, "traps": 99, "hearNoise": 5, "hide": 99, "moveSilently": 99, "openLocks": 99, "pickPockets": 125}}
       ]
+    },
+    {
+      "id": "druid",
+      "name": "Druid",
+      "race": "Human",
+      "requirements": {},
+      "primeRequisites": ["wis"],
+      "xpModifier": "standard",
+      "hitDie": "d6",
+      "maxLevel": 14,
+      "armour": {
+        "allowed": ["leather"],
+        "shields": true
+      },
+      "weapons": {
+        "text": "Clubs, daggers, slings, spears and staves only",
+        "allowed": ["club", "dagger", "sling", "spear", "staff"]
+      },
+      "languages": ["Alignment", "Common", "Druidic"],
+      "alignments": ["Neutral"],
+      "spellcasting": { "type": "divine", "list": "druid", "fromLevel": 1 },
+      "features": [
+        {
+          "id": "divine-magic",
+          "name": "Divine magic",
+          "summary": "Prays to nature for spells. Must carry a sprig of mistletoe they harvested themselves as a holy symbol, and stay in their deity's favour. Can't use magical books or tomes."
+        },
+        {
+          "id": "no-metal",
+          "name": "No metal armour",
+          "summary": "Can't wear metal armour or carry a metal shield. Wooden shields cost the same as a normal shield."
+        },
+        {
+          "id": "energy-resistance",
+          "name": "Energy resistance",
+          "summary": "+2 to saves against fire and electricity."
+        },
+        {
+          "id": "identification",
+          "name": "Identification",
+          "summary": "Knows every plant and animal on sight, and can tell whether water is pure."
+        },
+        {
+          "id": "druidic",
+          "name": "Languages",
+          "summary": "Speaks the druids' secret tongue. Learns one language of the Sylvan forests' creatures at each level after 2nd."
+        },
+        {
+          "id": "pass-without-trace",
+          "name": "Pass without trace",
+          "summary": "Leaves no tracks in natural surroundings, and moves through overgrowth at normal speed.",
+          "minLevel": 3
+        },
+        {
+          "id": "charm-immunity",
+          "name": "Charm immunity",
+          "summary": "Immune to the charms of fairies and Sylvan creatures.",
+          "minLevel": 7
+        },
+        {
+          "id": "magic-items",
+          "name": "Create magic items",
+          "summary": "Can make magic items through magical research.",
+          "minLevel": 9
+        }
+      ],
+      "levels": [
+        {"level": 1, "xp": 0, "hd": "1d6", "thac0": 19, "saves": {"death": 11, "wands": 12, "paralysis": 14, "breath": 16, "spells": 15}, "spells": [1]},
+        {"level": 2, "xp": 2000, "hd": "2d6", "thac0": 19, "saves": {"death": 11, "wands": 12, "paralysis": 14, "breath": 16, "spells": 15}, "spells": [2]},
+        {"level": 3, "xp": 4000, "hd": "3d6", "thac0": 19, "saves": {"death": 11, "wands": 12, "paralysis": 14, "breath": 16, "spells": 15}, "spells": [2, 1]},
+        {"level": 4, "xp": 7500, "hd": "4d6", "thac0": 19, "saves": {"death": 11, "wands": 12, "paralysis": 14, "breath": 16, "spells": 15}, "spells": [2, 2]},
+        {"level": 5, "xp": 12500, "hd": "5d6", "thac0": 17, "saves": {"death": 9, "wands": 10, "paralysis": 12, "breath": 14, "spells": 12}, "spells": [2, 2, 1, 1]},
+        {"level": 6, "xp": 20000, "hd": "6d6", "thac0": 17, "saves": {"death": 9, "wands": 10, "paralysis": 12, "breath": 14, "spells": 12}, "spells": [2, 2, 2, 1, 1]},
+        {"level": 7, "xp": 35000, "hd": "7d6", "thac0": 17, "saves": {"death": 9, "wands": 10, "paralysis": 12, "breath": 14, "spells": 12}, "spells": [3, 3, 2, 2, 1]},
+        {"level": 8, "xp": 60000, "hd": "8d6", "thac0": 17, "saves": {"death": 9, "wands": 10, "paralysis": 12, "breath": 14, "spells": 12}, "spells": [3, 3, 3, 2, 2]},
+        {"level": 9, "xp": 90000, "hd": "9d6", "thac0": 14, "saves": {"death": 6, "wands": 7, "paralysis": 9, "breath": 11, "spells": 9}, "spells": [4, 4, 3, 3, 2]},
+        {"level": 10, "xp": 125000, "hd": "9d6+1", "conModifier": false, "thac0": 14, "saves": {"death": 6, "wands": 7, "paralysis": 9, "breath": 11, "spells": 9}, "spells": [4, 4, 4, 3, 3]},
+        {"level": 11, "xp": 200000, "hd": "9d6+2", "conModifier": false, "thac0": 14, "saves": {"death": 6, "wands": 7, "paralysis": 9, "breath": 11, "spells": 9}, "spells": [5, 5, 4, 4, 3]},
+        {"level": 12, "xp": 300000, "hd": "9d6+3", "conModifier": false, "thac0": 14, "saves": {"death": 6, "wands": 7, "paralysis": 9, "breath": 11, "spells": 9}, "spells": [5, 5, 5, 4, 4]},
+        {"level": 13, "xp": 750000, "hd": "9d6+4", "conModifier": false, "thac0": 12, "saves": {"death": 3, "wands": 5, "paralysis": 7, "breath": 8, "spells": 7}, "spells": [6, 5, 5, 5, 4]},
+        {"level": 14, "xp": 1500000, "hd": "9d6+5", "conModifier": false, "thac0": 12, "saves": {"death": 3, "wands": 5, "paralysis": 7, "breath": 8, "spells": 7}, "spells": [6, 6, 5, 5, 5]}
+      ]
     }
   ]
 }

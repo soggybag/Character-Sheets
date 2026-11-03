@@ -23,7 +23,7 @@ extension NewCharacter {
         }
         fresh.className = fresh.bestClass(using: &generator)?.name
         fresh.adjustForXP()
-        fresh.alignment = rules.alignments.randomElement(using: &generator)
+        fresh.alignment = (fresh.classRules?.alignments ?? rules.alignments).randomElement(using: &generator)
 
         // Optional rule: 1s and 2s may be rerolled at 1st level.
         let rerolls = rules.creation.hitPoints.optionalRerollAtFirstLevel

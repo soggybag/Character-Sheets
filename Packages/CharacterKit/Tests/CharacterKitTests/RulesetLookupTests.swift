@@ -13,7 +13,8 @@ struct RulesetLookupTests {
         for (system, variant) in [("ose", nil), ("ose", "classic"), ("OSE", "Classic"), ("ose", "")] as [(String, String?)] {
             #expect(OSERuleset.named(system: system, variant: variant)?.variant == "classic", "\(system) \(variant ?? "-")")
         }
-        #expect(OSERuleset.named(system: "ose", variant: "advanced") == nil)
+        #expect(OSERuleset.named(system: "ose", variant: "advanced")?.variant == "advanced")
+        #expect(OSERuleset.named(system: "ose", variant: "carcass") == nil)
         #expect(OSERuleset.named(system: "bfrpg", variant: nil) == nil)
         #expect(OSERuleset.named(system: nil, variant: "classic") == nil)
     }
@@ -27,11 +28,11 @@ struct RulesetLookupTests {
     }
 
     @Test func rulesTheAppDoesntHaveFallBackWithANote() throws {
-        let advanced = try file("{ system: ose, variant: advanced }", "class: Fighter\nlevel: 1\n")
-        #expect(advanced.namedRuleset == nil && advanced.ruleset.variant == "classic")
-        let analysis = RulesAnalysis(advanced)
+        let unknown = try file("{ system: ose, variant: carcass }", "class: Fighter\nlevel: 1\n")
+        #expect(unknown.namedRuleset == nil && unknown.ruleset.variant == "classic")
+        let analysis = RulesAnalysis(unknown)
         #expect(analysis.notes.map(\.message).contains(
-            "The app doesn't have the rules for “ose advanced”, so Old-School Essentials Classic Fantasy is used where they match."))
+            "The app doesn't have the rules for “ose carcass”, so Old-School Essentials Classic Fantasy is used where they match."))
         // Classic Fantasy still fills in what matches.
         #expect(analysis.suggestions[["saves", "death"]] == .int(12))
     }
