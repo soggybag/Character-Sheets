@@ -324,7 +324,7 @@ private struct Builder {
             if className.isEmpty {
                 note(.info, "Choose a class to see what the rules suggest.", ["class"])
             } else {
-                note(.info, "No Old-School Essentials Classic Fantasy rules for “\(className)”, so saves, attacks and class abilities aren't suggested.", ["class"])
+                note(.info, "No \(rules.displayName) rules for “\(className)”, so saves, attacks and class abilities aren't suggested.", ["class"])
             }
             return
         }
@@ -333,6 +333,12 @@ private struct Builder {
                 note(.warning, "\(classRules.plural) need \(key.uppercased()) \(minimum) or more (it's \(score)).",
                      ["abilityScores", .key(key)])
             }
+        }
+        if let allowed = classRules.alignments,
+           let alignment = file.string(["alignment"]), !alignment.isEmpty,
+           !allowed.contains(where: { $0.caseInsensitiveCompare(alignment) == .orderedSame }) {
+            note(.warning, "\(classRules.plural) must be \(allowed.joined(separator: " or ")) (this one is \(alignment)).",
+                 ["alignment"])
         }
         if let level, level > classRules.maxLevel {
             note(.warning, "\(classRules.plural) can't normally go past level \(classRules.maxLevel).", ["level"])
@@ -571,7 +577,7 @@ private struct Builder {
         if (file.string(["alignment"]) ?? "").isEmpty {
             note(.info, "No alignment chosen.", ["alignment"])
         }
-        if classRules.spellcasting?.type == "divine" {
+        if classRules.spellcasting?.needsHolySymbol == true {
             let names = (0..<file.count(["equipment"])).compactMap { file.string(["equipment", .index($0), "name"]) }
             if !names.contains(where: { $0.lowercased().contains("holy symbol") }) {
                 note(.info, "\(classRules.plural) need a holy symbol to cast spells.", ["equipment"])

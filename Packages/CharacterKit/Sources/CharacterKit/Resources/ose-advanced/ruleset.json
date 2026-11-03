@@ -1,0 +1,108 @@
+{
+  "id": "ose",
+  "variant": "advanced",
+  "displayName": "Advanced Fantasy",
+  "source": "Old-School Essentials Advanced Fantasy. Not Open Game Content: used with permission of Necrotic Gnome. See README.md.",
+  "dataVersion": 1,
+  "files": {
+    "classes": "ose-advanced/classes.json",
+    "races": "ose-advanced/races.json",
+    "abilities": "ose/abilities.json",
+    "equipment": "ose/equipment.json"
+  },
+  "alignments": [
+    "Lawful",
+    "Neutral",
+    "Chaotic"
+  ],
+  "languages": [
+    "Bugbear",
+    "Doppelgänger",
+    "Dragon",
+    "Dwarvish",
+    "Elvish",
+    "Gargoyle",
+    "Gnoll",
+    "Gnomish",
+    "Goblin",
+    "Halfling",
+    "Harpy",
+    "Hobgoblin",
+    "Kobold",
+    "Lizard man",
+    "Medusa",
+    "Minotaur",
+    "Ogre",
+    "Orcish",
+    "Pixie",
+    "Human dialect"
+  ],
+  "saves": [
+    {
+      "key": "death",
+      "abbr": "D",
+      "name": "Death / poison"
+    },
+    {
+      "key": "wands",
+      "abbr": "W",
+      "name": "Wands"
+    },
+    {
+      "key": "paralysis",
+      "abbr": "P",
+      "name": "Paralysis / petrify"
+    },
+    {
+      "key": "breath",
+      "abbr": "B",
+      "name": "Breath attacks"
+    },
+    {
+      "key": "spells",
+      "abbr": "S",
+      "name": "Spells / rods / staves"
+    }
+  ],
+  "creation": {
+    "abilityRoll": "3d6",
+    "startingGold": "3d6*10",
+    "startingLevel": 1,
+    "abilityAdjustment": {
+      "note": "Lower a score by 2 to raise a prime requisite by 1.",
+      "cost": 2,
+      "canLower": [
+        "str",
+        "int",
+        "wis"
+      ],
+      "minimum": 9
+    },
+    "hitPoints": {
+      "minimumPerDie": 1,
+      "optionalRerollAtFirstLevel": [
+        1,
+        2
+      ]
+    }
+  },
+  "combat": {
+    "unarmouredAC": 9,
+    "ascendingAC": {
+      "note": "Ascending AC = 19 - descending AC; attack bonus = 19 - THAC0."
+    },
+    "attackMatrix": {
+      "note": "Roll needed = THAC0 - target AC, clamped to 2..20 (matches the SRD attack matrix)."
+    }
+  },
+  "exploration": {
+    "defaults": {
+      "listen": 1,
+      "secretDoors": 1,
+      "findTraps": 1
+    },
+    "openDoors": "From STR (abilities.json)",
+    "note": "Class exploration values replace these defaults."
+  },
+  "spellSlotsNote": "Index 0 = 1st level spells."
+}

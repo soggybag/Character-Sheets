@@ -1,0 +1,572 @@
+{
+  "variant": "advanced",
+  "races": [
+    {
+      "id": "drow",
+      "name": "Drow",
+      "plural": "Drow",
+      "requirements": {
+        "int": 9
+      },
+      "maximums": {},
+      "abilityModifiers": {
+        "con": -1,
+        "dex": 1
+      },
+      "languages": ["Alignment", "Common", "Deepcommon", "Elvish", "Gnomish"],
+      "infravision": 90,
+      "exploration": {
+        "listen": 2,
+        "secretDoors": 2
+      },
+      "features": [
+        {
+          "id": "secret-doors",
+          "name": "Detect secret doors",
+          "summary": "2-in-6 to find secret doors when searching."
+        },
+        {
+          "id": "ghoul-immunity",
+          "name": "Immunity to ghoul paralysis",
+          "summary": "Unaffected by ghoul paralysis."
+        },
+        {
+          "id": "infravision",
+          "name": "Infravision",
+          "summary": "Sees heat in the dark to 90'."
+        },
+        {
+          "id": "innate-magic",
+          "name": "Innate magic",
+          "summary": "Casts darkness once a day from 2nd level, and detect magic once a day from 4th.",
+          "minLevel": 2
+        },
+        {
+          "id": "light-sensitivity",
+          "name": "Light sensitivity",
+          "summary": "−2 to attack rolls and −1 AC in bright light."
+        },
+        {
+          "id": "listening",
+          "name": "Listening at doors",
+          "summary": "2-in-6 to hear noises."
+        },
+        {
+          "id": "npc-only",
+          "name": "Referee's option",
+          "summary": "At the referee's option, drow clerics may only be NPCs."
+        }
+      ],
+      "classes": {
+        "acrobat": 10,
+        "assassin": 10,
+        "cleric": 11,
+        "fighter": 7,
+        "knight": 9,
+        "magic-user": 9,
+        "ranger": 9,
+        "thief": 11
+      }
+    },
+    {
+      "id": "duergar",
+      "name": "Duergar",
+      "requirements": {
+        "con": 9,
+        "int": 9
+      },
+      "maximums": {},
+      "abilityModifiers": {
+        "con": 1,
+        "cha": -1
+      },
+      "languages": ["Alignment", "Common", "Deepcommon", "Dwarvish", "Gnomish", "Goblin", "Kobold"],
+      "infravision": 90,
+      "exploration": {
+        "listen": 2,
+        "findTraps": 2,
+        "constructionTricks": 2
+      },
+      "weapons": {
+        "text": "Small or normal sized",
+        "forbidden": ["long-bow", "two-handed-sword"]
+      },
+      "features": [
+        {
+          "id": "construction-tricks",
+          "name": "Detect construction tricks",
+          "summary": "2-in-6 to notice new construction, sliding walls or sloping passages when searching."
+        },
+        {
+          "id": "room-traps",
+          "name": "Detect room traps",
+          "summary": "2-in-6 to find non-magical room traps when searching."
+        },
+        {
+          "id": "infravision",
+          "name": "Infravision",
+          "summary": "Sees heat in the dark to 90'."
+        },
+        {
+          "id": "light-sensitivity",
+          "name": "Light sensitivity",
+          "summary": "−2 to attack rolls and −1 AC in bright light."
+        },
+        {
+          "id": "listening",
+          "name": "Listening at doors",
+          "summary": "2-in-6 to hear noises."
+        },
+        {
+          "id": "resilience",
+          "name": "Resilience",
+          "summary": "Bonus to saves against paralysis, poison, spells, and wands, rods and staves, by CON: 7–10 +2, 11–14 +3, 15–17 +4, 18 +5."
+        },
+        {
+          "id": "stealth",
+          "name": "Stealth",
+          "summary": "3-in-6 to move silently underground."
+        },
+        {
+          "id": "npc-only",
+          "name": "Referee's option",
+          "summary": "At the referee's option, duergar clerics may only be NPCs."
+        }
+      ],
+      "classes": {
+        "assassin": 9,
+        "cleric": 8,
+        "fighter": 9,
+        "thief": 9
+      }
+    },
+    {
+      "id": "dwarf",
+      "name": "Dwarf",
+      "plural": "Dwarves",
+      "requirements": {
+        "con": 9
+      },
+      "maximums": {},
+      "abilityModifiers": {
+        "con": 1,
+        "cha": -1
+      },
+      "languages": ["Alignment", "Common", "Dwarvish", "Gnomish", "Goblin", "Kobold"],
+      "infravision": 60,
+      "exploration": {
+        "listen": 2,
+        "findTraps": 2,
+        "constructionTricks": 2
+      },
+      "weapons": {
+        "text": "Small or normal sized",
+        "forbidden": ["long-bow", "two-handed-sword"]
+      },
+      "features": [
+        {
+          "id": "construction-tricks",
+          "name": "Detect construction tricks",
+          "summary": "2-in-6 to notice new construction, sliding walls or sloping passages when searching."
+        },
+        {
+          "id": "room-traps",
+          "name": "Detect room traps",
+          "summary": "2-in-6 to find non-magical room traps when searching."
+        },
+        {
+          "id": "infravision",
+          "name": "Infravision",
+          "summary": "Sees heat in the dark to 60'."
+        },
+        {
+          "id": "listening",
+          "name": "Listening at doors",
+          "summary": "2-in-6 to hear noises."
+        },
+        {
+          "id": "resilience",
+          "name": "Resilience",
+          "summary": "Bonus to saves against poison, spells, and wands, rods and staves, by CON: 7–10 +2, 11–14 +3, 15–17 +4, 18 +5."
+        },
+        {
+          "id": "npc-only",
+          "name": "Referee's option",
+          "summary": "At the referee's option, dwarven clerics may only be NPCs."
+        }
+      ],
+      "classes": {
+        "assassin": 9,
+        "cleric": 8,
+        "fighter": 10,
+        "thief": 9
+      }
+    },
+    {
+      "id": "elf",
+      "name": "Elf",
+      "plural": "Elves",
+      "requirements": {
+        "int": 9
+      },
+      "maximums": {},
+      "abilityModifiers": {
+        "con": -1,
+        "dex": 1
+      },
+      "languages": ["Alignment", "Common", "Elvish", "Gnoll", "Hobgoblin", "Orcish"],
+      "infravision": 60,
+      "exploration": {
+        "listen": 2,
+        "secretDoors": 2
+      },
+      "features": [
+        {
+          "id": "secret-doors",
+          "name": "Detect secret doors",
+          "summary": "2-in-6 to find secret doors when searching."
+        },
+        {
+          "id": "ghoul-immunity",
+          "name": "Immunity to ghoul paralysis",
+          "summary": "Unaffected by ghoul paralysis."
+        },
+        {
+          "id": "infravision",
+          "name": "Infravision",
+          "summary": "Sees heat in the dark to 60'."
+        },
+        {
+          "id": "listening",
+          "name": "Listening at doors",
+          "summary": "2-in-6 to hear noises."
+        },
+        {
+          "id": "npc-only",
+          "name": "Referee's option",
+          "summary": "At the referee's option, elven clerics and druids may only be NPCs."
+        }
+      ],
+      "classes": {
+        "acrobat": 10,
+        "assassin": 10,
+        "cleric": 7,
+        "druid": 8,
+        "fighter": 7,
+        "knight": 11,
+        "magic-user": 11,
+        "ranger": 11,
+        "thief": 10
+      }
+    },
+    {
+      "id": "gnome",
+      "name": "Gnome",
+      "requirements": {
+        "con": 9,
+        "int": 9
+      },
+      "maximums": {},
+      "abilityModifiers": {},
+      "languages": ["Alignment", "Common", "Dwarvish", "Gnomish", "Kobold", "Burrowing mammal"],
+      "infravision": 90,
+      "exploration": {
+        "listen": 2,
+        "constructionTricks": 2
+      },
+      "weapons": {
+        "text": "Sized to suit; no long bows or two-handed swords",
+        "forbidden": ["long-bow", "two-handed-sword"]
+      },
+      "features": [
+        {
+          "id": "defensive-bonus",
+          "name": "Defensive bonus",
+          "summary": "+2 AC against attackers larger than human-sized."
+        },
+        {
+          "id": "construction-tricks",
+          "name": "Detect construction tricks",
+          "summary": "2-in-6 to notice new construction, sliding walls or sloping passages when searching."
+        },
+        {
+          "id": "infravision",
+          "name": "Infravision",
+          "summary": "Sees heat in the dark to 90'."
+        },
+        {
+          "id": "listening",
+          "name": "Listening at doors",
+          "summary": "2-in-6 to hear noises."
+        },
+        {
+          "id": "magic-resistance",
+          "name": "Magic resistance",
+          "summary": "Bonus to saves against spells, and wands, rods and staves, by CON: 7–10 +2, 11–14 +3, 15–17 +4, 18 +5."
+        },
+        {
+          "id": "burrowing-mammals",
+          "name": "Speak with burrowing mammals",
+          "summary": "Speaks the secret language of burrowing mammals."
+        },
+        {
+          "id": "npc-only",
+          "name": "Referee's option",
+          "summary": "At the referee's option, gnomish clerics may only be NPCs."
+        }
+      ],
+      "classes": {
+        "assassin": 6,
+        "cleric": 7,
+        "fighter": 6,
+        "illusionist": 7,
+        "thief": 8
+      }
+    },
+    {
+      "id": "half-elf",
+      "name": "Half-Elf",
+      "plural": "Half-Elves",
+      "requirements": {
+        "cha": 9,
+        "con": 9
+      },
+      "maximums": {},
+      "abilityModifiers": {},
+      "languages": ["Alignment", "Common", "Elvish"],
+      "infravision": 60,
+      "exploration": {
+        "secretDoors": 2
+      },
+      "features": [
+        {
+          "id": "secret-doors",
+          "name": "Detect secret doors",
+          "summary": "2-in-6 to find secret doors when searching."
+        },
+        {
+          "id": "infravision",
+          "name": "Infravision",
+          "summary": "Sees heat in the dark to 60'."
+        }
+      ],
+      "classes": {
+        "acrobat": 12,
+        "assassin": 11,
+        "bard": 12,
+        "cleric": 5,
+        "druid": 12,
+        "fighter": 8,
+        "knight": 12,
+        "magic-user": 8,
+        "paladin": 12,
+        "ranger": 8,
+        "thief": 12
+      }
+    },
+    {
+      "id": "halfling",
+      "name": "Halfling",
+      "requirements": {
+        "con": 9,
+        "dex": 9
+      },
+      "maximums": {},
+      "abilityModifiers": {
+        "dex": 1,
+        "str": -1
+      },
+      "languages": ["Alignment", "Common", "Halfling"],
+      "exploration": {
+        "listen": 2
+      },
+      "weapons": {
+        "text": "Sized to suit; no long bows or two-handed swords",
+        "forbidden": ["long-bow", "two-handed-sword"]
+      },
+      "features": [
+        {
+          "id": "defensive-bonus",
+          "name": "Defensive bonus",
+          "summary": "+2 AC against attackers larger than human-sized."
+        },
+        {
+          "id": "initiative",
+          "name": "Initiative bonus",
+          "summary": "+1 to individual initiative (optional rule)."
+        },
+        {
+          "id": "listening",
+          "name": "Listening at doors",
+          "summary": "2-in-6 to hear noises."
+        },
+        {
+          "id": "missile-bonus",
+          "name": "Missile attack bonus",
+          "summary": "+1 to attack rolls with missile weapons."
+        },
+        {
+          "id": "resilience",
+          "name": "Resilience",
+          "summary": "Bonus to saves against poison, spells, and wands, rods and staves, by CON: 7–10 +2, 11–14 +3, 15–17 +4, 18 +5."
+        },
+        {
+          "id": "npc-only",
+          "name": "Referee's option",
+          "summary": "At the referee's option, halfling druids may only be NPCs."
+        }
+      ],
+      "classes": {
+        "druid": 6,
+        "fighter": 6,
+        "thief": 8
+      }
+    },
+    {
+      "id": "half-orc",
+      "name": "Half-Orc",
+      "requirements": {},
+      "maximums": {},
+      "abilityModifiers": {
+        "cha": -2,
+        "con": 1,
+        "str": 1
+      },
+      "languages": ["Alignment", "Common", "Orcish"],
+      "infravision": 60,
+      "features": [
+        {
+          "id": "infravision",
+          "name": "Infravision",
+          "summary": "Sees heat in the dark to 60'."
+        }
+      ],
+      "classes": {
+        "acrobat": 8,
+        "assassin": 8,
+        "cleric": 4,
+        "fighter": 10,
+        "thief": 8
+      }
+    },
+    {
+      "id": "human",
+      "name": "Human",
+      "requirements": {},
+      "maximums": {},
+      "abilityModifiers": {},
+      "languages": ["Alignment", "Common"],
+      "features": [
+        {
+          "id": "human-abilities",
+          "name": "Racial abilities (optional rule)",
+          "summary": "If demihuman class and level limits are lifted, humans get +1 CHA and +1 CON."
+        },
+        {
+          "id": "blessed",
+          "name": "Blessed (optional rule)",
+          "summary": "Rolls hit points twice, including at 1st level, and keeps the better."
+        },
+        {
+          "id": "decisiveness",
+          "name": "Decisiveness (optional rule)",
+          "summary": "Acts first when initiative ties; +1 to individual initiative."
+        },
+        {
+          "id": "leadership",
+          "name": "Leadership (optional rule)",
+          "summary": "Retainers and mercenaries get +1 to loyalty and morale."
+        }
+      ],
+      "classes": {
+        "acrobat": 14,
+        "assassin": 14,
+        "barbarian": 14,
+        "bard": 14,
+        "cleric": 14,
+        "druid": 14,
+        "fighter": 14,
+        "illusionist": 14,
+        "knight": 14,
+        "magic-user": 14,
+        "paladin": 14,
+        "ranger": 14,
+        "thief": 14
+      }
+    },
+    {
+      "id": "svirfneblin",
+      "name": "Svirfneblin",
+      "plural": "Svirfneblins",
+      "requirements": {
+        "con": 9
+      },
+      "maximums": {},
+      "abilityModifiers": {},
+      "languages": ["Alignment", "Common", "Deepcommon", "Gnomish", "Dwarvish", "Kobold", "Earth elemental"],
+      "infravision": 90,
+      "exploration": {
+        "listen": 2,
+        "constructionTricks": 2
+      },
+      "weapons": {
+        "text": "Sized to suit; no long bows or two-handed swords",
+        "forbidden": ["long-bow", "two-handed-sword"]
+      },
+      "features": [
+        {
+          "id": "blend-into-stone",
+          "name": "Blend into stone",
+          "summary": "Unnoticed among stone while silent and still: 4-in-6 in gloom, 2-in-6 in good light."
+        },
+        {
+          "id": "defensive-bonus",
+          "name": "Defensive bonus",
+          "summary": "+2 AC against attackers larger than human-sized."
+        },
+        {
+          "id": "construction-tricks",
+          "name": "Detect construction tricks",
+          "summary": "2-in-6 to notice new construction, sliding walls or sloping passages when searching."
+        },
+        {
+          "id": "infravision",
+          "name": "Infravision",
+          "summary": "Sees heat in the dark to 90'."
+        },
+        {
+          "id": "light-sensitivity",
+          "name": "Light sensitivity",
+          "summary": "−2 to attack rolls and −1 AC in bright light."
+        },
+        {
+          "id": "listening",
+          "name": "Listening at doors",
+          "summary": "2-in-6 to hear noises."
+        },
+        {
+          "id": "illusion-resistance",
+          "name": "Illusion resistance",
+          "summary": "+2 to saves against illusions."
+        },
+        {
+          "id": "earth-elementals",
+          "name": "Speak with earth elementals",
+          "summary": "Speaks the language of earth elementals."
+        },
+        {
+          "id": "npc-only",
+          "name": "Referee's option",
+          "summary": "At the referee's option, svirfneblin clerics may only be NPCs."
+        }
+      ],
+      "classes": {
+        "assassin": 8,
+        "cleric": 7,
+        "fighter": 6,
+        "illusionist": 7,
+        "thief": 8
+      }
+    }
+  ]
+}

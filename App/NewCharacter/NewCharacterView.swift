@@ -33,11 +33,16 @@ struct NewCharacterView: View {
     /// House rules, remembered because a group plays the same way each time.
     @AppStorage("abilityRollMethod") private var method = NewCharacter.RollMethod.rules
     @AppStorage("allowSwappingScores") private var allowSwapping = false
+    /// The rules variant, remembered for the same reason.
+    @AppStorage("newCharacterRules") private var variant = OSERuleset.classic.variant
 
     var body: some View {
         let analysis = character.analysis
         VStack(spacing: 0) {
             Form {
+                if OSERuleset.all.count > 1 {
+                    RulesSection(variant: $variant)
+                }
                 RandomSection(character: $character)
                 ScoresSection(character: $character, analysis: analysis,
                               method: $method, allowSwapping: $allowSwapping)
@@ -73,15 +78,36 @@ struct NewCharacterView: View {
         .onAppear { startOver() }
         .onDisappear { startOver() }
         .onChange(of: method) { character.method = method }
+        .onChange(of: variant) { startOver() }
+    }
+
+    private var rules: OSERuleset {
+        OSERuleset.named(system: OSERuleset.classic.system, variant: variant) ?? .classic
     }
 
     private func startOver() {
-        character = NewCharacter()
+        character = NewCharacter(rules: rules)
         character.method = method
     }
 }
 
 // MARK: - Sections
+
+/// Classic or Advanced Fantasy. Changing it starts the character over.
+private struct RulesSection: View {
+    @Binding var variant: String
+
+    var body: some View {
+        Section("Rules") {
+            Picker("Rules", selection: $variant) {
+                ForEach(OSERuleset.all, id: \.variant) { rules in
+                    Text(rules.displayName).tag(rules.variant)
+                }
+            }
+            .labelsHidden()
+        }
+    }
+}
 
 private struct RandomSection: View {
     @Binding var character: NewCharacter

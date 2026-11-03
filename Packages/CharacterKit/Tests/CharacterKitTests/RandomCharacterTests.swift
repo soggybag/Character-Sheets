@@ -86,10 +86,11 @@ struct RandomCharacterTests {
         #expect(thief.adjustments.isEmpty)
     }
 
-    @Test func randomCharactersAreComplete() {
-        let items = OSERuleset.classic.shopItems
+    @Test(arguments: [OSERuleset.classic, OSERuleset.advanced])
+    func randomCharactersAreComplete(rules: OSERuleset) {
+        let items = rules.shopItems
         for seed in 1...200 {
-            var new = NewCharacter()
+            var new = NewCharacter(rules: rules)
             new.name = "Kept"
             new.method = seed.isMultiple(of: 2) ? .fourDropLowest : .rules
             var generator = SeededGenerator(state: UInt64(seed))
@@ -99,10 +100,11 @@ struct RandomCharacterTests {
             #expect(new.unmetRequirements(for: classRules).isEmpty, "seed \(seed)")
             #expect(new.adjustmentNotes.isEmpty, "seed \(seed): \(new.adjustmentNotes)")
             #expect(new.alignment != nil && new.hitPoints != nil && new.gold != nil)
+            if let allowed = classRules.alignments { #expect(allowed.contains(new.alignment!), "seed \(seed)") }
             #expect(![1, 2].contains(new.hitPointRoll ?? 0), "seed \(seed)")
             #expect(new.unaffordable.isEmpty && new.moneyLeft!.totalCP >= 0)
             for purchase in new.purchases {
-                #expect(OSERuleset.classic.restriction(of: purchase.item, for: classRules) == nil,
+                #expect(rules.restriction(of: purchase.item, for: classRules) == nil,
                         "seed \(seed): \(classRules.name) with \(purchase.item.name)")
             }
             let file = new.makeFile()

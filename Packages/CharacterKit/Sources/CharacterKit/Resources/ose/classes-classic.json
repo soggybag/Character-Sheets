@@ -417,6 +417,15 @@
           "minLevel": 9
         }
       ],
+      "skills": [
+        { "key": "climb", "name": "Climb sheer surfaces", "kind": "percent" },
+        { "key": "traps", "name": "Find or remove treasure traps", "kind": "percent" },
+        { "key": "hearNoise", "name": "Hear noise", "kind": "inSix" },
+        { "key": "hide", "name": "Hide in shadows", "kind": "percent" },
+        { "key": "moveSilently", "name": "Move silently", "kind": "percent" },
+        { "key": "openLocks", "name": "Open locks", "kind": "percent" },
+        { "key": "pickPockets", "name": "Pick pockets", "kind": "percent" }
+      ],
       "levels": [
         {"level": 1, "xp": 0, "hd": "1d4", "thac0": 19, "saves": {"death": 13, "wands": 14, "paralysis": 13, "breath": 16, "spells": 15}, "thiefSkills": {"climb": 87, "traps": 10, "hearNoise": 2, "hide": 10, "moveSilently": 20, "openLocks": 15, "pickPockets": 20}},
         {"level": 2, "xp": 1200, "hd": "2d4", "thac0": 19, "saves": {"death": 13, "wands": 14, "paralysis": 13, "breath": 16, "spells": 15}, "thiefSkills": {"climb": 88, "traps": 15, "hearNoise": 2, "hide": 15, "moveSilently": 25, "openLocks": 20, "pickPockets": 25}},

@@ -6,6 +6,8 @@ import Foundation
 public struct ClassRules: Decodable, Sendable {
     public let id: String
     public let name: String
+    /// Only where adding "s" is wrong ("Elves").
+    let pluralName: String?
     public let race: String
     public let requirements: [String: Int]
     public let primeRequisites: [String]
@@ -15,10 +17,14 @@ public struct ClassRules: Decodable, Sendable {
     public let armour: ArmourRule
     public let weapons: WeaponRule
     public let languages: [String]
+    /// The only alignments the class allows; nil means any.
+    public let alignments: [String]?
     public let spellcasting: Spellcasting?
     public let exploration: [String: Int]?
     public let infravision: Int?
     public let features: [Feature]
+    /// What the numbers in each row's `thiefSkills` are, in table order.
+    public let skills: [Skill]?
     public let levels: [LevelRow]
     /// Extra limits on adjusting scores at creation.
     public let creation: Creation?
@@ -27,9 +33,16 @@ public struct ClassRules: Decodable, Sendable {
         levels.first { $0.level == level }
     }
 
+    enum CodingKeys: String, CodingKey {
+        case id, name, race, requirements, primeRequisites, xpModifier, hitDie, maxLevel, armour, weapons
+        case languages, alignments, spellcasting, exploration, infravision, features, skills, levels, creation
+        case pluralName = "plural"
+    }
+
     /// "Elves", "Thieves", "Fighters".
     public var plural: String {
-        switch name {
+        if let pluralName { return pluralName }
+        return switch name {
         case "Elf": "Elves"
         case "Dwarf": "Dwarves"
         case "Thief": "Thieves"
@@ -80,6 +93,27 @@ public struct ClassRules: Decodable, Sendable {
         /// `arcane` or `divine`.
         public let type: String
         public let fromLevel: Int
+        /// False for divine casters who don't need one (bards, rangers).
+        let holySymbol: Bool?
+
+        public var needsHolySymbol: Bool { type == "divine" && holySymbol != false }
+    }
+
+    /// One of the class's skills in `LevelRow.thiefSkills`.
+    public struct Skill: Decodable, Sendable, Equatable {
+        /// The key in `thiefSkills`, e.g. `climb`.
+        public let key: String
+        public let name: String
+        public let kind: Kind
+
+        public enum Kind: String, Decodable, Sendable {
+            /// Rolled on d%.
+            case percent
+            /// X-in-6: the value is X.
+            case inSix
+            /// A bonus or penalty, e.g. the assassination save penalty.
+            case modifier
+        }
     }
 
     public struct Creation: Decodable, Sendable {
@@ -111,6 +145,42 @@ public struct ClassRules: Decodable, Sendable {
             hd.split(separator: "+").dropFirst().first.flatMap { Int($0) } ?? 0
         }
     }
+}
+
+/// A race for the separate race and class option (Advanced Fantasy).
+public struct RaceRules: Decodable, Sendable {
+    public let id: String
+    public let name: String
+    /// Only where adding "s" is wrong ("Half-Elves").
+    let pluralName: String?
+    /// Lowest score allowed, e.g. `{"con": 9}`.
+    public let requirements: [String: Int]
+    /// Highest score allowed, after `abilityModifiers`.
+    public let maximums: [String: Int]
+    /// Added to the rolled scores, e.g. `{"con": 1, "cha": -1}`.
+    public let abilityModifiers: [String: Int]
+    public let languages: [String]
+    public let infravision: Int?
+    /// Replaces the class's value when better (dwarves' listening).
+    public let exploration: [String: Int]?
+    /// Limits on top of the class's (dwarves can't use long bows).
+    public let weapons: ClassRules.WeaponRule?
+    public let features: [ClassRules.Feature]
+    /// Class ids this race may take, with the highest level for each.
+    public let classes: [String: Int]
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, requirements, maximums, abilityModifiers, languages, infravision, exploration, weapons, features
+        case classes
+        case pluralName = "plural"
+    }
+
+    /// "Dwarves", "Gnomes".
+    public var plural: String { pluralName ?? name + "s" }
+
+    /// The highest level this race may reach in a class, or nil if it can't
+    /// take the class.
+    public func maxLevel(classID: String) -> Int? { classes[classID] }
 }
 
 struct AbilityTables: Decodable, Sendable {
@@ -220,10 +290,17 @@ struct RulesetInfo: Decodable, Sendable {
     let variant: String
     /// e.g. "Classic Fantasy".
     let displayName: String
+    let files: Files
     let alignments: [String]
     let combat: Combat
     let exploration: Exploration
     let creation: CreationRules
+
+    /// Paths in the bundle's resources, e.g. `ose/equipment.json`.
+    struct Files: Decodable, Sendable {
+        let classes, abilities, equipment: String
+        let races: String?
+    }
 
     struct Combat: Decodable, Sendable { let unarmouredAC: Int }
     struct Exploration: Decodable, Sendable { let defaults: [String: Int] }
@@ -254,4 +331,8 @@ public struct CreationRules: Decodable, Sendable {
 
 struct ClassesFile: Decodable {
     let classes: [ClassRules]
+}
+
+struct RacesFile: Decodable {
+    let races: [RaceRules]
 }
