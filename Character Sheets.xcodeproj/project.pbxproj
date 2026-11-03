@@ -203,7 +203,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.1;
+				MARKETING_VERSION = 0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mitchellhudson.CharacterSheets;
 				PRODUCT_MODULE_NAME = Character_Sheets;
 				PRODUCT_NAME = 3d6;
@@ -232,7 +232,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.1;
+				MARKETING_VERSION = 0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mitchellhudson.CharacterSheets;
 				PRODUCT_MODULE_NAME = Character_Sheets;
 				PRODUCT_NAME = 3d6;

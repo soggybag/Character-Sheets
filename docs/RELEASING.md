@@ -35,7 +35,7 @@ copies it to the clipboard for TestFlight's **What to Test**. Run the smoke
 test in `docs/TESTING.md` on the processed build before external testers
 get it.
 
-The marketing version is `MARKETING_VERSION` in the project (currently 0.1).
+The marketing version is `MARKETING_VERSION` in the project (currently 0.2).
 Export compliance is answered in `Config/Info.plist`
 (`ITSAppUsesNonExemptEncryption = NO`: the app uses no encryption).
 
