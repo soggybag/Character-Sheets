@@ -75,25 +75,16 @@ struct MovementRow: View {
 /// house rule) goes in Notes.
 struct ClassAbilitiesSection: View {
     let analysis: RulesAnalysis
+    @Environment(\.sheetZoom) private var zoom
 
     var body: some View {
         SheetSection(title: analysis.raceAbilities.isEmpty ? "Class Abilities" : "Abilities") {
-            VStack(alignment: .leading, spacing: 6) {
-                ForEach(analysis.classAbilities, id: \.id) { ability in
-                    row(ability)
-                }
-            }
-            if let race = analysis.raceRules, !analysis.raceAbilities.isEmpty {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(race.name)
-                        .zoomFont(.caption)
-                        .foregroundStyle(.secondary)
-                    ForEach(analysis.raceAbilities, id: \.id) { ability in
-                        row(ability)
-                    }
-                }
-                .padding(.top, analysis.classAbilities.isEmpty ? 0 : 6)
-            }
+            // One Text, so a selection can run across abilities (and copy them all).
+            abilities
+                .lineSpacing(4 * zoom)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .textSelection(.enabled)
             if !analysis.laterAbilities.isEmpty {
                 Text("Later: " + analysis.laterAbilities
                     .map { "\($0.name) (level \($0.minLevel ?? 1))" }.joined(separator: ", "))
@@ -105,10 +96,22 @@ struct ClassAbilitiesSection: View {
         }
     }
 
-    private func row(_ ability: ClassRules.Feature) -> some View {
-        (Text(ability.name).bold() + Text("  ") + Text(ability.summary).foregroundStyle(.secondary))
-            .fixedSize(horizontal: false, vertical: true)
-            .textSelection(.enabled)
+    /// The class's abilities, then the race's under its name, a line each.
+    private var abilities: Text {
+        var lines = analysis.classAbilities.map(line)
+        if let race = analysis.raceRules, !analysis.raceAbilities.isEmpty {
+            lines.append(Text(race.name)
+                .font(.system(size: SheetZoom.pointSize(.caption) * zoom))
+                .foregroundStyle(.secondary))
+            lines += analysis.raceAbilities.map(line)
+        }
+        return lines.enumerated().reduce(Text("")) { text, entry in
+            Text("\(text)\(entry.offset == 0 ? "" : "\n")\(entry.element)")
+        }
+    }
+
+    private func line(_ ability: ClassRules.Feature) -> Text {
+        Text("\(Text(ability.name).bold())  \(Text(ability.summary).foregroundStyle(.secondary))")
     }
 }
 
