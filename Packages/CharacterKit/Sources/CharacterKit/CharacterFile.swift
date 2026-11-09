@@ -207,6 +207,18 @@ extension CharacterFile {
               !name.isEmpty else { return nil }
         return name
     }
+
+    /// The name as a file name for an unsaved character ("Fingle"), or nil
+    /// without one. Slashes and colons, which macOS doesn't allow in file
+    /// names, become hyphens, and a leading dot (a hidden file) is dropped.
+    public var suggestedFileName: String? {
+        guard let name else { return nil }
+        var safe = name.replacingOccurrences(of: "/", with: "-").replacingOccurrences(of: ":", with: "-")
+        safe = String(safe.drop { $0 == "." }).trimmingCharacters(in: .whitespaces)
+        // Well inside the 255-byte limit, leaving room for ".md" and " 2".
+        while safe.utf8.count > 200 { safe.removeLast() }
+        return safe.isEmpty ? nil : safe
+    }
 }
 
 // MARK: - Building values
