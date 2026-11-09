@@ -16,7 +16,7 @@ the legal info, so it's at the end of the description too.
 
 The App Store name must be unique. TestFlight already shows 3d6, so the app
 record should have it; confirm in App Store Connect → App Information. If
-it's taken or too bare to find, use "3d6: Character Sheets" (21), "3d6 Character Sheets" (20).
+it's taken or too bare to find, use "3d6: Character Sheets" (21) or "3d6 Character Sheets" (20).
 
 ## Subtitle (30 max)
 
