@@ -182,3 +182,27 @@ struct TagTests {
         #expect(f.text() == "---\nspells:\n  spellbook:\n    - { name: Sleep, level: 1 }\n---\n")
     }
 }
+
+@Suite("File name from the character's name")
+struct SuggestedFileNameTests {
+    @Test(arguments: [
+        ("Fingle", "Fingle"),
+        ("  Brother Cedric  ", "Brother Cedric"),
+        ("Ronk/the Fighter", "Ronk-the Fighter"),
+        ("Elowen: Thistledown", "Elowen- Thistledown"),
+        ("...Hidden", "Hidden"),
+        ("Zoë the Bold", "Zoë the Bold"),
+    ])
+    func safeName(name: String, expected: String) throws {
+        let file = try CharacterFile(text: "---\nformatVersion: 1\nname: \"\(name)\"\n---\n")
+        #expect(file.suggestedFileName == expected)
+    }
+
+    @Test func noName() throws {
+        #expect(try CharacterFile(text: "---\nformatVersion: 1\n---\n").suggestedFileName == nil)
+        #expect(try CharacterFile(text: "---\nformatVersion: 1\nname: \"...\"\n---\n").suggestedFileName == nil)
+        let long = String(repeating: "é", count: 150)
+        let file = try CharacterFile(text: "---\nformatVersion: 1\nname: \(long)\n---\n")
+        #expect(file.suggestedFileName.map { $0.utf8.count <= 200 } == true)
+    }
+}

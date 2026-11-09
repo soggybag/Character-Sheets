@@ -34,6 +34,7 @@ struct CharacterWindow: View {
         }
         .frame(minWidth: Self.minWidth, minHeight: 480)
         .background { CharacterWindowRegistration() }
+        .background { UntitledDocumentName(name: fileURL == nil ? suggestedFileName : nil) }
         .toolbar { toolbar }
         .focusedSceneValue(\.printableCharacter, printable)
     }
@@ -41,6 +42,12 @@ struct CharacterWindow: View {
     private var printable: PrintableCharacter? {
         guard case let .sheet(file) = document.content else { return nil }
         return PrintableCharacter(file: file, fallbackName: placeholderName)
+    }
+
+    /// The character's name, for an unsaved file's name.
+    private var suggestedFileName: String? {
+        guard case let .sheet(file) = document.content else { return nil }
+        return file.suggestedFileName
     }
 
     private var placeholderName: String {

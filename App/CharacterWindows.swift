@@ -99,3 +99,37 @@ struct CharacterWindowCommands: View {
             .help("Open each character sheet as a tab in the frontmost sheet's window")
     }
 }
+
+/// Until a character is saved, the window and the Save dialog use the
+/// character's name instead of "Untitled". Once the file has a name of its
+/// own, it's left alone (renaming it is up to the person).
+struct UntitledDocumentName: NSViewRepresentable {
+    /// Nil goes back to "Untitled".
+    let name: String?
+
+    func makeNSView(context: Context) -> Probe { Probe() }
+
+    func updateNSView(_ nsView: Probe, context: Context) {
+        nsView.name = name
+        nsView.apply()
+    }
+
+    final class Probe: NSView {
+        var name: String?
+        private var applied: String??
+
+        override func viewDidMoveToWindow() {
+            super.viewDidMoveToWindow()
+            // After SwiftUI has attached the document to the window.
+            DispatchQueue.main.async { [weak self] in self?.apply() }
+        }
+
+        func apply() {
+            guard let window, let document = NSDocumentController.shared.document(for: window),
+                  document.fileURL == nil, applied != .some(name) else { return }
+            applied = .some(name)
+            document.displayName = name
+            for controller in document.windowControllers { controller.synchronizeWindowTitleWithDocumentName() }
+        }
+    }
+}
