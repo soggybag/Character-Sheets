@@ -119,7 +119,7 @@ Decisions:
 
 ## Roadmap
 
-### M0: Foundations (now)
+### M0: Foundations
 - [x] File format spec (`docs/FILE-FORMAT.md`)
 - [x] Sample character (`examples/`)
 - [x] JSON Schema for validating the header (`schema/`)
@@ -188,17 +188,24 @@ Decisions:
 - [x] **Import PDF character sheets** (PDFKit form fields; three layouts,
       see `docs/PDF-IMPORT.md`). Opens the result as a new document to review.
 
-### M5: Ship 1.0
+### M5: Ship 1.0 ← now
 - [x] TestFlight setup: signing team, export compliance, upload script
       (`scripts/testflight.sh`, see `docs/RELEASING.md`)
 - [x] Placeholder app icon (`scripts/make-placeholder-icon.swift`)
-- [ ] Final app icon
+- [x] Final app icon (white, from the sRGB export)
 - [x] About window attributions; Help → Open Game License
 - [x] Help window (shown on first launch) explaining the sheet and the file
       format; Help → Open Sample Character; Help → Send Feedback…
-- [ ] Beta with testers; layout pass from their feedback
-- [ ] Final app name, App Store listing, simple website, announce to the
-      OSE community
+- [ ] Beta with testers; layout pass from their feedback. Builds on
+      TestFlight since October; 0.2 (9 Nov 2026) adds Advanced Fantasy.
+- [x] App name: 3d6
+- [x] Simple website (`site/`)
+- [ ] App Store listing: description, subtitle (may say OSE), keywords,
+      screenshots. Draft in `docs/APP-STORE.md`, already naming Advanced
+      Fantasy and the permission note.
+- [ ] Announce to the OSE community
+- [ ] After release: a promo code for Necrotic Gnome
+      (summon@necroticgnome.com), as the license asks
 
 ### Between betas
 - [x] Party view: File → Open Party Folder… lists everyone in a folder (HP,
@@ -221,7 +228,7 @@ Decisions:
       Format drafted in `docs/EQUIPMENT-FORMAT.md`, with an example in
       `examples/equipment/`. Parser, copper prices, and Settings →
       Equipment done and checked by hand.
-- [ ] **Random character and house rules in New Character:** a Random
+- [x] **Random character and house rules in New Character:** a Random
       Character button rolls everything (the best class for the scores,
       adjustments that reach a better XP bonus without losing a modifier,
       a starting kit from the shop), then everything can be changed. House
@@ -231,22 +238,22 @@ Decisions:
       and the random roll uses that rule and the 1st-level HP reroll.
       Sub-par: every score below 9, or two or more below 7 (checked
       against the rules site).
-- [ ] **Rearrange equipment:** drag rows by a handle, or right-click it
+- [x] **Rearrange equipment:** drag rows by a handle, or right-click it
       for Move Up / Down / to Top / to Bottom.
-- [ ] **Rules values within reach:** Return in an empty box fills in the
+- [x] **Rules values within reach:** Return in an empty box fills in the
       grey rules value; Edit → Use Rules Value (⌥⌘R) for the box being
       typed in. (Right-clicking a box shows the text field's own menu.)
-- [ ] **Zoom:** View → Zoom In / Zoom Out / Actual Size (⌘+ ⌘− ⌘0) for
+- [x] **Zoom:** View → Zoom In / Zoom Out / Actual Size (⌘+ ⌘− ⌘0) for
       the sheet's text, 85%–200%, for every sheet, remembered. Fonts and box
       widths scale together (sharp text, same layout).
-- [ ] **Roll Max HP** from the sheet when it's empty: every hit die at the
+- [x] **Roll Max HP** from the sheet when it's empty: every hit die at the
       current level, dice shown, or a typed total. Return fills a weapon's
       grey damage.
-- [ ] **Class Abilities** on the sheet (code review 1, S8): what the class
+- [x] **Class Abilities** on the sheet (code review 1, S8): what the class
       can do at this level, from the rules data in our own words, with
       later abilities listed by level. Read-only; extras go in Notes. The
       printout lists the names under Languages to stay on one page.
-- [ ] **Movement where it's used:** Combat shows the encounter rate (feet
+- [x] **Movement where it's used:** Combat shows the encounter rate (feet
       per round); Exploration shows the rate per turn and overland travel
       (miles a day). Both are worked out from the one stored rate. When the
       load slows the character, the rates are outlined and say
@@ -254,7 +261,7 @@ Decisions:
       encumbrance gets a Carrying treasure checkbox (`carryingTreasure` in
       the file); a rate that followed the rules follows the checkbox. The
       printed sheet matches.
-- [ ] OSE Advanced Fantasy: Necrotic Gnome gave special permission
+- [x] OSE Advanced Fantasy (in 0.2): Necrotic Gnome gave special permission
       (3 Nov 2026) for the class names, advancement tables and the short
       facts per race and class (see Open decisions). The Creative Commons
       SRD (early 2027) will only be the B/X material, so it won't add these
@@ -266,18 +273,23 @@ Decisions:
       Character done (separate race and class: modifiers, class list and
       level limits, languages; race shown on the sheet). The sheet uses the race
       too (abilities, exploration, class and level limits, weapon limits in
-      the shop and notes, missile bonus, languages). Still open:
-      multi-classing (optional rule) and the race's ability score maximums
-      (none in the Players Tome).
-- [ ] **Use the third-party license** (decided 21 Oct 2026, see Open
+      the shop and notes, missile bonus, languages). Each class's own
+      skills on the sheet and printout (acrobat, assassin, barbarian,
+      half-orc, ranger, thief). Help, website and tester notes cover it.
+      Multiple classes are in Later.
+- [x] **Use the third-party license** (decided 21 Oct 2026, see Open
       decisions). Done, to check by hand: a new About window (logo,
       "Requires Old-School Essentials", trademark line, "independent app"
       note); Help → Licenses and Legal (was Open Game License) with the same
       notices, then the OGL and Yams; Help and the website name the game; the
-      logo is in the asset catalogue and `site/images/`. Still to do: the App
-      Store listing (description says Old-School Essentials and "Requires
-      Old-School Essentials"; subtitle may say OSE), and after release a
-      promo code for Necrotic Gnome (summon@necroticgnome.com).
+      logo is in the asset catalogue and `site/images/`. The App Store
+      listing and the promo code for Necrotic Gnome are under M5.
+
+- [x] **Unsaved characters are named after the character**: the window
+      and the Save dialog use the name instead of "Untitled" (made safe
+      for a file name). Saved files keep their names. (0.2)
+- [x] **Abilities can be selected and copied** together, names and all.
+      (0.2)
 
 ### Later
 - **Notes formatting** (from beta testing, 21 Oct 2026). Notes stay
@@ -300,6 +312,10 @@ Decisions:
   fields by path (`saves.death`) and calculated values by name (`str.mod`,
   `weapons.0.melee`; bring back `RulesAnalysis.namedValues` from git). Import a layout to
   get a different sheet; the character file doesn't change.
+- **Multiple classes** (Advanced Fantasy optional rule, Players Tome
+  p. 15): up to three classes, XP split between them, a level per class,
+  hit points divided, the best saves and THAC0. Touches the file format,
+  sheet, level-up and New Character. Waiting to see if testers ask.
 - iPad version
 - More rulesets: Basic Fantasy, B/X variants, 5e (SRD 5.2, CC-BY-4.0)
 - Retainers and hirelings as linked character files
@@ -330,8 +346,9 @@ Anything here needs a strong case before it moves up:
 
 ## Open decisions
 
-- App name (avoid "OSE" and "D&D" in it). The bundle id is
-  `com.mitchellhudson.CharacterSheets`; the signing team is still to set.
+- **Decided: the app is called 3d6** (no "OSE" or "D&D" in the name). The
+  bundle id stays `com.mitchellhudson.CharacterSheets`; the signing team
+  is `753UQ7TNXJ`.
 - **Decided (21 Oct 2026): use Necrotic Gnome's third-party license**
   (v1.7, in `docs/Old-School Essentials Third Party License-…/`). Their
   answers removed the open questions. Without the license the app couldn't
