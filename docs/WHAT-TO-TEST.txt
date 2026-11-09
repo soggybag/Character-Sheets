@@ -8,6 +8,8 @@ New in this build: Advanced Fantasy.
 - The sheet uses the race: its abilities, exploration chances, languages and weapon limits, and a warning at its level limit.
 - Each class's own skills on the sheet and printout: an acrobat's tightrope walking, an assassin's assassination, a ranger's tracking and so on, not only the thief's.
 - Bards and rangers are no longer told to carry a holy symbol.
+- An unsaved character's window and Save dialog use the character's name instead of "Untitled".
+- The Abilities section can be selected and copied in one go, names and all.
 
 Things to try:
 - Roll a few Advanced Fantasy characters, with and without a race, and with Random Character. Do the class list's limits and the scores look right?
